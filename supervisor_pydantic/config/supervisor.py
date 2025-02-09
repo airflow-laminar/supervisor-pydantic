@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, time, timedelta, timezone
+from datetime import datetime, timezone
 from logging import getLogger
 from pathlib import Path
 from shutil import rmtree
@@ -233,20 +233,8 @@ class SupervisorConfiguration(BaseModel):
 
 
 class SupervisorConvenienceConfiguration(SupervisorConfiguration):
-    airflow: ConvenienceConfiguration = Field(
+    convenience: ConvenienceConfiguration = Field(
         default_factory=ConvenienceConfiguration, description="Required configurations for convenience integration"
-    )
-
-    # Passthrough to PythonSensor in airflow-ha
-    check_interval: timedelta = Field(default=timedelta(seconds=5), description="Interval between supervisor program status checks")
-    check_timeout: timedelta = Field(default=timedelta(hours=8), description="Timeout to wait for supervisor program status checks")
-
-    # HighAvailabilityOperator custom args
-    runtime: Optional[timedelta] = Field(default=None, description="Max runtime of Supervisor job")
-    endtime: Optional[time] = Field(default=None, description="End time of Supervisor job")
-    maxretrigger: Optional[int] = Field(
-        default=None,
-        description="Max number of retriggers of Supervisor job (e.g. max number of checks separated by `check_interval`)",
     )
 
     _pydantic_path: Path = PrivateAttr(default="pydantic.json")
@@ -258,23 +246,23 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
         Path(self._pydantic_path).write_text(self.model_dump_json())
 
     @model_validator(mode="after")
-    def _setup_airflow_defaults(self):
+    def _setup_convenience_defaults(self):
         """Method to overload configuration with values needed for the setup
-        of airflow tasks that we construct"""
+        of convenience tasks that we construct"""
         # inet_http_server
         if not self.inet_http_server:
             self.inet_http_server = InetHttpServerConfiguration()
 
-        self.inet_http_server.port = self.airflow.port
-        self.inet_http_server.username = self.airflow.username
-        self.inet_http_server.password = self.airflow.password
+        self.inet_http_server.port = self.convenience.port
+        self.inet_http_server.username = self.convenience.username
+        self.inet_http_server.password = self.convenience.password
 
-        self.supervisorctl.serverurl = f"{self.airflow.protocol}://{self.airflow.host}:{self.airflow.port.split(':')[-1]}/"
+        self.supervisorctl.serverurl = f"{self.convenience.protocol}://{self.convenience.host}:{self.convenience.port.split(':')[-1]}/"
 
         # rpcinterface
         if not self.rpcinterface:
             self.rpcinterface = {"supervisor": RpcInterfaceConfiguration()}
-        self.rpcinterface["supervisor"].rpcinterface_factory = self.airflow.rpcinterface_factory
+        self.rpcinterface["supervisor"].rpcinterface_factory = self.convenience.rpcinterface_factory
 
         # supervisord
         self.supervisord.nodaemon = False
@@ -284,11 +272,11 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
         for config in self.program.values():
             config.autostart = False
             config.autorestart = False
-            config.startsecs = self.airflow.startsecs
-            config.startretries = self.airflow.startretries
-            config.exitcodes = self.airflow.exitcodes
-            config.stopsignal = self.airflow.stopsignal
-            config.stopwaitsecs = self.airflow.stopwaitsecs
+            config.startsecs = self.convenience.startsecs
+            config.startretries = self.convenience.startretries
+            config.exitcodes = self.convenience.exitcodes
+            config.stopsignal = self.convenience.stopsignal
+            config.stopwaitsecs = self.convenience.stopwaitsecs
 
         # other
         if str(self.working_dir) not in str(self._pydantic_path):

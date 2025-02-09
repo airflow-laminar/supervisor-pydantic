@@ -32,7 +32,7 @@ def permissioned_open_port() -> int:
 def supervisor_convenience_configuration(open_port: int) -> Iterator[SupervisorConvenienceConfiguration]:
     with NamedTemporaryFile("w", suffix=".cfg") as tf:
         cfg = SupervisorConvenienceConfiguration(
-            airflow=ConvenienceConfiguration(port=f"*:{open_port}"),
+            convenience=ConvenienceConfiguration(port=f"*:{open_port}"),
             path=tf.name,
             program={
                 "test": ProgramConfiguration(
@@ -49,7 +49,7 @@ def permissioned_supervisor_convenience_configuration(
 ) -> Iterator[SupervisorConvenienceConfiguration]:
     with NamedTemporaryFile("w", suffix=".cfg") as tf:
         cfg = SupervisorConvenienceConfiguration(
-            airflow=ConvenienceConfiguration(port=f"*:{permissioned_open_port}", username="user1", password="testpassword1"),
+            convenience=ConvenienceConfiguration(port=f"*:{permissioned_open_port}", username="user1", password="testpassword1"),
             path=tf.name,
             program={
                 "test": ProgramConfiguration(
