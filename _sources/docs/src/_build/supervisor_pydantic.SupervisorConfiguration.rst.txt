@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.SupervisorConfiguration
+============================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autopydantic_model:: SupervisorConfiguration

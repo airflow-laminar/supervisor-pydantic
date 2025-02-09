@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.InetHttpServerConfiguration
+================================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autopydantic_model:: InetHttpServerConfiguration
