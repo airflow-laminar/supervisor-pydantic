@@ -24,7 +24,15 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-dependencies = []
+dependencies = [
+    "colorlog",
+    "hydra-core",
+    "jinja2",
+    "omegaconf",
+    "pydantic>=2",
+    "rich",
+    "typer",
+]
 
 [project.optional-dependencies]
 develop = [
@@ -37,9 +45,12 @@ develop = [
     "ruff",
     "twine",
     "wheel",
+    # Test dependencies
+    "supervisor",
 ]
 
 [project.scripts]
+_supervisor_convenience = "supervisor_pydantic.convenience.commands:main"
 
 [project.urls]
 Repository = "https://github.com/airflow-laminar/supervisor-pydantic"
@@ -113,4 +124,10 @@ known-first-party = ["supervisor_pydantic"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
+"__init__.py" = ["F401", "F403"]
+
+[tool.yardang]
+title = "supervisor-pydantic"
+root = "README.md"
+pages = ["docs/src/API.md"]
+use-autoapi = false
