@@ -431,64 +431,9 @@
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to supervisor working directory&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Working Dir&quot;</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;airflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;convenience&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ConvenienceConfiguration&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Required configurations for convenience integration&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;check_interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PT5S&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Interval between supervisor program status checks&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;duration&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Check Interval&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;check_timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PT8H&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Timeout to wait for supervisor program status checks&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;duration&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Check Timeout&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;runtime&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;duration&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max runtime of Supervisor job&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Runtime&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;endtime&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;End time of Supervisor job&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Endtime&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;maxretrigger&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Max number of retriggers of Supervisor job (e.g. max number of checks separated by `check_interval`)&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Maxretrigger&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2603,49 +2548,14 @@
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">airflow</span> <span class="pre">(supervisor_pydantic.config.convenience.ConvenienceConfiguration)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_interval</span> <span class="pre">(datetime.timedelta)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_timeout</span> <span class="pre">(datetime.timedelta)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">endtime</span> <span class="pre">(datetime.time</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxretrigger</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">runtime</span> <span class="pre">(datetime.timedelta</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convenience</span> <span class="pre">(supervisor_pydantic.config.convenience.ConvenienceConfiguration)</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.airflow">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">airflow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ConvenienceConfiguration</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.airflow" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.convenience">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convenience</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ConvenienceConfiguration</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.convenience" title="Link to this definition">¶</a></dt>
 <dd><p>Required configurations for convenience integration</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.check_interval">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_interval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">timedelta</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=5)</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.check_interval" title="Link to this definition">¶</a></dt>
-<dd><p>Interval between supervisor program status checks</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.check_timeout">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">timedelta</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=28800)</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.check_timeout" title="Link to this definition">¶</a></dt>
-<dd><p>Timeout to wait for supervisor program status checks</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.runtime">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">runtime</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.runtime" title="Link to this definition">¶</a></dt>
-<dd><p>Max runtime of Supervisor job</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.endtime">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">endtime</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">time</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.endtime" title="Link to this definition">¶</a></dt>
-<dd><p>End time of Supervisor job</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.maxretrigger">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">maxretrigger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.maxretrigger" title="Link to this definition">¶</a></dt>
-<dd><p>Max number of retriggers of Supervisor job (e.g. max number of checks separated by <cite>check_interval</cite>)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2724,12 +2634,7 @@
             <ul>
 <li><a class="reference internal" href="#">supervisor_pydantic.SupervisorConvenienceConfiguration</a><ul>
 <li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration</span></code></a><ul>
-<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.airflow"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.airflow</span></code></a></li>
-<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.check_interval"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.check_interval</span></code></a></li>
-<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.check_timeout"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.check_timeout</span></code></a></li>
-<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.runtime"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.runtime</span></code></a></li>
-<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.endtime"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.endtime</span></code></a></li>
-<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.maxretrigger"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.maxretrigger</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.convenience"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.convenience</span></code></a></li>
 <li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.model_post_init"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.model_post_init()</span></code></a></li>
 </ul>
 </li>
