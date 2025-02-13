@@ -106,9 +106,9 @@ def start_supervisor(
     if _check_running(cfg_obj):
         return _raise_or_exit(True, _exit)
     cfg_obj.start(daemon=True)
-    running = _wait_or_while(until=lambda: cfg_obj.running(), timeout=30)
+    running = _wait_or_while(until=lambda: cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
     if not running:
-        log.critical("Still not running 30s after start command!")
+        log.critical(f"Still not running {cfg_obj.convenience.command_timeout}s after start command!")
         return _raise_or_exit(False, _exit)
     return _raise_or_exit(True, _exit)
 
@@ -134,12 +134,12 @@ def start_programs(
     _wait_or_while(
         until=lambda: all(_.running() for _ in client.getAllProcessInfo()),
         unless=lambda: any(_.stopped() for _ in client.getAllProcessInfo()),
-        timeout=5,
+        timeout=cfg_obj.convenience.command_timeout,
     )
     all_ok = _wait_or_while(
         until=lambda: all(_.ok(ok_exitstatuses=cfg_obj.convenience.exitcodes) for _ in client.getAllProcessInfo()),
         unless=lambda: any(_.bad(ok_exitstatuses=cfg_obj.convenience.exitcodes) for _ in client.getAllProcessInfo()),
-        timeout=10,
+        timeout=cfg_obj.convenience.command_timeout,
     )
     if not all_ok:
         for r in client.getAllProcessInfo():
@@ -213,7 +213,7 @@ def stop_programs(
     ret = client.stopAllProcesses()
     log.info(ret)
 
-    all_stopped = _wait_or_while(until=lambda: all(_.stopped() for _ in client.getAllProcessInfo()), timeout=10)
+    all_stopped = _wait_or_while(until=lambda: all(_.stopped() for _ in client.getAllProcessInfo()), timeout=cfg_obj.convenience.command_timeout)
     if not all_stopped:
         for r in client.getAllProcessInfo():
             log.info(r.model_dump_json())
@@ -260,9 +260,9 @@ def stop_supervisor(
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
     cfg_obj.stop()
-    not_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=30)
+    not_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
     if not not_running:
-        log.critical("Still running 30s after stop command!")
+        log.critical(f"Still running {cfg_obj.convenience.command_timeout}s after stop command!")
         return _raise_or_exit(False, _exit)
     return _raise_or_exit(True, _exit)
 
@@ -288,9 +288,9 @@ def kill_supervisor(
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
     cfg_obj.kill()
-    still_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=30)
+    still_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
     if still_running:
-        log.critical("Still running 30s after kill command!")
+        log.critical(f"Still running {cfg_obj.convenience.command_timeout}s after kill command!")
         return _raise_or_exit(False, _exit)
     return _raise_or_exit(True, _exit)
 
@@ -316,7 +316,7 @@ def remove_supervisor_config(
         return _raise_or_exit(False, _exit)
 
     # TODO move to config
-    sleep(5)
+    sleep(cfg_obj.convenience.command_timeout)
 
     # TODO make optional
     cfg_obj.rmdir()
