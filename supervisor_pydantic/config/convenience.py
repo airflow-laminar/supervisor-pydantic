@@ -77,6 +77,10 @@ class ConvenienceConfiguration(_BaseCfgModel):
         default="/RPC2",
         description="Path for supervisor XMLRPC HTTP API. Used by the XMLRPC client",
     )
+    command_timeout: int = Field(
+        default=30,
+        description="Timeout for convenience commands sent to the supervisor, in seconds",
+    )
 
     @model_validator(mode="after")
     def validate_remote_accessible(self):
