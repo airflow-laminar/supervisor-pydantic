@@ -1,5 +1,5 @@
 import socket
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from time import sleep
 from typing import Iterator
 
@@ -30,10 +30,10 @@ def permissioned_open_port() -> int:
 
 @fixture(scope="module")
 def supervisor_convenience_configuration(open_port: int) -> Iterator[SupervisorConvenienceConfiguration]:
-    with NamedTemporaryFile("w", suffix=".cfg") as tf:
+    with TemporaryDirectory() as td:
         cfg = SupervisorConvenienceConfiguration(
             convenience=ConvenienceConfiguration(port=f"*:{open_port}"),
-            path=tf.name,
+            working_dir=td,
             program={
                 "test": ProgramConfiguration(
                     command="bash -c 'sleep 1; exit 1'",

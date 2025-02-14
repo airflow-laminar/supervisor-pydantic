@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timezone
+from getpass import getuser
 from logging import getLogger
 from pathlib import Path
 from shutil import rmtree
@@ -76,24 +76,23 @@ class SupervisorConfiguration(BaseModel):
     rpcinterface: Optional[Dict[str, RpcInterfaceConfiguration]] = Field(default=None)
 
     # other configuration
-    config_path: Optional[Path] = Field(default="", description="Path to supervisor configuration file")
+    config_path: Optional[Path] = Field(default="supervisor.cfg", description="Path to supervisor configuration file, relative to `working_dir`")
     working_dir: Optional[Path] = Field(default="", description="Path to supervisor working directory")
 
     @model_validator(mode="after")
     def _setup_config_and_working_dir(self):
-        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")
-        tempdir = Path(gettempdir()).resolve()
-
-        if self.working_dir == "":
+        if self.working_dir is None or self.working_dir == "":
             if self.supervisord.directory:
                 # use this as the dir
                 self.working_dir = self.supervisord.directory
             else:
-                self.working_dir = tempdir / f"supervisor-{now}"
+                self.working_dir = Path(gettempdir()).resolve() / f"supervisor-{getuser()}-{'-'.join(list(self.program.keys()))}"
                 self.supervisord.directory = self.working_dir
-            using_default_working_dir = True
-        else:
-            using_default_working_dir = False
+
+        self.working_dir.mkdir(parents=True, exist_ok=True)
+
+        if not Path(self.config_path).exists() or str(self.working_dir) not in str(self.config_path):
+            self.config_path = (self.working_dir / self.config_path).resolve()
 
         # force pidfile to be in working dir if not otherwise set
         if not self.supervisord.pidfile:
@@ -102,12 +101,6 @@ class SupervisorConfiguration(BaseModel):
         # force logfile to be in working dir if not otherwise set
         if not self.supervisord.logfile:
             self.supervisord.logfile = self.working_dir / "supervisord.log"
-
-        if self.config_path == "":
-            if using_default_working_dir:
-                self.config_path = self.working_dir / "supervisor.cfg"
-            else:
-                self.config_path = self.working_dir / f"supervisor-{now}.cfg"
 
         for name, program_config in self.program.items():
             if program_config.directory is None:

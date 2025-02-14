@@ -9,9 +9,9 @@ from supervisor_pydantic.client.xmlrpc import ProcessState
 
 def _assert_client_actions(client: SupervisorRemoteXMLRPCClient):
     assert client.getProcessInfo("test").state == ProcessState.STOPPED
-    sleep(0.5)
+    sleep(1)
     assert client.startAllProcesses()["test"].state == ProcessState.RUNNING
-    sleep(0.5)
+    sleep(1)
     assert client.getProcessInfo("test").state == ProcessState.EXITED
     assert client.startProcess("test").state == ProcessState.RUNNING
     assert client.stopProcess("test").state == ProcessState.STOPPED
