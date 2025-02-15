@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from getpass import getuser
 from pathlib import Path
 from unittest.mock import patch
 
@@ -25,24 +25,20 @@ def test_inst():
         SupervisorConfiguration()
     with (
         patch("supervisor_pydantic.config.supervisor.gettempdir") as p1,
-        patch("supervisor_pydantic.config.supervisor.datetime") as p2,
     ):
         pth = Path(__file__).resolve().parent.parent.parent.parent / ".pytest_cache"
         p1.return_value = str(pth)
-        p2.now.return_value = datetime(2000, 1, 1, 0, 0, 0, 1, tzinfo=UTC)
         c = SupervisorConfiguration(program={"test": ProgramConfiguration(command="test")})
-        assert str(c.working_dir) == str(pth / "supervisor-2000-01-01T00-00-00")
-        assert str(c.config_path) == str(pth / "supervisor-2000-01-01T00-00-00" / "supervisor.cfg")
+        assert str(c.working_dir) == str(pth / f"supervisor-{getuser()}-test")
+        assert str(c.config_path) == str(pth / f"supervisor-{getuser()}-test" / "supervisor.cfg")
 
 
 def test_cfg_roundtrip_json():
     with (
         patch("supervisor_pydantic.config.supervisor.gettempdir") as p1,
-        patch("supervisor_pydantic.config.supervisor.datetime") as p2,
     ):
         pth = Path(__file__).resolve().parent.parent.parent.parent / ".pytest_cache"
         p1.return_value = str(pth)
-        p2.now.return_value = datetime(2000, 1, 1, 0, 0, 0, 1, tzinfo=UTC)
         c = SupervisorConfiguration(program={"test": ProgramConfiguration(command="test")})
         assert c.model_validate_json(c.model_dump_json()) == c
 
@@ -50,11 +46,9 @@ def test_cfg_roundtrip_json():
 def test_cfg():
     with (
         patch("supervisor_pydantic.config.supervisor.gettempdir") as p1,
-        patch("supervisor_pydantic.config.supervisor.datetime") as p2,
     ):
         pth = Path(__file__).resolve().parent.parent.parent.parent / ".pytest_cache"
         p1.return_value = str(pth)
-        p2.now.return_value = datetime(2000, 1, 1, 0, 0, 0, 1, tzinfo=UTC)
         c = SupervisorConfiguration(program={"test": ProgramConfiguration(command="test")})
         assert (
             c.to_cfg().strip()
@@ -67,18 +61,16 @@ directory={dir}
 
 [program:test]
 command=test
-directory={dir}/test""".format(dir=str(pth / "supervisor-2000-01-01T00-00-00"))
+directory={dir}/test""".format(dir=str(pth / f"supervisor-{getuser()}-test"))
         )
 
 
 def test_cfg_all():
     with (
         patch("supervisor_pydantic.config.supervisor.gettempdir") as p1,
-        patch("supervisor_pydantic.config.supervisor.datetime") as p2,
     ):
         pth = Path(__file__).resolve().parent.parent.parent.parent / ".pytest_cache"
         p1.return_value = str(pth)
-        p2.now.return_value = datetime(2000, 1, 1, 0, 0, 0, 1, tzinfo=UTC)
         c = SupervisorConfiguration(
             unix_http_server=UnixHttpServerConfiguration(
                 file="/a/test/file",
@@ -139,5 +131,5 @@ socket=test
 command=echo 'test'
 
 [rpcinterface:testrpcinterface]
-supervisor.rpcinterface_factory=a.test.module""".format(dir=str(pth / "supervisor-2000-01-01T00-00-00"))
+supervisor.rpcinterface_factory=a.test.module""".format(dir=str(pth / f"supervisor-{getuser()}-test"))
         )
