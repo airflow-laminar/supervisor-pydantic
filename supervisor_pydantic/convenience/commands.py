@@ -103,8 +103,18 @@ def start_supervisor(
     cfg_obj = _load_or_pass(cfg)
     if not _check_same(cfg_obj):
         log.critical("Configs don't match")
+
+        # TODO check if "critical" things are different and restart
+        # supervisor if necessary
+
+        # Otherwise just write and reload
+        cfg_obj._write_self()
+        client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
+        client.reloadConfig()
+
     if _check_running(cfg_obj):
         return _raise_or_exit(True, _exit)
+
     cfg_obj.start(daemon=True)
     running = _wait_or_while(until=lambda: cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
     if not running:
