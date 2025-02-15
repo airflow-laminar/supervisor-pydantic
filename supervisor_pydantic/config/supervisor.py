@@ -89,8 +89,6 @@ class SupervisorConfiguration(BaseModel):
                 self.working_dir = Path(gettempdir()).resolve() / f"supervisor-{getuser()}-{'-'.join(list(self.program.keys()))}"
                 self.supervisord.directory = self.working_dir
 
-        self.working_dir.mkdir(parents=True, exist_ok=True)
-
         if not Path(self.config_path).exists() or str(self.working_dir) not in str(self.config_path):
             self.config_path = (self.working_dir / self.config_path).resolve()
 
