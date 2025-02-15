@@ -130,24 +130,29 @@ class SupervisorRemoteXMLRPCClient(object):
     def getAllProcessInfo(self) -> List[ProcessInfo]:
         return [ProcessInfo(**_) for _ in self._client.supervisor.getAllProcessInfo()]
 
-    def getState(self):
+    def getState(self) -> SupervisorState:
         return SupervisorState(self._client.supervisor.getState()["statecode"])
 
     # def readLog(self):
     #     return self._client.supervisor.readLog(0, 0)
 
-    def restart(self):
-        return self._client.supervisor.restart()
+    def restart(self) -> SupervisorState:
+        self._client.supervisor.restart()
+        return self.getState()
 
-    def shutdown(self):
-        return self._client.supervisor.shutdown()
+    def shutdown(self) -> SupervisorState:
+        self._client.supervisor.shutdown()
+        return self.getState()
 
     ###################
     # process methods #
     ###################
-    def getProcessInfo(self, name: str):
+    def getProcessInfo(self, name: str) -> ProcessInfo:
         if name not in self._cfg.program:
             raise RuntimeError(f"Unknown process: {name}")
+        return self._getProcessInfoInternal(name)
+
+    def _getProcessInfoInternal(self, name: str) -> ProcessInfo:
         return ProcessInfo(**self._client.supervisor.getProcessInfo(name))
 
     def readProcessLog(self, name: str):
@@ -191,17 +196,32 @@ class SupervisorRemoteXMLRPCClient(object):
     def stopProcess(self, name: str) -> ProcessInfo:
         if name not in self._cfg.program:
             raise RuntimeError(f"Unknown process: {name}")
+        return self._stopProcessInternal(name)
+
+    def _stopProcessInternal(self, name: str) -> ProcessInfo:
         try:
             if self._client.supervisor.stopProcess(name):
-                return self.getProcessInfo(name)
+                return self._getProcessInfoInternal(name)
         except Fault as f:
             if f.faultCode == SupervisorMethodResult.NOT_RUNNING.value:
-                return self.getProcessInfo(name)
+                return self._getProcessInfoInternal(name)
             raise f
-        return self.getProcessInfo(name)
+        return self._getProcessInfoInternal(name)
 
-    # def reloadConfig(self):
-    #     return self._client.supervisor.reloadConfig()
+    def reloadConfig(self, start_new: bool = False) -> SupervisorState:
+        added, changed, removed = self._client.supervisor.reloadConfig()[0]
+        proc_infos = []
+        for name in removed:
+            proc_infos.append(self._stopProcessInternal(name))
+        for name in changed:
+            self._stopProcessInternal(name)
+            proc_infos.append(self.startProcess(name))
+        # Don't need to start as we'll do this separately
+        for name in added:
+            self._client.supervisor.addProcessGroup(name)
+            if start_new:
+                proc_infos.append(self.startProcess(name))
+        return proc_infos
 
     # def signalAllProcesses(self, signal):
     #     return self._client.supervisor.signalAllProcesses()
