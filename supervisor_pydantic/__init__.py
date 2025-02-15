@@ -2,4 +2,4 @@ from .client import *
 from .config import *
 from .convenience import *
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
