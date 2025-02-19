@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import List, Optional
 
 from pydantic import Field, SecretStr, field_serializer, field_validator, model_validator
@@ -5,6 +6,8 @@ from pydantic import Field, SecretStr, field_serializer, field_validator, model_
 from .base import HostPort, Signal, SupervisorLocation, UnixUserName, _BaseCfgModel
 
 __all__ = ("ConvenienceConfiguration",)
+
+_log = getLogger(__name__)
 
 
 class ConvenienceConfiguration(_BaseCfgModel):
@@ -89,9 +92,9 @@ class ConvenienceConfiguration(_BaseCfgModel):
     @model_validator(mode="after")
     def validate_remote_accessible(self):
         if self.local_or_remote == "remote" and self.port.startswith(("localhost", "127.0.0.1")):
-            raise ValueError("Supervisor binds only to loopback (localhost/127.0.0.1), but asked for remote")
+            _log.warning("Supervisor binds only to loopback (localhost/127.0.0.1), but asked for remote")
         if self.local_or_remote == "remote" and self.host.startswith(("localhost", "127.0.0.1")):
-            raise ValueError("Supervisor client expecting hostname, got localhost/127.0.0.1")
+            _log.warning("Supervisor client expecting hostname, got localhost/127.0.0.1")
         return self
 
     @field_serializer("exitcodes", when_used="json")
