@@ -27,34 +27,52 @@ __all__ = (
 
 
 def _check_exists(cfg: SupervisorConvenienceConfiguration) -> bool:
+    log.info(f"Checking for working dir {cfg.working_dir} and config path {cfg.config_path}")
     if cfg.working_dir.exists() and cfg.config_path.exists():
         # its probably already been written
+        log.info(f"Working dir {cfg.working_dir} and config path {cfg.config_path} exist")
         return True
+    log.info(f"Working dir {cfg.working_dir} and/or config path {cfg.config_path} do not exist")
     return False
 
 
 def _check_same(cfg: SupervisorConvenienceConfiguration) -> bool:
+    log.info("Checking if config file matches")
     if _check_exists(cfg) and cfg.config_path.read_text().strip() == cfg.to_cfg().strip():
         # same file contents
+        log.info(f"Config file {cfg.config_path} matches")
         return True
     elif not _check_exists(cfg):
+        # no file exists, so we can write it
+        log.info(f"Config file {cfg.config_path} does not exist, so we can write it")
         return True
+    log.info(f"Config file {cfg.config_path} does not match")
     return False
 
 
 def _check_running(cfg: SupervisorConvenienceConfiguration) -> bool:
     if _check_same(cfg):
-        return cfg.running()
+        # check if running
+        log.info("Checking if supervisor is running")
+        if cfg.running():
+            log.info("Supervisor is running")
+            return True
+        log.info("Supervisor is not running")
+    log.info("Supervisor config file does not match, so we can't check if it's running")
     return False
 
 
 def _wait_or_while(until: Callable, unless: Optional[Callable] = None, timeout: int = 5) -> bool:
+    log.info(f"Waiting for {timeout} seconds")
     for _ in range(timeout):
         if until():
+            log.info("`until` condition met")
             return True
         if unless and unless():
+            log.info("`unless` condition met")
             return False
         sleep(1)
+    log.info("Timed out after {timeout} seconds")
     return False
 
 
@@ -81,10 +99,15 @@ def write_supervisor_config(cfg_json: str, _exit: Annotated[bool, Argument(hidde
         cfg_json (str): JSON string of SupervisorConvenienceConfiguration
     """
     # NOTE: typer does not support union types
+    log.info(f"Loading JSON config: {cfg_json}")
     cfg_obj = _load_or_pass(cfg_json)
+
     if not _check_same(cfg_obj):
-        log.critical("Configs don't match")
+        log.critical("Configurations don't match while writing supervisor config. This may lead to zombie supervisors")
+
+    log.info(f"Writing supervisor config to {cfg_obj.config_path}")
     cfg_obj._write_self()
+
     return _raise_or_exit(True, _exit)
 
 
@@ -101,25 +124,32 @@ def start_supervisor(
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
+
     if not _check_same(cfg_obj):
-        log.critical("Configs don't match")
+        log.critical("Configurations don't match while writing supervisor config. This may lead to zombie supervisors")
 
         # TODO check if "critical" things are different and restart
         # supervisor if necessary
 
         # Otherwise just write and reload
+        log.info("Writing supervisor config to {cfg_obj.config_path}")
         cfg_obj._write_self()
+
+        log.info("Reloading supervisor config")
         client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
         client.reloadConfig()
 
     if _check_running(cfg_obj):
+        log.info("Supervisor is already running")
         return _raise_or_exit(True, _exit)
 
+    log.info("Starting supervisor")
     cfg_obj.start(daemon=True)
     running = _wait_or_while(until=lambda: cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
     if not running:
-        log.critical(f"Still not running {cfg_obj.convenience.command_timeout}s after start command!")
+        log.critical(f"Supervisor still not running {cfg_obj.convenience.command_timeout}s after start command!")
         return _raise_or_exit(False, _exit)
+    log.info("Supervisor started")
     return _raise_or_exit(True, _exit)
 
 
@@ -138,12 +168,16 @@ def start_programs(
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
+
+    log.info(f"Initializing client with config: {cfg_obj}")
     client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
 
     if restart:
         # No builtin restart, so stop everything then start again on the next line
+        log.info("Stopping all processes before restarting")
         client.stopAllProcesses()
 
+    log.info("Starting all processes")
     ret = client.startAllProcesses()
     log.info(ret)
 
@@ -158,11 +192,11 @@ def start_programs(
         timeout=cfg_obj.convenience.command_timeout,
     )
     if not all_ok:
+        log.critical("Not all processes started successfully")
         for r in client.getAllProcessInfo():
             log.info(r.model_dump_json())
-        log.warning("not all processes started")
         return _raise_or_exit(False, _exit)
-    log.info("all processes started")
+    log.info("All processes started")
     return _raise_or_exit(True, _exit)
 
 
@@ -183,8 +217,11 @@ def check_programs(
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
+
+    log.info(f"Initializing client with config: {cfg_obj}")
     client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
 
+    log.info("Checking all processes")
     ret = client.getAllProcessInfo()
     for r in ret:
         log.info(r.model_dump_json())
@@ -192,22 +229,22 @@ def check_programs(
     ok = False
     if check_running:
         if all(p.running() for p in ret):
-            log.info("all processes running")
+            log.info("All processes running")
             ok = True
         else:
-            log.warning("not all processes running")
+            log.warning("Not all processes running")
     elif check_done:
         if all(p.done(ok_exitstatuses=cfg_obj.convenience.exitcodes) for p in ret):
-            log.info("all processes done")
+            log.info("All processes done")
             ok = True
         else:
-            log.info("not all processes done")
+            log.info("Not all processes done")
     else:
         if all(p.ok(ok_exitstatuses=cfg_obj.convenience.exitcodes) for p in ret):
-            log.info("all processes ok")
+            log.info("All processes ok")
             ok = True
         else:
-            log.info("not all processes ok")
+            log.info("Not all processes ok")
     return _raise_or_exit(ok, _exit)
 
 
@@ -224,18 +261,21 @@ def stop_programs(
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
+
+    log.info(f"Initializing client with config: {cfg_obj}")
     client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
 
+    log.info("Stopping all processes")
     ret = client.stopAllProcesses()
     log.info(ret)
 
     all_stopped = _wait_or_while(until=lambda: all(_.stopped() for _ in client.getAllProcessInfo()), timeout=cfg_obj.convenience.command_timeout)
     if not all_stopped:
+        log.critical("Not all processes stopped successfully")
         for r in client.getAllProcessInfo():
             log.info(r.model_dump_json())
-        log.warning("not all processes stopped")
         return _raise_or_exit(False, _exit)
-    log.info("all processes stopped")
+    log.info("All processes stopped")
     return _raise_or_exit(True, _exit)
 
 
@@ -253,11 +293,12 @@ def restart_programs(
         force (bool, optional): if true, force restart. Defaults to False.
     """
     if force:
+        log.info("Force restarting all processes")
         if not stop_programs(cfg, False):
-            log.warning("could not stop programs")
+            log.warning("Could not stop programs")
             return _raise_or_exit(False, _exit)
     if not start_programs(cfg, False):
-        log.warning("could not start programs")
+        log.warning("Could not start programs")
         return _raise_or_exit(False, _exit)
     return _raise_or_exit(True, _exit)
 
@@ -275,7 +316,10 @@ def stop_supervisor(
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
+
+    log.info("Stopping supervisor")
     cfg_obj.stop()
+
     not_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
     if not not_running:
         log.critical(f"Still running {cfg_obj.convenience.command_timeout}s after stop command!")
@@ -303,7 +347,9 @@ def kill_supervisor(
 
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
+    log.info("Killing supervisor")
     cfg_obj.kill()
+
     still_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
     if still_running:
         log.critical(f"Still running {cfg_obj.convenience.command_timeout}s after kill command!")
@@ -324,17 +370,21 @@ def remove_supervisor_config(
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
+
+    log.info("Removing supervisor config")
     still_running = stop_supervisor(cfg_obj, _exit=False)
     if still_running:
+        log.critical("Supervisor still running after stop command!")
         still_running = kill_supervisor(cfg_obj, _exit=False)
 
     if still_running:
+        log.critical("Supervisor still running after kill command!")
         return _raise_or_exit(False, _exit)
 
-    # TODO move to config
+    log.info(f"Sleeping for {cfg_obj.convenience.command_timeout} seconds")
     sleep(cfg_obj.convenience.command_timeout)
 
-    # TODO make optional
+    log.info("Removing supervisor config and folder")
     cfg_obj.rmdir()
     return _raise_or_exit(True, _exit)
 
