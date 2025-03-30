@@ -127,16 +127,22 @@ def start_programs(
     cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
+    restart: bool = False,
     _exit: Annotated[bool, Argument(hidden=True)] = True,
 ):
     """Start all programs in the supervisor instance
 
     Args:
         cfg (Annotated[Path, Option, optional): Path to JSON file of SupervisorConvenienceConfiguration
+        restart (bool, optional): if true, restart all programs. Defaults to False.
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
     client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
+
+    if restart:
+        # No builtin restart, so stop everything then start again on the next line
+        client.stopAllProcesses()
 
     ret = client.startAllProcesses()
     log.info(ret)
