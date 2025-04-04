@@ -40,7 +40,7 @@ classDiagram
     SupervisorConfiguration *-- RpcInterfaceConfiguration
     SupervisorConvenienceConfiguration *-- ConvenienceConfiguration
 
-    class SupervisorConfiguration{
+    class SupervisorConfiguration {
         supervisord: SupervisordConfiguration
         supervisorctl: SupervisorctlConfiguration
         inet_http_server: InetHttpServerConfiguration
@@ -65,7 +65,7 @@ classDiagram
         stop()
         kill()
     }
-    class SupervisorConvenienceConfiguration{
+    class SupervisorConvenienceConfiguration {
         convenience ConvenienceConfiguration
     }
     class SupervisordConfiguration {
@@ -100,7 +100,11 @@ classDiagram
       password: str
     }
     class UnixHttpServerConfiguration {
-
+      file: Path
+      chmod: Octal
+      chown: str
+      username: str
+      password: str
     }
     class IncludeConfiguration {
       files: List~str~
