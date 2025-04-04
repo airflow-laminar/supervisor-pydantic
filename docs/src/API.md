@@ -22,5 +22,7 @@
     InetHttpServerConfiguration
     RpcInterfaceConfiguration
     UnixHttpServerConfiguration
+
+    ConvenienceConfiguration
 ```
 
