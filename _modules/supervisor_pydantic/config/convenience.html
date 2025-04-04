@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>supervisor_pydantic.config.rpcinterface - supervisor-pydantic v1.2.4</title>
+        <title>supervisor_pydantic.config.convenience - supervisor-pydantic v1.2.4</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -254,31 +254,125 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for supervisor_pydantic.config.rpcinterface</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+          <h1>Source code for supervisor_pydantic.config.convenience</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">SecretStr</span><span class="p">,</span> <span class="n">field_serializer</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">model_validator</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">_BaseCfgModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">HostPort</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">SupervisorLocation</span><span class="p">,</span> <span class="n">UnixUserName</span><span class="p">,</span> <span class="n">_BaseCfgModel</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;RpcInterfaceConfiguration&quot;</span><span class="p">,)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ConvenienceConfiguration&quot;</span><span class="p">,)</span>
 
-
-<div class="viewcode-block" id="RpcInterfaceConfiguration">
-<a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.RpcInterfaceConfiguration.html#supervisor_pydantic.RpcInterfaceConfiguration">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">RpcInterfaceConfiguration</span><span class="p">(</span><span class="n">_BaseCfgModel</span><span class="p">):</span>
-<div class="viewcode-block" id="RpcInterfaceConfiguration.to_cfg">
-<a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.RpcInterfaceConfiguration.html#supervisor_pydantic.RpcInterfaceConfiguration.to_cfg">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="c1"># Overload to require key</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_cfg</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[rpc_interface&quot;</span><span class="p">,</span> <span class="s2">&quot;[rpcinterface&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;rpcinterface_factory=&quot;</span><span class="p">,</span> <span class="s2">&quot;supervisor.rpcinterface_factory=&quot;</span><span class="p">)</span></div>
+<span class="n">_log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="ConvenienceConfiguration">
+<a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.ConvenienceConfiguration.html#supervisor_pydantic.ConvenienceConfiguration">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvenienceConfiguration</span><span class="p">(</span><span class="n">_BaseCfgModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience layer, settings that MUST be set when running via convenience API&quot;&quot;&quot;</span>
+
+    <span class="c1">############</span>
+    <span class="c1"># programs #</span>
+    <span class="c1">############</span>
+    <span class="c1"># autostart = False</span>
+    <span class="c1"># autorestart = False</span>
+    <span class="n">startsecs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The total number of seconds which the program needs to stay running after a startup to consider the start successful (moving the process from the STARTING state to the RUNNING state). Set to 0 to indicate that the program needn’t stay running for any particular amount of time. Even if a process exits with an “expected” exit code (see exitcodes), the start will still be considered a failure if the process exits quicker than startsecs.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">startretries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The number of serial failure attempts that supervisord will allow when attempting to start the program before giving up and putting the process into an FATAL state. After each failed restart, process will be put in BACKOFF state and each retry attempt will take increasingly more time.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">exitcodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The list of “expected” exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">stopsignal</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Signal</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;TERM&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The signal used to kill the program when a stop is requested. This can be specified using the signal’s name or its number. It is normally one of: TERM, HUP, INT, QUIT, KILL, USR1, or USR2.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">stopwaitsecs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1">####################</span>
+    <span class="c1"># inet_http_server #</span>
+    <span class="c1">####################</span>
+    <span class="c1"># port not optional</span>
+    <span class="n">port</span><span class="p">:</span> <span class="n">HostPort</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;*:9001&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl will use XML-RPC to communicate with supervisord over this port. To listen on all interfaces in the machine, use :9001 or *:9001. Please read the security warning above.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnixUserName</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The username required for authentication to the HTTP/Unix Server.&quot;</span><span class="p">)</span>
+    <span class="n">password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SecretStr</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The password required for authentication to the HTTP/Unix server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string </span><span class="si">{SHA}</span><span class="s2">. For example, </span><span class="si">{SHA}</span><span class="s2">82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># rpc_interface #</span>
+    <span class="c1">###################</span>
     <span class="n">rpcinterface_factory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;supervisor.rpcinterface:make_main_rpcinterface&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;pkg_resources “entry point” dotted name to your RPC interface’s factory function.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># TODO</span></div>
+
+    <span class="c1">#########</span>
+    <span class="c1"># Other #</span>
+    <span class="c1">#########</span>
+    <span class="n">local_or_remote</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SupervisorLocation</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Location of supervisor, either local for same-machine or remote. If same-machine, communicates via Unix sockets by default, if remote, communicates via inet http server&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Hostname of the supervisor host. Used by the XMLRPC client&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">protocol</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;http&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Protocol of the supervisor XMLRPC HTTP API. Used by the XMLRPC client&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">rpcpath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/RPC2&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path for supervisor XMLRPC HTTP API. Used by the XMLRPC client&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1">#########</span>
+    <span class="c1"># Other #</span>
+    <span class="c1">#########</span>
+    <span class="n">command_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Timeout for convenience commands sent to the supervisor, in seconds&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="ConvenienceConfiguration.validate_remote_accessible">
+<a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.ConvenienceConfiguration.html#supervisor_pydantic.ConvenienceConfiguration.validate_remote_accessible">[docs]</a>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_remote_accessible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_or_remote</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)):</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Supervisor binds only to loopback (localhost/127.0.0.1), but asked for remote&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_or_remote</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)):</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Supervisor client expecting hostname, got localhost/127.0.0.1&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;exitcodes&quot;</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dump_exitcodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;exitcodes&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_exitcodes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">v</span></div>
 
 </pre></div>
         </article>

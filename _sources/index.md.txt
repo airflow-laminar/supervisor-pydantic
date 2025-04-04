@@ -36,6 +36,158 @@ It provides:
 - `InetHttpServerConfiguration`: wrapper around [`init-http-server`](https://supervisord.org/configuration.html#inet-http-server-section-settings)
 - `RpcInterfaceConfiguration`: wrapper around [`rpcinterface`](https://supervisord.org/configuration.html#rpcinterface-x-section-settings)
 - `UnixHttpServerConfiguration`: wrapper around [`unix-http-server`](https://supervisord.org/configuration.html#unix-http-server-section-settings)
+- `ConvenienceConfiguration`: Required minimum set of configuration settings to run supervisor using the `SupervisorConvenienceConfiguration`
+
+```mermaid
+classDiagram
+    SupervisorConfiguration <|-- SupervisorConvenienceConfiguration
+    SupervisorConfiguration *-- SupervisordConfiguration
+    SupervisorConfiguration *-- SupervisorctlConfiguration
+    SupervisorConfiguration *-- InetHttpServerConfiguration
+    SupervisorConfiguration *-- UnixHttpServerConfiguration
+    SupervisorConfiguration *-- IncludeConfiguration
+    SupervisorConfiguration *-- ProgramConfiguration
+    SupervisorConfiguration *-- EventListenerConfiguration
+    SupervisorConfiguration *-- FcgiProgramConfiguration
+    SupervisorConfiguration *-- GroupConfiguration
+    SupervisorConfiguration *-- RpcInterfaceConfiguration
+    SupervisorConvenienceConfiguration *-- ConvenienceConfiguration
+
+    class SupervisorConfiguration{
+        supervisord: SupervisordConfiguration
+        supervisorctl: SupervisorctlConfiguration
+        inet_http_server: InetHttpServerConfiguration
+        unix_http_server: UnixHttpServerConfiguration
+
+        include: IncludeConfiguration
+
+        program: Dict~str, ProgramConfiguration~
+        eventlistener: Dict~str, EventListenerConfiguration~
+        fcgiprogram: Dict~str, FcgiProgramConfiguration~
+        group: Dict~str, GroupConfiguration~
+        rpcinterface: Dict~str, RpcInterfaceConfiguration~
+
+        config_path: Path
+        working_dir: Path
+
+        load(config_dir; str, config_name: str, overrides: List~str~)
+        write()
+        rmdir()
+        start(daemon: bool)
+        running()
+        stop()
+        kill()
+    }
+    class SupervisorConvenienceConfiguration{
+        convenience ConvenienceConfiguration
+    }
+    class SupervisordConfiguration {
+      logfile: Path
+      logfile_maxbytes: str
+      logfile_backups: int
+      loglevel: LogLevel
+      pidfile: Path
+      umask: OctalUmask
+      nodaemon: bool
+      silent: bool
+      minfds: int
+      minprocs: int
+      nocleanup: bool
+      childlogdir: Path
+      user: str
+      directory: Path
+      strip_ansi: bool
+      environment: dict
+      identifier: str
+    }
+    class SupervisorctlConfiguration {
+      serverurl: str
+      username: str
+      password: str
+      prompt: str
+      history_file: Path
+    }
+    class InetHttpServerConfiguration {
+      port: str
+      username: str
+      password: str
+    }
+    class UnixHttpServerConfiguration {
+
+    }
+    class IncludeConfiguration {
+      files: List~str~
+    }
+    class ProgramConfiguration {
+      command: str
+      process_name: str
+      numprocs: int
+      numprocs_start: int
+      priority: int
+      autostart: bool
+      startsecs: int
+      startretries: int
+      autorestart: bool
+      exitcodes: List~int~
+      stopsignal: Signal
+      stopwaitsecs: int
+      stopasgroup: bool
+      killasgroup: bool
+      user: str
+      redirect_stderr: bool
+      stdout_logfile: Path
+      stdout_logfile_maxbytes: str
+      stdout_logfile_backups: int
+      stdout_capture_maxbytes: int
+      stdout_events_enabled: int
+      stdout_syslog: bool
+      stderr_logfile: Path
+      stderr_logfile_maxbytes: str
+      stderr_logfile_backups: int
+      stderr_capture_maxbytes: int
+      stderr_events_enabled: bool
+      stderr_syslog: bool
+      environment: Dict~str, str~
+      directory: Path
+      umask: OctalUmask
+      serverurl: str
+    }
+    class EventListenerConfiguration {
+      buffer_size: int
+      events: List~EventType~
+      result_handler: str
+    }
+    class FcgiProgramConfiguration {
+      socket: str
+      socket_backlog: str
+      socket_owner: strOrGroup
+      socket_mode: Octal
+    }
+    class GroupConfiguration {
+      programs: List~str~
+      priority: int
+    }
+    class RpcInterfaceConfiguration {
+      rpcinterface_factory: str
+      kwargs: Dict~str, Any~
+    }
+    class ConvenienceConfiguration {
+      startsecs: int
+      startretries: int
+      exitcodes: List~int~
+      stopsignal: Signal
+      stopwaitsecs: int
+      port: str
+      password: str
+      rpcinterface_factory: str
+      local_or_remote: str
+      host: str
+      protocol: str
+      rpcpath: str
+      command_timeout: int
+    }
+
+```
 
 Additionally, this library provides a small convenience CLI (`_supervisor_convenience`) for remotely managing supervisor. It is a simple wrapper around the [`supervisord`](https://supervisord.org/running.html#running-supervisord) and [`supervisorctl`](https://supervisord.org/running.html#running-supervisorctl) CLIs in supervisor.
 

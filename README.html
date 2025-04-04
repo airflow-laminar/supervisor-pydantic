@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="docs/src/_build/supervisor_pydantic.InetHttpServerConfiguration.html">supervisor_pydantic.InetHttpServerConfiguration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/src/_build/supervisor_pydantic.RpcInterfaceConfiguration.html">supervisor_pydantic.RpcInterfaceConfiguration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/src/_build/supervisor_pydantic.UnixHttpServerConfiguration.html">supervisor_pydantic.UnixHttpServerConfiguration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/src/_build/supervisor_pydantic.ConvenienceConfiguration.html">supervisor_pydantic.ConvenienceConfiguration</a></li>
 </ul>
 </li>
 </ul>
@@ -284,8 +285,158 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">InetHttpServerConfiguration</span></code>: wrapper around <a class="reference external" href="https://supervisord.org/configuration.html#inet-http-server-section-settings"><code class="docutils literal notranslate"><span class="pre">init-http-server</span></code></a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">RpcInterfaceConfiguration</span></code>: wrapper around <a class="reference external" href="https://supervisord.org/configuration.html#rpcinterface-x-section-settings"><code class="docutils literal notranslate"><span class="pre">rpcinterface</span></code></a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">UnixHttpServerConfiguration</span></code>: wrapper around <a class="reference external" href="https://supervisord.org/configuration.html#unix-http-server-section-settings"><code class="docutils literal notranslate"><span class="pre">unix-http-server</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ConvenienceConfiguration</span></code>: Required minimum set of configuration settings to run supervisor using the <code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration</span></code></p></li>
 </ul>
-<p>Additionally, this library provides a small convenience CLI (<code class="docutils literal notranslate"><span class="pre">_supervisor_convenience</span></code>) for remotely managing supervisor. It is a simple wrapper around the <a class="reference external" href="https://supervisord.org/running.html#running-supervisord"><code class="docutils literal notranslate"><span class="pre">supervisord</span></code></a> and <a class="reference external" href="https://supervisord.org/running.html#running-supervisorctl"><code class="docutils literal notranslate"><span class="pre">supervisorctl</span></code></a> CLIs in supervisor.</p>
+<pre  class="mermaid">
+        classDiagram
+    SupervisorConfiguration &lt;|-- SupervisorConvenienceConfiguration
+    SupervisorConfiguration *-- SupervisordConfiguration
+    SupervisorConfiguration *-- SupervisorctlConfiguration
+    SupervisorConfiguration *-- InetHttpServerConfiguration
+    SupervisorConfiguration *-- UnixHttpServerConfiguration
+    SupervisorConfiguration *-- IncludeConfiguration
+    SupervisorConfiguration *-- ProgramConfiguration
+    SupervisorConfiguration *-- EventListenerConfiguration
+    SupervisorConfiguration *-- FcgiProgramConfiguration
+    SupervisorConfiguration *-- GroupConfiguration
+    SupervisorConfiguration *-- RpcInterfaceConfiguration
+    SupervisorConvenienceConfiguration *-- ConvenienceConfiguration
+
+    class SupervisorConfiguration{
+        supervisord: SupervisordConfiguration
+        supervisorctl: SupervisorctlConfiguration
+        inet_http_server: InetHttpServerConfiguration
+        unix_http_server: UnixHttpServerConfiguration
+
+        include: IncludeConfiguration
+
+        program: Dict~str, ProgramConfiguration~
+        eventlistener: Dict~str, EventListenerConfiguration~
+        fcgiprogram: Dict~str, FcgiProgramConfiguration~
+        group: Dict~str, GroupConfiguration~
+        rpcinterface: Dict~str, RpcInterfaceConfiguration~
+
+        config_path: Path
+        working_dir: Path
+
+        load(config_dir; str, config_name: str, overrides: List~str~)
+        write()
+        rmdir()
+        start(daemon: bool)
+        running()
+        stop()
+        kill()
+    }
+    class SupervisorConvenienceConfiguration{
+        convenience ConvenienceConfiguration
+    }
+    class SupervisordConfiguration {
+      logfile: Path
+      logfile_maxbytes: str
+      logfile_backups: int
+      loglevel: LogLevel
+      pidfile: Path
+      umask: OctalUmask
+      nodaemon: bool
+      silent: bool
+      minfds: int
+      minprocs: int
+      nocleanup: bool
+      childlogdir: Path
+      user: str
+      directory: Path
+      strip_ansi: bool
+      environment: dict
+      identifier: str
+    }
+    class SupervisorctlConfiguration {
+      serverurl: str
+      username: str
+      password: str
+      prompt: str
+      history_file: Path
+    }
+    class InetHttpServerConfiguration {
+      port: str
+      username: str
+      password: str
+    }
+    class UnixHttpServerConfiguration {
+
+    }
+    class IncludeConfiguration {
+      files: List~str~
+    }
+    class ProgramConfiguration {
+      command: str
+      process_name: str
+      numprocs: int
+      numprocs_start: int
+      priority: int
+      autostart: bool
+      startsecs: int
+      startretries: int
+      autorestart: bool
+      exitcodes: List~int~
+      stopsignal: Signal
+      stopwaitsecs: int
+      stopasgroup: bool
+      killasgroup: bool
+      user: str
+      redirect_stderr: bool
+      stdout_logfile: Path
+      stdout_logfile_maxbytes: str
+      stdout_logfile_backups: int
+      stdout_capture_maxbytes: int
+      stdout_events_enabled: int
+      stdout_syslog: bool
+      stderr_logfile: Path
+      stderr_logfile_maxbytes: str
+      stderr_logfile_backups: int
+      stderr_capture_maxbytes: int
+      stderr_events_enabled: bool
+      stderr_syslog: bool
+      environment: Dict~str, str~
+      directory: Path
+      umask: OctalUmask
+      serverurl: str
+    }
+    class EventListenerConfiguration {
+      buffer_size: int
+      events: List~EventType~
+      result_handler: str
+    }
+    class FcgiProgramConfiguration {
+      socket: str
+      socket_backlog: str
+      socket_owner: strOrGroup
+      socket_mode: Octal
+    }
+    class GroupConfiguration {
+      programs: List~str~
+      priority: int
+    }
+    class RpcInterfaceConfiguration {
+      rpcinterface_factory: str
+      kwargs: Dict~str, Any~
+    }
+    class ConvenienceConfiguration {
+      startsecs: int
+      startretries: int
+      exitcodes: List~int~
+      stopsignal: Signal
+      stopwaitsecs: int
+      port: str
+      password: str
+      rpcinterface_factory: str
+      local_or_remote: str
+      host: str
+      protocol: str
+      rpcpath: str
+      command_timeout: int
+    }
+
+    </pre><p>Additionally, this library provides a small convenience CLI (<code class="docutils literal notranslate"><span class="pre">_supervisor_convenience</span></code>) for remotely managing supervisor. It is a simple wrapper around the <a class="reference external" href="https://supervisord.org/running.html#running-supervisord"><code class="docutils literal notranslate"><span class="pre">supervisord</span></code></a> and <a class="reference external" href="https://supervisord.org/running.html#running-supervisorctl"><code class="docutils literal notranslate"><span class="pre">supervisorctl</span></code></a> CLIs in supervisor.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">check-programs</span></code>:  Check if programs are in a good state.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">configure-supervisor</span></code>:  Write a SupervisorConvenienceConfiguration JSON as a supervisor config file</p></li>
@@ -361,6 +512,43 @@
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+const load = async () => {
+    await mermaid.run();
+    const all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+    if(mermaids_to_add_zoom > 0) {
+        var svgs = d3.selectAll(".mermaid svg");
+        if(all_mermaids.length !== mermaids_processed.length) {
+            // try again in a sec, wait for mermaids to load
+            setTimeout(load, 200);
+            return;
+        } else if(svgs.size() !== mermaids_to_add_zoom) {
+            // try again in a sec, wait for mermaids to load
+            setTimeout(load, 200);
+            return;
+        } else {
+            svgs.each(function() {
+                var svg = d3.select(this);
+                svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                var inner = svg.select("g");
+                var zoom = d3.zoom().on("zoom", function(event) {
+                    inner.attr("transform", event.transform);
+                });
+                svg.call(zoom);
+            });
+        }
+    }
+};
+
+window.addEventListener("load", load);
+</script>
     <script src="_static/js/custom.js?v=956e5d78"></script>
     </body>
 </html>
