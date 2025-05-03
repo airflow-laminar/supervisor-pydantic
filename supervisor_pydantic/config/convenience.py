@@ -111,3 +111,7 @@ class ConvenienceConfiguration(_BaseCfgModel):
         if isinstance(v, list):
             return [int(_) for _ in v]
         return v
+
+    @field_serializer("password", when_used="json")
+    def _dump_password(self, v):
+        return v.get_secret_value() if v else None
