@@ -38,6 +38,14 @@ class ConvenienceConfiguration(_BaseCfgModel):
         default=30,
         description="The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.",
     )
+    stopasgroup: Optional[bool] = Field(
+        default=True,
+        description="If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.",
+    )
+    killasgroup: Optional[bool] = Field(
+        default=True,
+        description="If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.",
+    )
 
     ####################
     # inet_http_server #
