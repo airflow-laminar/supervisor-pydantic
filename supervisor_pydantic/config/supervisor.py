@@ -268,6 +268,8 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
             config.exitcodes = self.convenience.exitcodes
             config.stopsignal = self.convenience.stopsignal
             config.stopwaitsecs = self.convenience.stopwaitsecs
+            config.stopasgroup = self.convenience.stopasgroup
+            config.killasgroup = self.convenience.killasgroup
 
         # other
         if str(self.working_dir) not in str(self._pydantic_path):
