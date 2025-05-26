@@ -297,6 +297,14 @@
         <span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">stopasgroup</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">killasgroup</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1">####################</span>
     <span class="c1"># inet_http_server #</span>
