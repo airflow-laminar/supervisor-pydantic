@@ -3,7 +3,7 @@ from json import loads
 from typing import Callable, Literal
 
 from pydantic import BaseModel
-from pydantic.functional_validators import AfterValidator
+from pydantic.functional_validators import AfterValidator, BeforeValidator
 from typing_extensions import Annotated
 
 _un_regex = re.compile(r"^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$")
@@ -40,11 +40,17 @@ def _is_host_port(v: str) -> str:
     return v
 
 
+def _convert_to_host_port(v: str | int) -> str:
+    if isinstance(v, int):
+        v = f"*:{v}"
+    return v
+
+
 Octal = Annotated[str, AfterValidator(_is_octal(4))]
 OctalUmask = Annotated[str, AfterValidator(_is_octal(3))]
 UnixUserNameOrGroup = Annotated[str, AfterValidator(_is_username_or_usernamegroup)]
 UnixUserName = Annotated[str, AfterValidator(_is_username)]
-HostPort = Annotated[str, AfterValidator(_is_host_port)]
+HostPort = Annotated[str, BeforeValidator(_convert_to_host_port), AfterValidator(_is_host_port)]
 LogLevel = Literal["critical", "error", "warn", "info", "debug", "trace", "blather"]
 Signal = Literal["TERM", "HUP", "INT", "QUIT", "KILL", "USR1", "USR2"]
 EventType = Literal[
