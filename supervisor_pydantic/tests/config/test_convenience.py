@@ -19,9 +19,11 @@ def test_cfg():
 
 def test_cfg_extra():
     c = SupervisorConvenienceConfiguration(
-        convenience=ConvenienceConfiguration(), program={"test": ProgramConfiguration(command="echo test")}, working_dir="/tmp/supervisor-runner-test"
+        convenience=ConvenienceConfiguration(port=7000),
+        program={"test": ProgramConfiguration(command="echo test")},
+        working_dir="/tmp/supervisor-runner-test",
     )
     assert (
         c.to_cfg().strip()
-        == "[inet_http_server]\nport=*:9001\n\n[supervisord]\nlogfile=/tmp/supervisor-runner-test/supervisord.log\npidfile=/tmp/supervisor-runner-test/supervisord.pid\nnodaemon=false\nidentifier=supervisor\n\n[supervisorctl]\nserverurl=http://localhost:9001/\n\n[program:test]\ncommand=echo test\nautostart=false\nstartsecs=1\nautorestart=false\nexitcodes=0\nstopsignal=TERM\nstopwaitsecs=30\nstopasgroup=true\nkillasgroup=true\ndirectory=/tmp/supervisor-runner-test/test\n\n[rpcinterface:supervisor]\nsupervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface"
+        == "[inet_http_server]\nport=*:7000\n\n[supervisord]\nlogfile=/tmp/supervisor-runner-test/supervisord.log\npidfile=/tmp/supervisor-runner-test/supervisord.pid\nnodaemon=false\nidentifier=supervisor\n\n[supervisorctl]\nserverurl=http://localhost:7000/\n\n[program:test]\ncommand=echo test\nautostart=false\nstartsecs=1\nautorestart=false\nexitcodes=0\nstopsignal=TERM\nstopwaitsecs=30\nstopasgroup=true\nkillasgroup=true\ndirectory=/tmp/supervisor-runner-test/test\n\n[rpcinterface:supervisor]\nsupervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface"
     )
