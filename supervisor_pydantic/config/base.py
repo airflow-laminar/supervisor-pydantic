@@ -1,6 +1,6 @@
 import re
 from json import loads
-from typing import Callable, Literal
+from typing import Callable, Literal, Union
 
 from pydantic import BaseModel
 from pydantic.functional_validators import AfterValidator, BeforeValidator
@@ -40,7 +40,7 @@ def _is_host_port(v: str) -> str:
     return v
 
 
-def _convert_to_host_port(v: str | int) -> str:
+def _convert_to_host_port(v: Union[str, int]) -> str:
     if isinstance(v, int):
         v = f"*:{v}"
     return v
