@@ -15,15 +15,15 @@ def test_dump_exitcodes():
     # pydantic_core._pydantic_core.PydanticSerializationError: Error serializing to JSON:
     # PydanticSerializationError: Error calling function `_dump_exitcodes`:
     # TypeError: sequence item 0: expected str instance, int found
-    ProgramConfiguration(command="echo 'test'", exitcodes=[0]).model_dump_json()
+    ProgramConfiguration(command="echo 'test'", exitcodes=[0]).model_dump_json(exclude_unset=True)
 
 
 def test_autorestart_options():
-    ProgramConfiguration(command="echo 'test'", autorestart=True).model_dump_json()
-    ProgramConfiguration(command="echo 'test'", autorestart=False).model_dump_json()
-    ProgramConfiguration(command="echo 'test'", autorestart="unexpected").model_dump_json()
+    ProgramConfiguration(command="echo 'test'", autorestart=True).model_dump_json(exclude_unset=True)
+    ProgramConfiguration(command="echo 'test'", autorestart=False).model_dump_json(exclude_unset=True)
+    ProgramConfiguration(command="echo 'test'", autorestart="unexpected").model_dump_json(exclude_unset=True)
     with raises(ValidationError):
-        ProgramConfiguration(command="echo 'test'", autorestart="other").model_dump_json()
+        ProgramConfiguration(command="echo 'test'", autorestart="other").model_dump_json(exclude_unset=True)
 
 
 def test_cfg():

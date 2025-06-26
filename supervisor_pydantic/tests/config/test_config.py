@@ -40,7 +40,9 @@ def test_cfg_roundtrip_json():
         pth = Path(__file__).resolve().parent.parent.parent.parent / ".pytest_cache"
         p1.return_value = str(pth)
         c = SupervisorConfiguration(program={"test": ProgramConfiguration(command="test")})
-        assert c.model_validate_json(c.model_dump_json()) == c
+        rehydrated = c.model_validate_json(c.model_dump_json(exclude_unset=True))
+        assert rehydrated == c
+        assert rehydrated.model_dump_json(exclude_unset=True) == c.model_dump_json(exclude_unset=True)
 
 
 def test_cfg():

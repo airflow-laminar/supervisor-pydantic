@@ -194,7 +194,7 @@ def start_programs(
     if not all_ok:
         log.critical("Not all processes started successfully")
         for r in client.getAllProcessInfo():
-            log.info(r.model_dump_json())
+            log.info(r.model_dump_json(exclude_unset=True))
         return _raise_or_exit(False, _exit)
     log.info("All processes started")
     return _raise_or_exit(True, _exit)
@@ -224,7 +224,7 @@ def check_programs(
     log.info("Checking all processes")
     ret = client.getAllProcessInfo()
     for r in ret:
-        log.info(r.model_dump_json())
+        log.info(r.model_dump_json(exclude_unset=True))
 
     ok = False
     if check_running:
@@ -273,7 +273,7 @@ def stop_programs(
     if not all_stopped:
         log.critical("Not all processes stopped successfully")
         for r in client.getAllProcessInfo():
-            log.info(r.model_dump_json())
+            log.info(r.model_dump_json(exclude_unset=True))
         return _raise_or_exit(False, _exit)
     log.info("All processes stopped")
     return _raise_or_exit(True, _exit)

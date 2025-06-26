@@ -13,7 +13,9 @@ def test_cfg():
     c = ConvenienceConfiguration(username="test", password="testpw")
     assert (
         c.to_cfg().strip()
-        == "[convenience]\nstartsecs=1\nexitcodes=0\nstopsignal=TERM\nstopwaitsecs=30\nstopasgroup=true\nkillasgroup=true\nport=*:9001\nusername=test\npassword=testpw\nrpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface\nlocal_or_remote=local\nhost=localhost\nprotocol=http\nrpcpath=/RPC2\ncommand_timeout=30"
+        == """[convenience]
+username=test
+password=testpw"""
     )
 
 
@@ -25,5 +27,33 @@ def test_cfg_extra():
     )
     assert (
         c.to_cfg().strip()
-        == "[inet_http_server]\nport=*:7000\n\n[supervisord]\nlogfile=/tmp/supervisor-runner-test/supervisord.log\npidfile=/tmp/supervisor-runner-test/supervisord.pid\nnodaemon=false\nidentifier=supervisor\n\n[supervisorctl]\nserverurl=http://localhost:7000/\n\n[program:test]\ncommand=echo test\nautostart=false\nstartsecs=1\nautorestart=false\nexitcodes=0\nstopsignal=TERM\nstopwaitsecs=30\nstopasgroup=true\nkillasgroup=true\ndirectory=/tmp/supervisor-runner-test/test\n\n[rpcinterface:supervisor]\nsupervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface"
+        == """[inet_http_server]
+port=*:7000
+
+[supervisord]
+logfile=/tmp/supervisor-runner-test/supervisord.log
+pidfile=/tmp/supervisor-runner-test/supervisord.pid
+nodaemon=false
+directory=/tmp/supervisor-runner-test
+identifier=supervisor
+
+[supervisorctl]
+serverurl=http://localhost:7000/
+
+[program:test]
+command=echo test
+autostart=false
+startsecs=1
+autorestart=false
+exitcodes=0
+stopsignal=TERM
+stopwaitsecs=30
+stopasgroup=true
+killasgroup=true
+stdout_logfile=/tmp/supervisor-runner-test/test/output.log
+stderr_logfile=/tmp/supervisor-runner-test/test/error.log
+directory=/tmp/supervisor-runner-test/test
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface"""
     )

@@ -9,14 +9,14 @@ def test_command():
 
 
 def test_write(supervisor_convenience_configuration: SupervisorConvenienceConfiguration):
-    json = supervisor_convenience_configuration.model_dump_json()
+    json = supervisor_convenience_configuration.model_dump_json(exclude_unset=True)
     assert write_supervisor_config(json, _exit=False)
     assert supervisor_convenience_configuration._pydantic_path.read_text().strip() == json
     supervisor_convenience_configuration.rmdir()
 
 
 def test_start_stop(supervisor_convenience_configuration: SupervisorConvenienceConfiguration):
-    json = supervisor_convenience_configuration.model_dump_json()
+    json = supervisor_convenience_configuration.model_dump_json(exclude_unset=True)
     assert write_supervisor_config(json, _exit=False)
     assert supervisor_convenience_configuration._pydantic_path.read_text().strip() == json
     assert start_supervisor(supervisor_convenience_configuration._pydantic_path, _exit=False)

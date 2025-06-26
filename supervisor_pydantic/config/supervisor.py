@@ -81,13 +81,16 @@ class SupervisorConfiguration(BaseModel):
 
     @model_validator(mode="after")
     def _setup_config_and_working_dir(self):
-        if self.working_dir is None or self.working_dir == "":
-            if self.supervisord.directory:
-                # use this as the dir
-                self.working_dir = self.supervisord.directory
-            else:
-                self.working_dir = Path(gettempdir()).resolve() / f"supervisor-{getuser()}-{'-'.join(list(self.program.keys()))}"
-                self.supervisord.directory = self.working_dir
+        if self.working_dir is None or self.working_dir == "" and self.supervisord.directory:
+            # use this as the dir
+            self.working_dir = self.supervisord.directory
+        elif self.working_dir is None or self.working_dir == "":
+            # align supervisord to working dir
+            self.working_dir = Path(gettempdir()).resolve() / f"supervisor-{getuser()}-{'-'.join(list(self.program.keys()))}"
+
+        if not self.supervisord.directory:
+            # align supervisord to working dir
+            self.supervisord.directory = self.working_dir
 
         if not Path(self.config_path).exists() or str(self.working_dir) not in str(self.config_path):
             self.config_path = (self.working_dir / self.config_path).resolve()
@@ -172,7 +175,7 @@ class SupervisorConfiguration(BaseModel):
 
             if not isinstance(config, cls):
                 if issubclass(cls, type(config)):
-                    config = config.model_dump()
+                    config = config.model_dump(exclude_unset=True)
                 config = cls(**config)
             return config
 
@@ -234,7 +237,7 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
         # TODO make config driven
         self.write()
         _log.info(f"Writing model json: {self._pydantic_path}")
-        Path(self._pydantic_path).write_text(self.model_dump_json())
+        Path(self._pydantic_path).write_text(self.model_dump_json(exclude_unset=True))
 
     @model_validator(mode="after")
     def _setup_convenience_defaults(self):
@@ -260,7 +263,7 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
         self.supervisord.identifier = "supervisor"
 
         # programs
-        for config in self.program.values():
+        for name, config in self.program.items():
             config.autostart = False
             config.autorestart = False
             config.startsecs = self.convenience.startsecs
@@ -270,6 +273,8 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
             config.stopwaitsecs = self.convenience.stopwaitsecs
             config.stopasgroup = self.convenience.stopasgroup
             config.killasgroup = self.convenience.killasgroup
+            config.stdout_logfile = self.working_dir / name / "output.log"
+            config.stderr_logfile = self.working_dir / name / "error.log"
 
         # other
         if str(self.working_dir) not in str(self._pydantic_path):

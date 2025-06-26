@@ -84,12 +84,12 @@ EventType = Literal[
 SupervisorLocation = Literal["local", "remote"]
 
 
-class _BaseCfgModel(BaseModel):
+class _BaseCfgModel(BaseModel, validate_assignment=True):
     def to_cfg(self, key: str = "") -> str:
         ret = f"[{_snake_regex.sub('_', self.__class__.__name__.replace('Configuration', '')).lower()}{':' + key if key else ''}]"
         # round trip to json so we're fully
         # cfg-compatible
-        for k, v in loads(self.model_dump_json()).items():
+        for k, v in loads(self.model_dump_json(exclude_unset=True)).items():
             if v is not None:
                 if isinstance(v, bool):
                     ret += f"\n{k}={str(v).lower()}"

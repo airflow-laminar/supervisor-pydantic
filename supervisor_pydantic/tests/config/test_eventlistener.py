@@ -19,8 +19,8 @@ def test_cfg():
 
 def test_cfg_roundtrip():
     c = EventListenerConfiguration(command="echo 'test'")
-    print(c.model_dump_json())
-    assert c.model_validate_json(c.model_dump_json()) == c
+    print(c.model_dump_json(exclude_unset=True))
+    assert c.model_validate_json(c.model_dump_json(exclude_unset=True)) == c
 
     c = EventListenerConfiguration(command="echo 'test'", events=["PROCESS_STATE"])
     assert c.model_validate_json(c.model_dump_json()) == c
