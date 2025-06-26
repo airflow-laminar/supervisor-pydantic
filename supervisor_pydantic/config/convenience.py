@@ -93,7 +93,7 @@ class ConvenienceConfiguration(_BaseCfgModel):
     # Other #
     #########
     command_timeout: int = Field(
-        default=30,
+        default=60,
         description="Timeout for convenience commands sent to the supervisor, in seconds",
     )
 
