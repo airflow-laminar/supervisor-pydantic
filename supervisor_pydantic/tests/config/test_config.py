@@ -30,7 +30,7 @@ def test_inst():
         p1.return_value = str(pth)
         c = SupervisorConfiguration(program={"test": ProgramConfiguration(command="test")})
         assert str(c.working_dir) == str(pth / f"supervisor-{getuser()}-test")
-        assert str(c.config_path) == str(pth / f"supervisor-{getuser()}-test" / "supervisor.cfg")
+        assert str(c.config_path) == str(pth / f"supervisor-{getuser()}-test" / "supervisord.conf")
 
 
 def test_cfg_roundtrip_json():
