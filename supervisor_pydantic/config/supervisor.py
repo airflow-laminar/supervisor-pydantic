@@ -76,7 +76,7 @@ class SupervisorConfiguration(BaseModel):
     rpcinterface: Optional[Dict[str, RpcInterfaceConfiguration]] = Field(default=None)
 
     # other configuration
-    config_path: Optional[Path] = Field(default="supervisor.cfg", description="Path to supervisor configuration file, relative to `working_dir`")
+    config_path: Optional[Path] = Field(default="supervisord.conf", description="Path to supervisor configuration file, relative to `working_dir`")
     working_dir: Optional[Path] = Field(default="", description="Path to supervisor working directory")
 
     @model_validator(mode="after")
