@@ -1,6 +1,0 @@
-﻿supervisor\_pydantic.ConvenienceConfiguration
-=============================================
-
-.. currentmodule:: supervisor_pydantic
-
-.. autopydantic_model:: ConvenienceConfiguration

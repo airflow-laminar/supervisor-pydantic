@@ -218,7 +218,6 @@
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.InetHttpServerConfiguration.html">supervisor_pydantic.InetHttpServerConfiguration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.RpcInterfaceConfiguration.html">supervisor_pydantic.RpcInterfaceConfiguration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.UnixHttpServerConfiguration.html">supervisor_pydantic.UnixHttpServerConfiguration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.ConvenienceConfiguration.html">supervisor_pydantic.ConvenienceConfiguration</a></li>
 </ul>
 </li>
 </ul>
@@ -265,11 +264,13 @@
 <h1>supervisor_pydantic.SupervisorConvenienceConfiguration<a class="headerlink" href="#supervisor-pydantic-supervisorconvenienceconfiguration" title="Link to this heading">¶</a></h1>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration">
-<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">supervisor_pydantic.</span></span><span class="sig-name descname"><span class="pre">SupervisorConvenienceConfiguration</span></span><a class="reference internal" href="../../../_modules/supervisor_pydantic/config/supervisor.html#SupervisorConvenienceConfiguration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">supervisor_pydantic.</span></span><span class="sig-name descname"><span class="pre">SupervisorConvenienceConfiguration</span></span><a class="reference internal" href="../../../_modules/supervisor_pydantic/config/convenience.html#SupervisorConvenienceConfiguration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="supervisor_pydantic.SupervisorConfiguration.html#supervisor_pydantic.SupervisorConfiguration" title="supervisor_pydantic.config.supervisor.SupervisorConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">SupervisorConfiguration</span></code></a></p>
+<p>Convenience layer, settings that MUST be set when running via convenience API</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SupervisorConvenienceConfiguration&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Convenience layer, settings that MUST be set when running via convenience API&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;unix_http_server&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -432,205 +433,194 @@
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path to supervisor working directory&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Working Dir&quot;</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;convenience&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ConvenienceConfiguration&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Required configurations for convenience integration&quot;</span>
+<span class="w">      </span><span class="nt">&quot;startsecs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The total number of seconds which the program needs to stay running after a startup to consider the start successful (moving the process from the STARTING state to the RUNNING state). Set to 0 to indicate that the program needn\u2019t stay running for any particular amount of time. Even if a process exits with an \u201cexpected\u201d exit code (see exitcodes), the start will still be considered a failure if the process exits quicker than startsecs.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Startsecs&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;startretries&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The number of serial failure attempts that supervisord will allow when attempting to start the program before giving up and putting the process into an FATAL state. After each failed restart, process will be put in BACKOFF state and each retry attempt will take increasingly more time.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Startretries&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;exitcodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">               </span><span class="p">},</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="mi">0</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The list of \u201cexpected\u201d exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Exitcodes&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;stopsignal&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="s2">&quot;TERM&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;HUP&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;INT&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;QUIT&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;KILL&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;USR1&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;USR2&quot;</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TERM&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The signal used to kill the program when a stop is requested. This can be specified using the signal\u2019s name or its number. It is normally one of: TERM, HUP, INT, QUIT, KILL, USR1, or USR2.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stopsignal&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;stopwaitsecs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stopwaitsecs&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;stopasgroup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stopasgroup&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;killasgroup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Killasgroup&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*:9001&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl will use XML-RPC to communicate with supervisord over this port. To listen on all interfaces in the machine, use :9001 or *:9001. Please read the security warning above.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Port&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The username required for authentication to the HTTP/Unix Server.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Username&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;writeOnly&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The password required for authentication to the HTTP/Unix server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password \u201cthepassword\u201d. Note that hashed password must be in hex format.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Password&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;rpcinterface_factory&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;supervisor.rpcinterface:make_main_rpcinterface&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg_resources \u201centry point\u201d dotted name to your RPC interface\u2019s factory function.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rpcinterface Factory&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;local_or_remote&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;remote&quot;</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Location of supervisor, either local for same-machine or remote. If same-machine, communicates via Unix sockets by default, if remote, communicates via inet http server&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Local Or Remote&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hostname of the supervisor host. Used by the XMLRPC client&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Host&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;protocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Protocol of the supervisor XMLRPC HTTP API. Used by the XMLRPC client&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Protocol&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;rpcpath&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/RPC2&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path for supervisor XMLRPC HTTP API. Used by the XMLRPC client&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rpcpath&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;command_timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Timeout for convenience commands sent to the supervisor, in seconds&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Command Timeout&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;ConvenienceConfiguration&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Convenience layer, settings that MUST be set when running via convenience API&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;startsecs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The total number of seconds which the program needs to stay running after a startup to consider the start successful (moving the process from the STARTING state to the RUNNING state). Set to 0 to indicate that the program needn\u2019t stay running for any particular amount of time. Even if a process exits with an \u201cexpected\u201d exit code (see exitcodes), the start will still be considered a failure if the process exits quicker than startsecs.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Startsecs&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;startretries&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The number of serial failure attempts that supervisord will allow when attempting to start the program before giving up and putting the process into an FATAL state. After each failed restart, process will be put in BACKOFF state and each retry attempt will take increasingly more time.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Startretries&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;exitcodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-<span class="w">                     </span><span class="p">},</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="mi">0</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The list of \u201cexpected\u201d exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Exitcodes&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;stopsignal&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                        </span><span class="s2">&quot;TERM&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="s2">&quot;HUP&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="s2">&quot;INT&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="s2">&quot;QUIT&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="s2">&quot;KILL&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="s2">&quot;USR1&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="s2">&quot;USR2&quot;</span>
-<span class="w">                     </span><span class="p">],</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TERM&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The signal used to kill the program when a stop is requested. This can be specified using the signal\u2019s name or its number. It is normally one of: TERM, HUP, INT, QUIT, KILL, USR1, or USR2.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stopsignal&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;stopwaitsecs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stopwaitsecs&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;stopasgroup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Stopasgroup&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;killasgroup&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Killasgroup&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*:9001&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl will use XML-RPC to communicate with supervisord over this port. To listen on all interfaces in the machine, use :9001 or *:9001. Please read the security warning above.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Port&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The username required for authentication to the HTTP/Unix Server.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Username&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
-<span class="w">                     </span><span class="nt">&quot;writeOnly&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The password required for authentication to the HTTP/Unix server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password \u201cthepassword\u201d. Note that hashed password must be in hex format.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Password&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;rpcinterface_factory&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;supervisor.rpcinterface:make_main_rpcinterface&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg_resources \u201centry point\u201d dotted name to your RPC interface\u2019s factory function.&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rpcinterface Factory&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;local_or_remote&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                        </span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="s2">&quot;remote&quot;</span>
-<span class="w">                     </span><span class="p">],</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Location of supervisor, either local for same-machine or remote. If same-machine, communicates via Unix sockets by default, if remote, communicates via inet http server&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Local Or Remote&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hostname of the supervisor host. Used by the XMLRPC client&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Host&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;protocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Protocol of the supervisor XMLRPC HTTP API. Used by the XMLRPC client&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Protocol&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;rpcpath&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/RPC2&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Path for supervisor XMLRPC HTTP API. Used by the XMLRPC client&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rpcpath&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-<span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;command_timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Timeout for convenience commands sent to the supervisor, in seconds&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Command Timeout&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">},</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ConvenienceConfiguration&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
-<span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;EventListenerConfiguration&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2583,14 +2573,119 @@
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Fields<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convenience</span> <span class="pre">(supervisor_pydantic.config.convenience.ConvenienceConfiguration)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">command_timeout</span> <span class="pre">(int)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exitcodes</span> <span class="pre">(List[int]</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">host</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">killasgroup</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_or_remote</span> <span class="pre">(Literal['local',</span> <span class="pre">'remote']</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">password</span> <span class="pre">(pydantic.types.SecretStr</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span> <span class="pre">(Annotated[str,</span> <span class="pre">pydantic.functional_validators.BeforeValidator(func=supervisor_pydantic.config.base._convert_to_host_port,</span> <span class="pre">json_schema_input_type=PydanticUndefined),</span> <span class="pre">pydantic.functional_validators.AfterValidator(func=supervisor_pydantic.config.base._is_host_port)])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">protocol</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rpcinterface_factory</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rpcpath</span> <span class="pre">(str)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">startretries</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">startsecs</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopasgroup</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopsignal</span> <span class="pre">(Literal['TERM',</span> <span class="pre">'HUP',</span> <span class="pre">'INT',</span> <span class="pre">'QUIT',</span> <span class="pre">'KILL',</span> <span class="pre">'USR1',</span> <span class="pre">'USR2']</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopwaitsecs</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">username</span> <span class="pre">(Annotated[str,</span> <span class="pre">pydantic.functional_validators.AfterValidator(func=supervisor_pydantic.config.base._is_username)]</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.convenience">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convenience</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="supervisor_pydantic.ConvenienceConfiguration.html#supervisor_pydantic.ConvenienceConfiguration" title="supervisor_pydantic.config.convenience.ConvenienceConfiguration"><span class="pre">ConvenienceConfiguration</span></a></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.convenience" title="Link to this definition">¶</a></dt>
-<dd><p>Required configurations for convenience integration</p>
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.startsecs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">startsecs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.startsecs" title="Link to this definition">¶</a></dt>
+<dd><p>The total number of seconds which the program needs to stay running after a startup to consider the start successful (moving the process from the STARTING state to the RUNNING state). Set to 0 to indicate that the program needn’t stay running for any particular amount of time. Even if a process exits with an “expected” exit code (see exitcodes), the start will still be considered a failure if the process exits quicker than startsecs.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.startretries">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">startretries</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.startretries" title="Link to this definition">¶</a></dt>
+<dd><p>The number of serial failure attempts that supervisord will allow when attempting to start the program before giving up and putting the process into an FATAL state. After each failed restart, process will be put in BACKOFF state and each retry attempt will take increasingly more time.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.exitcodes">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exitcodes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0]</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.exitcodes" title="Link to this definition">¶</a></dt>
+<dd><p>The list of “expected” exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.stopsignal">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stopsignal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'TERM'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'HUP'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'INT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'QUIT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'KILL'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'USR1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'USR2'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TERM'</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.stopsignal" title="Link to this definition">¶</a></dt>
+<dd><p>The signal used to kill the program when a stop is requested. This can be specified using the signal’s name or its number. It is normally one of: TERM, HUP, INT, QUIT, KILL, USR1, or USR2.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.stopwaitsecs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stopwaitsecs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.stopwaitsecs" title="Link to this definition">¶</a></dt>
+<dd><p>The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.stopasgroup">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stopasgroup</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.stopasgroup" title="Link to this definition">¶</a></dt>
+<dd><p>If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.killasgroup">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">killasgroup</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.killasgroup" title="Link to this definition">¶</a></dt>
+<dd><p>If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.port">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">BeforeValidator</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="pre">_convert_to_host_port</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">json_schema_input_type</span></span><span class="o"><span class="pre">=</span></span><span class="pre">PydanticUndefined</span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AfterValidator</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="pre">_is_host_port</span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'*:9001'</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.port" title="Link to this definition">¶</a></dt>
+<dd><p>A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl will use XML-RPC to communicate with supervisord over this port. To listen on all interfaces in the machine, use :9001 or <a href="#id1"><span class="problematic" id="id2">*</span></a>:9001. Please read the security warning above.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.username">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AfterValidator</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="pre">_is_username</span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.username" title="Link to this definition">¶</a></dt>
+<dd><p>The username required for authentication to the HTTP/Unix Server.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.password">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SecretStr</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.password" title="Link to this definition">¶</a></dt>
+<dd><p>The password required for authentication to the HTTP/Unix server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.rpcinterface_factory">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rpcinterface_factory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'supervisor.rpcinterface:make_main_rpcinterface'</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.rpcinterface_factory" title="Link to this definition">¶</a></dt>
+<dd><p>pkg_resources “entry point” dotted name to your RPC interface’s factory function.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.local_or_remote">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">local_or_remote</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'local'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'remote'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'local'</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.local_or_remote" title="Link to this definition">¶</a></dt>
+<dd><p>Location of supervisor, either local for same-machine or remote. If same-machine, communicates via Unix sockets by default, if remote, communicates via inet http server</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.host">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'localhost'</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.host" title="Link to this definition">¶</a></dt>
+<dd><p>Hostname of the supervisor host. Used by the XMLRPC client</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.protocol">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protocol</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'http'</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.protocol" title="Link to this definition">¶</a></dt>
+<dd><p>Protocol of the supervisor XMLRPC HTTP API. Used by the XMLRPC client</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.rpcpath">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rpcpath</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/RPC2'</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.rpcpath" title="Link to this definition">¶</a></dt>
+<dd><p>Path for supervisor XMLRPC HTTP API. Used by the XMLRPC client</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.command_timeout">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">command_timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.command_timeout" title="Link to this definition">¶</a></dt>
+<dd><p>Timeout for convenience commands sent to the supervisor, in seconds</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2669,7 +2764,22 @@
             <ul>
 <li><a class="reference internal" href="#">supervisor_pydantic.SupervisorConvenienceConfiguration</a><ul>
 <li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration</span></code></a><ul>
-<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.convenience"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.convenience</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.startsecs"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.startsecs</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.startretries"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.startretries</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.exitcodes"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.exitcodes</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.stopsignal"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.stopsignal</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.stopwaitsecs"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.stopwaitsecs</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.stopasgroup"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.stopasgroup</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.killasgroup"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.killasgroup</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.port"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.port</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.username"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.username</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.password"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.password</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.rpcinterface_factory"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.rpcinterface_factory</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.local_or_remote"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.local_or_remote</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.host"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.host</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.protocol"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.protocol</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.rpcpath"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.rpcpath</span></code></a></li>
+<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.command_timeout"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.command_timeout</span></code></a></li>
 <li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.model_post_init"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.model_post_init()</span></code></a></li>
 </ul>
 </li>

@@ -217,7 +217,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../docs/src/_build/supervisor_pydantic.InetHttpServerConfiguration.html">supervisor_pydantic.InetHttpServerConfiguration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../docs/src/_build/supervisor_pydantic.RpcInterfaceConfiguration.html">supervisor_pydantic.RpcInterfaceConfiguration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../docs/src/_build/supervisor_pydantic.UnixHttpServerConfiguration.html">supervisor_pydantic.UnixHttpServerConfiguration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../docs/src/_build/supervisor_pydantic.ConvenienceConfiguration.html">supervisor_pydantic.ConvenienceConfiguration</a></li>
 </ul>
 </li>
 </ul>
@@ -256,21 +255,27 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for supervisor_pydantic.config.convenience</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">SecretStr</span><span class="p">,</span> <span class="n">field_serializer</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">PrivateAttr</span><span class="p">,</span> <span class="n">SecretStr</span><span class="p">,</span> <span class="n">field_serializer</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">model_validator</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">HostPort</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">SupervisorLocation</span><span class="p">,</span> <span class="n">UnixUserName</span><span class="p">,</span> <span class="n">_BaseCfgModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">HostPort</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">SupervisorLocation</span><span class="p">,</span> <span class="n">UnixUserName</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.inet_http_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">InetHttpServerConfiguration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.rpcinterface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RpcInterfaceConfiguration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.supervisor</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorConfiguration</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ConvenienceConfiguration&quot;</span><span class="p">,)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SupervisorConvenienceConfiguration&quot;</span><span class="p">,</span> <span class="s2">&quot;load_convenience_config&quot;</span><span class="p">)</span>
 
 <span class="n">_log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ConvenienceConfiguration">
-<a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.ConvenienceConfiguration.html#supervisor_pydantic.ConvenienceConfiguration">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ConvenienceConfiguration</span><span class="p">(</span><span class="n">_BaseCfgModel</span><span class="p">):</span>
+<div class="viewcode-block" id="SupervisorConvenienceConfiguration">
+<a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.SupervisorConvenienceConfiguration.html#supervisor_pydantic.SupervisorConvenienceConfiguration">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SupervisorConvenienceConfiguration</span><span class="p">(</span><span class="n">SupervisorConfiguration</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience layer, settings that MUST be set when running via convenience API&quot;&quot;&quot;</span>
+
+    <span class="n">_pydantic_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;pydantic.json&quot;</span><span class="p">)</span>
 
     <span class="c1">############</span>
     <span class="c1"># programs #</span>
@@ -356,17 +361,6 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Timeout for convenience commands sent to the supervisor, in seconds&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="ConvenienceConfiguration.validate_remote_accessible">
-<a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.ConvenienceConfiguration.html#supervisor_pydantic.ConvenienceConfiguration.validate_remote_accessible">[docs]</a>
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_remote_accessible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_or_remote</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)):</span>
-            <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Supervisor binds only to loopback (localhost/127.0.0.1), but asked for remote&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_or_remote</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)):</span>
-            <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Supervisor client expecting hostname, got localhost/127.0.0.1&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-
     <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;exitcodes&quot;</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dump_exitcodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
@@ -384,8 +378,64 @@
 
     <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dump_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="k">else</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="k">else</span> <span class="kc">None</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_self</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO make config driven</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+        <span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing model json: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_convenience_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to overload configuration with values needed for the setup</span>
+<span class="sd">        of convenience tasks that we construct&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_or_remote</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)):</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Supervisor binds only to loopback (localhost/127.0.0.1), but asked for remote&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_or_remote</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)):</span>
+            <span class="n">_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Supervisor client expecting hostname, got localhost/127.0.0.1&quot;</span><span class="p">)</span>
+
+        <span class="c1"># inet_http_server</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inet_http_server</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inet_http_server</span> <span class="o">=</span> <span class="n">InetHttpServerConfiguration</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inet_http_server</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inet_http_server</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inet_http_server</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">supervisorctl</span><span class="o">.</span><span class="n">serverurl</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">/&quot;</span>
+
+        <span class="c1"># rpcinterface</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rpcinterface</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rpcinterface</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;supervisor&quot;</span><span class="p">:</span> <span class="n">RpcInterfaceConfiguration</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rpcinterface</span><span class="p">[</span><span class="s2">&quot;supervisor&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">rpcinterface_factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rpcinterface_factory</span>
+
+        <span class="c1"># supervisord</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">supervisord</span><span class="o">.</span><span class="n">nodaemon</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">supervisord</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;supervisor&quot;</span>
+
+        <span class="c1"># programs</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">autostart</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">autorestart</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">startsecs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startsecs</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">startretries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startretries</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">exitcodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exitcodes</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">stopsignal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopsignal</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">stopwaitsecs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopwaitsecs</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">stopasgroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopasgroup</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">killasgroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">killasgroup</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">stdout_logfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span> <span class="o">/</span> <span class="n">name</span> <span class="o">/</span> <span class="s2">&quot;output.log&quot;</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">stderr_logfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span> <span class="o">/</span> <span class="n">name</span> <span class="o">/</span> <span class="s2">&quot;error.log&quot;</span>
+
+        <span class="c1"># other</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pydantic_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span> <span class="o">/</span> <span class="s2">&quot;pydantic.json&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<span class="n">load_convenience_config</span> <span class="o">=</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="o">.</span><span class="n">load</span>
 </pre></div>
         </article>
       </div>
