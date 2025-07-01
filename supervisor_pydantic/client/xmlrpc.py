@@ -110,11 +110,11 @@ class SupervisorRemoteXMLRPCClient(object):
 
     def __init__(self, cfg: SupervisorConvenienceConfiguration):
         self._cfg = cfg
-        self._host = cfg.convenience.host
-        self._port = int(cfg.convenience.port.split(":")[-1])
-        self._protocol = cfg.convenience.protocol
-        self._rpcpath = "/" + cfg.convenience.rpcpath if not cfg.convenience.rpcpath.startswith("/") else cfg.convenience.rpcpath
-        self._rpcurl = self._build_rpcurl(username=cfg.convenience.username, password=cfg.convenience.password)
+        self._host = cfg.host
+        self._port = int(cfg.port.split(":")[-1])
+        self._protocol = cfg.protocol
+        self._rpcpath = "/" + cfg.rpcpath if not cfg.rpcpath.startswith("/") else cfg.rpcpath
+        self._rpcurl = self._build_rpcurl(username=cfg.username, password=cfg.password)
         self._client = ServerProxy(self._rpcurl)
 
     def _build_rpcurl(self, username: Optional[str], password: Optional[str]) -> str:

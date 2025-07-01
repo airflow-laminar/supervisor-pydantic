@@ -1,27 +1,13 @@
-from supervisor_pydantic import ConvenienceConfiguration, ProgramConfiguration, SupervisorConvenienceConfiguration
+from supervisor_pydantic import ProgramConfiguration, SupervisorConvenienceConfiguration
 
 
 def test_inst():
-    ConvenienceConfiguration()
-
-
-def test_inst_extra():
-    SupervisorConvenienceConfiguration(convenience=ConvenienceConfiguration(), program={"test": ProgramConfiguration(command="echo test")})
-
-
-def test_cfg():
-    c = ConvenienceConfiguration(username="test", password="testpw")
-    assert (
-        c.to_cfg().strip()
-        == """[convenience]
-username=test
-password=testpw"""
-    )
+    SupervisorConvenienceConfiguration(program={"test": ProgramConfiguration(command="echo test")})
 
 
 def test_cfg_extra():
     c = SupervisorConvenienceConfiguration(
-        convenience=ConvenienceConfiguration(port=7000),
+        port=7000,
         program={"test": ProgramConfiguration(command="echo test")},
         working_dir="/tmp/supervisor-runner-test",
     )
