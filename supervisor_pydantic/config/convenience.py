@@ -1,17 +1,23 @@
 from logging import getLogger
+from pathlib import Path
 from typing import List, Optional
 
-from pydantic import Field, SecretStr, field_serializer, field_validator, model_validator
+from pydantic import Field, PrivateAttr, SecretStr, field_serializer, field_validator, model_validator
 
-from .base import HostPort, Signal, SupervisorLocation, UnixUserName, _BaseCfgModel
+from .base import HostPort, Signal, SupervisorLocation, UnixUserName
+from .inet_http_server import InetHttpServerConfiguration
+from .rpcinterface import RpcInterfaceConfiguration
+from .supervisor import SupervisorConfiguration
 
-__all__ = ("ConvenienceConfiguration",)
+__all__ = ("SupervisorConvenienceConfiguration", "load_convenience_config")
 
 _log = getLogger(__name__)
 
 
-class ConvenienceConfiguration(_BaseCfgModel):
+class SupervisorConvenienceConfiguration(SupervisorConfiguration):
     """Convenience layer, settings that MUST be set when running via convenience API"""
+
+    _pydantic_path: Path = PrivateAttr(default="pydantic.json")
 
     ############
     # programs #
@@ -97,14 +103,6 @@ class ConvenienceConfiguration(_BaseCfgModel):
         description="Timeout for convenience commands sent to the supervisor, in seconds",
     )
 
-    @model_validator(mode="after")
-    def validate_remote_accessible(self):
-        if self.local_or_remote == "remote" and self.port.startswith(("localhost", "127.0.0.1")):
-            _log.warning("Supervisor binds only to loopback (localhost/127.0.0.1), but asked for remote")
-        if self.local_or_remote == "remote" and self.host.startswith(("localhost", "127.0.0.1")):
-            _log.warning("Supervisor client expecting hostname, got localhost/127.0.0.1")
-        return self
-
     @field_serializer("exitcodes", when_used="json")
     def _dump_exitcodes(self, v):
         if v:
@@ -123,3 +121,59 @@ class ConvenienceConfiguration(_BaseCfgModel):
     @field_serializer("password", when_used="json")
     def _dump_password(self, v):
         return v.get_secret_value() if v else None
+
+    def _write_self(self):
+        # TODO make config driven
+        self.write()
+        _log.info(f"Writing model json: {self._pydantic_path}")
+        Path(self._pydantic_path).write_text(self.model_dump_json(exclude_unset=True))
+
+    @model_validator(mode="after")
+    def _setup_convenience_defaults(self):
+        """Method to overload configuration with values needed for the setup
+        of convenience tasks that we construct"""
+        if self.local_or_remote == "remote" and self.port.startswith(("localhost", "127.0.0.1")):
+            _log.warning("Supervisor binds only to loopback (localhost/127.0.0.1), but asked for remote")
+        if self.local_or_remote == "remote" and self.host.startswith(("localhost", "127.0.0.1")):
+            _log.warning("Supervisor client expecting hostname, got localhost/127.0.0.1")
+
+        # inet_http_server
+        if not self.inet_http_server:
+            self.inet_http_server = InetHttpServerConfiguration()
+
+        self.inet_http_server.port = self.port
+        self.inet_http_server.username = self.username
+        self.inet_http_server.password = self.password
+
+        self.supervisorctl.serverurl = f"{self.protocol}://{self.host}:{self.port.split(':')[-1]}/"
+
+        # rpcinterface
+        if not self.rpcinterface:
+            self.rpcinterface = {"supervisor": RpcInterfaceConfiguration()}
+        self.rpcinterface["supervisor"].rpcinterface_factory = self.rpcinterface_factory
+
+        # supervisord
+        self.supervisord.nodaemon = False
+        self.supervisord.identifier = "supervisor"
+
+        # programs
+        for name, config in self.program.items():
+            config.autostart = False
+            config.autorestart = False
+            config.startsecs = self.startsecs
+            config.startretries = self.startretries
+            config.exitcodes = self.exitcodes
+            config.stopsignal = self.stopsignal
+            config.stopwaitsecs = self.stopwaitsecs
+            config.stopasgroup = self.stopasgroup
+            config.killasgroup = self.killasgroup
+            config.stdout_logfile = self.working_dir / name / "output.log"
+            config.stderr_logfile = self.working_dir / name / "error.log"
+
+        # other
+        if str(self.working_dir) not in str(self._pydantic_path):
+            self._pydantic_path = self.working_dir / "pydantic.json"
+        return self
+
+
+load_convenience_config = SupervisorConvenienceConfiguration.load

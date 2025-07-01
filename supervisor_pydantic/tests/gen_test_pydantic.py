@@ -1,11 +1,11 @@
 from pathlib import Path
 
-from supervisor_pydantic import ConvenienceConfiguration, ProgramConfiguration, SupervisorConvenienceConfiguration
+from supervisor_pydantic import ProgramConfiguration, SupervisorConvenienceConfiguration
 
 if __name__ == "__main__":
     path = Path(__file__).parent.parent.parent
     cfg = SupervisorConvenienceConfiguration(
-        convenience=ConvenienceConfiguration(port="*:9090"),
+        port="*:9090",
         working_dir=path,
         path=path,
         program={

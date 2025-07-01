@@ -5,7 +5,7 @@ from typing import Iterator
 
 from pytest import fixture
 
-from supervisor_pydantic import ConvenienceConfiguration, ProgramConfiguration, SupervisorConvenienceConfiguration
+from supervisor_pydantic import ProgramConfiguration, SupervisorConvenienceConfiguration
 
 
 @fixture(scope="module")
@@ -32,7 +32,7 @@ def permissioned_open_port() -> int:
 def supervisor_convenience_configuration(open_port: int) -> Iterator[SupervisorConvenienceConfiguration]:
     with TemporaryDirectory() as td:
         cfg = SupervisorConvenienceConfiguration(
-            convenience=ConvenienceConfiguration(port=f"*:{open_port}"),
+            port=f"*:{open_port}",
             working_dir=td,
             program={
                 "test": ProgramConfiguration(
@@ -49,7 +49,9 @@ def permissioned_supervisor_convenience_configuration(
 ) -> Iterator[SupervisorConvenienceConfiguration]:
     with NamedTemporaryFile("w", suffix=".cfg") as tf:
         cfg = SupervisorConvenienceConfiguration(
-            convenience=ConvenienceConfiguration(port=f"*:{permissioned_open_port}", username="user1", password="testpassword1"),
+            port=f"*:{permissioned_open_port}",
+            username="user1",
+            password="testpassword1",
             path=tf.name,
             program={
                 "test": ProgramConfiguration(

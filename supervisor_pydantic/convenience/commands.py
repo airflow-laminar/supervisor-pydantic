@@ -145,9 +145,9 @@ def start_supervisor(
 
     log.info("Starting supervisor")
     cfg_obj.start(daemon=True)
-    running = _wait_or_while(until=lambda: cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
+    running = _wait_or_while(until=lambda: cfg_obj.running(), timeout=cfg_obj.command_timeout)
     if not running:
-        log.critical(f"Supervisor still not running {cfg_obj.convenience.command_timeout}s after start command!")
+        log.critical(f"Supervisor still not running {cfg_obj.command_timeout}s after start command!")
         return _raise_or_exit(False, _exit)
     log.info("Supervisor started")
     return _raise_or_exit(True, _exit)
@@ -184,12 +184,12 @@ def start_programs(
     _wait_or_while(
         until=lambda: all(_.running() for _ in client.getAllProcessInfo()),
         unless=lambda: any(_.stopped() for _ in client.getAllProcessInfo()),
-        timeout=cfg_obj.convenience.command_timeout,
+        timeout=cfg_obj.command_timeout,
     )
     all_ok = _wait_or_while(
-        until=lambda: all(_.ok(ok_exitstatuses=cfg_obj.convenience.exitcodes) for _ in client.getAllProcessInfo()),
-        unless=lambda: any(_.bad(ok_exitstatuses=cfg_obj.convenience.exitcodes) for _ in client.getAllProcessInfo()),
-        timeout=cfg_obj.convenience.command_timeout,
+        until=lambda: all(_.ok(ok_exitstatuses=cfg_obj.exitcodes) for _ in client.getAllProcessInfo()),
+        unless=lambda: any(_.bad(ok_exitstatuses=cfg_obj.exitcodes) for _ in client.getAllProcessInfo()),
+        timeout=cfg_obj.command_timeout,
     )
     if not all_ok:
         log.critical("Not all processes started successfully")
@@ -234,13 +234,13 @@ def check_programs(
         else:
             log.warning("Not all processes running")
     elif check_done:
-        if all(p.done(ok_exitstatuses=cfg_obj.convenience.exitcodes) for p in ret):
+        if all(p.done(ok_exitstatuses=cfg_obj.exitcodes) for p in ret):
             log.info("All processes done")
             ok = True
         else:
             log.info("Not all processes done")
     else:
-        if all(p.ok(ok_exitstatuses=cfg_obj.convenience.exitcodes) for p in ret):
+        if all(p.ok(ok_exitstatuses=cfg_obj.exitcodes) for p in ret):
             log.info("All processes ok")
             ok = True
         else:
@@ -269,7 +269,7 @@ def stop_programs(
     ret = client.stopAllProcesses()
     log.info(ret)
 
-    all_stopped = _wait_or_while(until=lambda: all(_.stopped() for _ in client.getAllProcessInfo()), timeout=cfg_obj.convenience.command_timeout)
+    all_stopped = _wait_or_while(until=lambda: all(_.stopped() for _ in client.getAllProcessInfo()), timeout=cfg_obj.command_timeout)
     if not all_stopped:
         log.critical("Not all processes stopped successfully")
         for r in client.getAllProcessInfo():
@@ -320,9 +320,9 @@ def stop_supervisor(
     log.info("Stopping supervisor")
     cfg_obj.stop()
 
-    not_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
+    not_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.command_timeout)
     if not not_running:
-        log.critical(f"Still running {cfg_obj.convenience.command_timeout}s after stop command!")
+        log.critical(f"Still running {cfg_obj.command_timeout}s after stop command!")
         return _raise_or_exit(False, _exit)
     return _raise_or_exit(True, _exit)
 
@@ -350,9 +350,9 @@ def kill_supervisor(
     log.info("Killing supervisor")
     cfg_obj.kill()
 
-    still_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.convenience.command_timeout)
+    still_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.command_timeout)
     if still_running:
-        log.critical(f"Still running {cfg_obj.convenience.command_timeout}s after kill command!")
+        log.critical(f"Still running {cfg_obj.command_timeout}s after kill command!")
         return _raise_or_exit(False, _exit)
     return _raise_or_exit(True, _exit)
 
@@ -381,8 +381,8 @@ def remove_supervisor_config(
         log.critical("Supervisor still running after kill command!")
         return _raise_or_exit(False, _exit)
 
-    log.info(f"Sleeping for {cfg_obj.convenience.command_timeout} seconds")
-    sleep(cfg_obj.convenience.command_timeout)
+    log.info(f"Sleeping for {cfg_obj.command_timeout} seconds")
+    sleep(cfg_obj.command_timeout)
 
     log.info("Removing supervisor config and folder")
     cfg_obj.rmdir()

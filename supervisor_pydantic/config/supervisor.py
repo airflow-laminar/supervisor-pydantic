@@ -10,11 +10,10 @@ from typing import Dict, Optional
 
 from hydra import compose, initialize_config_dir
 from hydra.utils import instantiate
-from pydantic import BaseModel, Field, PrivateAttr, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 from ..exceptions import ConfigNotFoundError
 from ..utils import _get_calling_file
-from .convenience import ConvenienceConfiguration
 from .eventlistener import EventListenerConfiguration
 from .fcgiprogram import FcgiProgramConfiguration
 from .group import GroupConfiguration
@@ -28,9 +27,7 @@ from .unix_http_server import UnixHttpServerConfiguration
 
 __all__ = (
     "SupervisorConfiguration",
-    "SupervisorConvenienceConfiguration",
     "load_config",
-    "load_convenience_config",
 )
 
 _log = getLogger(__name__)
@@ -226,61 +223,4 @@ class SupervisorConfiguration(BaseModel):
             os.kill(int(self.supervisord.pidfile.read_text()), SIGKILL)
 
 
-class SupervisorConvenienceConfiguration(SupervisorConfiguration):
-    convenience: ConvenienceConfiguration = Field(
-        default_factory=ConvenienceConfiguration, description="Required configurations for convenience integration"
-    )
-
-    _pydantic_path: Path = PrivateAttr(default="pydantic.json")
-
-    def _write_self(self):
-        # TODO make config driven
-        self.write()
-        _log.info(f"Writing model json: {self._pydantic_path}")
-        Path(self._pydantic_path).write_text(self.model_dump_json(exclude_unset=True))
-
-    @model_validator(mode="after")
-    def _setup_convenience_defaults(self):
-        """Method to overload configuration with values needed for the setup
-        of convenience tasks that we construct"""
-        # inet_http_server
-        if not self.inet_http_server:
-            self.inet_http_server = InetHttpServerConfiguration()
-
-        self.inet_http_server.port = self.convenience.port
-        self.inet_http_server.username = self.convenience.username
-        self.inet_http_server.password = self.convenience.password
-
-        self.supervisorctl.serverurl = f"{self.convenience.protocol}://{self.convenience.host}:{self.convenience.port.split(':')[-1]}/"
-
-        # rpcinterface
-        if not self.rpcinterface:
-            self.rpcinterface = {"supervisor": RpcInterfaceConfiguration()}
-        self.rpcinterface["supervisor"].rpcinterface_factory = self.convenience.rpcinterface_factory
-
-        # supervisord
-        self.supervisord.nodaemon = False
-        self.supervisord.identifier = "supervisor"
-
-        # programs
-        for name, config in self.program.items():
-            config.autostart = False
-            config.autorestart = False
-            config.startsecs = self.convenience.startsecs
-            config.startretries = self.convenience.startretries
-            config.exitcodes = self.convenience.exitcodes
-            config.stopsignal = self.convenience.stopsignal
-            config.stopwaitsecs = self.convenience.stopwaitsecs
-            config.stopasgroup = self.convenience.stopasgroup
-            config.killasgroup = self.convenience.killasgroup
-            config.stdout_logfile = self.working_dir / name / "output.log"
-            config.stderr_logfile = self.working_dir / name / "error.log"
-
-        # other
-        if str(self.working_dir) not in str(self._pydantic_path):
-            self._pydantic_path = self.working_dir / "pydantic.json"
-        return self
-
-
 load_config = SupervisorConfiguration.load
-load_convenience_config = SupervisorConvenienceConfiguration.load

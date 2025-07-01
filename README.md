@@ -23,7 +23,6 @@ It provides:
 - `InetHttpServerConfiguration`: wrapper around [`init-http-server`](https://supervisord.org/configuration.html#inet-http-server-section-settings)
 - `RpcInterfaceConfiguration`: wrapper around [`rpcinterface`](https://supervisord.org/configuration.html#rpcinterface-x-section-settings)
 - `UnixHttpServerConfiguration`: wrapper around [`unix-http-server`](https://supervisord.org/configuration.html#unix-http-server-section-settings)
-- `ConvenienceConfiguration`: Required minimum set of configuration settings to run supervisor using the `SupervisorConvenienceConfiguration`
 
 ```mermaid
 classDiagram
@@ -38,7 +37,6 @@ classDiagram
     SupervisorConfiguration *-- FcgiProgramConfiguration
     SupervisorConfiguration *-- GroupConfiguration
     SupervisorConfiguration *-- RpcInterfaceConfiguration
-    SupervisorConvenienceConfiguration *-- ConvenienceConfiguration
 
     class SupervisorConfiguration {
         supervisord: SupervisordConfiguration
@@ -66,7 +64,19 @@ classDiagram
         kill()
     }
     class SupervisorConvenienceConfiguration {
-        convenience ConvenienceConfiguration
+      startsecs: int
+      startretries: int
+      exitcodes: List~int~
+      stopsignal: Signal
+      stopwaitsecs: int
+      port: str
+      password: str
+      rpcinterface_factory: str
+      local_or_remote: str
+      host: str
+      protocol: str
+      rpcpath: str
+      command_timeout: int
     }
     class SupervisordConfiguration {
       logfile: Path
@@ -161,21 +171,6 @@ classDiagram
     class RpcInterfaceConfiguration {
       rpcinterface_factory: str
       kwargs: Dict~str, Any~
-    }
-    class ConvenienceConfiguration {
-      startsecs: int
-      startretries: int
-      exitcodes: List~int~
-      stopsignal: Signal
-      stopwaitsecs: int
-      port: str
-      password: str
-      rpcinterface_factory: str
-      local_or_remote: str
-      host: str
-      protocol: str
-      rpcpath: str
-      command_timeout: int
     }
 
 ```
