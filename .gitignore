@@ -135,9 +135,6 @@ docs/_build/
 docs/src/_build/
 docs/api
 docs/index.md
-<<<<<<< before updating
-docs/_build/
-=======
 docs/html
 docs/jupyter_execute
 index.md
@@ -149,7 +146,6 @@ js/dist
 js/lib
 js/node_modules
 supervisor_pydantic/extension
->>>>>>> after updating
 
 # Jupyter
 .ipynb_checkpoints
@@ -162,9 +158,3 @@ supervisor_pydantic/labextension
 
 # Rust
 target
-<<<<<<< before updating
-
-
-docs/html
-=======
->>>>>>> after updating
