@@ -187,6 +187,5 @@ Additionally, this library provides a small convenience CLI (`_supervisor_conven
 - `stop-supervisor`:  Stop the supervisor instance
 - `unconfigure-supervisor`:  Remove the supervisor config file and working directory
 
-
 > [!NOTE]
 > This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).
