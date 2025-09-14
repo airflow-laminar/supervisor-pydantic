@@ -146,6 +146,7 @@ supervisor_pydantic/extension
 # Jupyter
 .ipynb_checkpoints
 .autoversion
+Untitled*.ipynb
 !supervisor_pydantic/extension/supervisor_pydantic.json
 !supervisor_pydantic/extension/install.json
 supervisor_pydantic/nbextension
