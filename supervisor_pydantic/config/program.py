@@ -1,4 +1,5 @@
 from pathlib import Path
+from shlex import quote
 from typing import Dict, List, Literal, Optional, Union
 
 from pydantic import Field, field_serializer, field_validator
@@ -161,3 +162,9 @@ class ProgramConfiguration(_BaseCfgModel):
             if v.lower() == "true":
                 return True
         return v
+
+    @field_serializer("environment", when_used="json")
+    def _dump_environment(self, v):
+        if isinstance(v, dict):
+            return ",".join(f"{k}={quote(str(v).lower())}" for k, v in v.items())
+        return None
