@@ -2,6 +2,7 @@ from pathlib import Path
 from shlex import quote
 from typing import Dict, List, Literal, Optional, Union
 
+from omegaconf import DictConfig
 from pydantic import Field, field_serializer, field_validator
 
 from .base import OctalUmask, Signal, UnixUserName, _BaseCfgModel
@@ -161,6 +162,20 @@ class ProgramConfiguration(_BaseCfgModel):
                 return False
             if v.lower() == "true":
                 return True
+        return v
+
+    @field_validator("environment", mode="before")
+    @classmethod
+    def _load_environment(cls, v):
+        if isinstance(v, str):
+            d = {}
+            for item in v.split(","):
+                if "=" in item:
+                    k, val = item.split("=", 1)
+                    d[k] = val
+            return d
+        if isinstance(v, DictConfig):
+            return dict(v)
         return v
 
     @field_serializer("environment", when_used="json")
