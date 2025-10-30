@@ -141,9 +141,15 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
         if not self.inet_http_server:
             self.inet_http_server = InetHttpServerConfiguration()
 
-        self.inet_http_server.port = self.port
-        self.inet_http_server.username = self.username
-        self.inet_http_server.password = self.password
+        self.port, self.inet_http_server.port = self.port or self.inet_http_server.port, self.port or self.inet_http_server.port
+        self.username, self.inet_http_server.username = (
+            self.username or self.inet_http_server.username,
+            self.username or self.inet_http_server.username,
+        )
+        self.password, self.inet_http_server.password = (
+            self.password or self.inet_http_server.password,
+            self.password or self.inet_http_server.password,
+        )
 
         self.supervisorctl.serverurl = f"{self.protocol}://{self.host}:{self.port.split(':')[-1]}/"
 
