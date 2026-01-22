@@ -6,6 +6,10 @@ hidden: true
 ---
 
 
+docs/src/getting-started.md
+
+docs/src/examples.md
+
 docs/src/API.md
 
 
@@ -201,6 +205,26 @@ Additionally, this library provides a small convenience CLI (`_supervisor_conven
 - `stop-programs`: Stop all programs in the supervisor instance
 - `stop-supervisor`: Stop the supervisor instance
 - `unconfigure-supervisor`: Remove the supervisor config file and working directory
+
+## Integration with Other Libraries
+
+`supervisor-pydantic` is designed to integrate seamlessly with other libraries in the [airflow-laminar](https://github.com/airflow-laminar) ecosystem:
+
+### airflow-supervisor
+
+[airflow-supervisor](https://github.com/airflow-laminar/airflow-supervisor) uses `supervisor-pydantic` to manage external processes as part of Airflow DAGs. It provides operators and sensors for starting, monitoring, and stopping supervised processes within your Airflow workflows.
+
+### airflow-config
+
+[airflow-config](https://github.com/airflow-laminar/airflow-config) provides configuration management for Airflow, including support for supervisor configurations. You can define your supervisor configurations alongside your DAG configurations for consistent, centralized management.
+
+## Documentation
+
+Full documentation is available at [https://airflow-laminar.github.io/supervisor-pydantic/](https://airflow-laminar.github.io/supervisor-pydantic/).
+
+- [Getting Started](https://airflow-laminar.github.io/supervisor-pydantic/getting-started.html) - Installation and quick start guide
+- [Examples](https://airflow-laminar.github.io/supervisor-pydantic/examples.html) - Practical examples for common use cases
+- [API Reference](https://airflow-laminar.github.io/supervisor-pydantic/API.html) - Complete API documentation
 
 > [!NOTE]
 > This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).

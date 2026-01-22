@@ -197,6 +197,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="docs/src/getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs/src/examples.html">Examples</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="docs/src/API.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="docs/src/_build/supervisor_pydantic.SupervisorConfiguration.html">supervisor_pydantic.SupervisorConfiguration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/src/_build/supervisor_pydantic.SupervisorConvenienceConfiguration.html">supervisor_pydantic.SupervisorConvenienceConfiguration</a></li>
@@ -436,6 +438,27 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">stop-supervisor</span></code>: Stop the supervisor instance</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">unconfigure-supervisor</span></code>: Remove the supervisor config file and working directory</p></li>
 </ul>
+</section>
+<section id="integration-with-other-libraries">
+<h2>Integration with Other Libraries<a class="headerlink" href="#integration-with-other-libraries" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">supervisor-pydantic</span></code> is designed to integrate seamlessly with other libraries in the <a class="reference external" href="https://github.com/airflow-laminar">airflow-laminar</a> ecosystem:</p>
+<section id="airflow-supervisor">
+<h3>airflow-supervisor<a class="headerlink" href="#airflow-supervisor" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/airflow-laminar/airflow-supervisor">airflow-supervisor</a> uses <code class="docutils literal notranslate"><span class="pre">supervisor-pydantic</span></code> to manage external processes as part of Airflow DAGs. It provides operators and sensors for starting, monitoring, and stopping supervised processes within your Airflow workflows.</p>
+</section>
+<section id="airflow-config">
+<h3>airflow-config<a class="headerlink" href="#airflow-config" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/airflow-laminar/airflow-config">airflow-config</a> provides configuration management for Airflow, including support for supervisor configurations. You can define your supervisor configurations alongside your DAG configurations for consistent, centralized management.</p>
+</section>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<p>Full documentation is available at <a class="reference external" href="https://airflow-laminar.github.io/supervisor-pydantic/">https://airflow-laminar.github.io/supervisor-pydantic/</a>.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://airflow-laminar.github.io/supervisor-pydantic/getting-started.html">Getting Started</a> - Installation and quick start guide</p></li>
+<li><p><a class="reference external" href="https://airflow-laminar.github.io/supervisor-pydantic/examples.html">Examples</a> - Practical examples for common use cases</p></li>
+<li><p><a class="reference external" href="https://airflow-laminar.github.io/supervisor-pydantic/API.html">API Reference</a> - Complete API documentation</p></li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This library was generated using <a class="reference external" href="https://copier.readthedocs.io/en/stable/">copier</a> from the <a class="reference external" href="https://github.com/python-project-templates/base">Base Python Project Template repository</a>.</p>
@@ -482,6 +505,12 @@
             <ul>
 <li><a class="reference internal" href="#">supervisor-pydantic</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#integration-with-other-libraries">Integration with Other Libraries</a><ul>
+<li><a class="reference internal" href="#airflow-supervisor">airflow-supervisor</a></li>
+<li><a class="reference internal" href="#airflow-config">airflow-config</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
 </ul>
