@@ -90,9 +90,8 @@ class _BaseCfgModel(BaseModel, validate_assignment=True):
         # round trip to json so we're fully
         # cfg-compatible
         for k, v in loads(self.model_dump_json(exclude_unset=True)).items():
-            if v is not None:
-                if isinstance(v, bool):
-                    ret += f"\n{k}={str(v).lower()}"
-                else:
-                    ret += f"\n{k}={v}"
+            if isinstance(v, bool):
+                ret += f"\n{k}={str(v).lower()}"
+            else:
+                ret += f"\n{k}={v}"
         return ret.strip() + "\n"

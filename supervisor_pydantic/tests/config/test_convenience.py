@@ -30,6 +30,7 @@ serverurl=http://localhost:7000/
 command=echo test
 autostart=false
 startsecs=1
+startretries=None
 autorestart=false
 exitcodes=0
 stopsignal=TERM
