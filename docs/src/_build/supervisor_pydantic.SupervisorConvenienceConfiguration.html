@@ -2562,29 +2562,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Fields<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">command_timeout</span> <span class="pre">(int)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exitcodes</span> <span class="pre">(List[int]</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">host</span> <span class="pre">(str)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">killasgroup</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_or_remote</span> <span class="pre">(Literal['local',</span> <span class="pre">'remote']</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">password</span> <span class="pre">(pydantic.types.SecretStr</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span> <span class="pre">(Annotated[str,</span> <span class="pre">pydantic.functional_validators.BeforeValidator(func=supervisor_pydantic.config.base._convert_to_host_port,</span> <span class="pre">json_schema_input_type=PydanticUndefined),</span> <span class="pre">pydantic.functional_validators.AfterValidator(func=supervisor_pydantic.config.base._is_host_port)])</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">protocol</span> <span class="pre">(str)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rpcinterface_factory</span> <span class="pre">(str)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rpcpath</span> <span class="pre">(str)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">startretries</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">startsecs</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopasgroup</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopsignal</span> <span class="pre">(Literal['TERM',</span> <span class="pre">'HUP',</span> <span class="pre">'INT',</span> <span class="pre">'QUIT',</span> <span class="pre">'KILL',</span> <span class="pre">'USR1',</span> <span class="pre">'USR2']</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopwaitsecs</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">username</span> <span class="pre">(Annotated[str,</span> <span class="pre">pydantic.functional_validators.AfterValidator(func=supervisor_pydantic.config.base._is_username)]</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute pydantic_field">
+</details></p><dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.startsecs">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">startsecs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.startsecs" title="Link to this definition">¶</a></dt>
 <dd><p>The total number of seconds which the program needs to stay running after a startup to consider the start successful (moving the process from the STARTING state to the RUNNING state). Set to 0 to indicate that the program needn’t stay running for any particular amount of time. Even if a process exits with an “expected” exit code (see exitcodes), the start will still be considered a failure if the process exits quicker than startsecs.</p>
@@ -2680,21 +2658,6 @@
 <dd><p>Timeout for convenience commands sent to the supervisor, in seconds</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="supervisor_pydantic.SupervisorConvenienceConfiguration.model_post_init">
-<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.model_post_init" title="Link to this definition">¶</a></dt>
-<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
-<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> – The BaseModel instance.</p></li>
-<li><p><strong>context</strong> – The context.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -2772,7 +2735,6 @@
 <li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.protocol"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.protocol</span></code></a></li>
 <li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.rpcpath"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.rpcpath</span></code></a></li>
 <li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.command_timeout"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.command_timeout</span></code></a></li>
-<li><a class="reference internal" href="#supervisor_pydantic.SupervisorConvenienceConfiguration.model_post_init"><code class="docutils literal notranslate"><span class="pre">SupervisorConvenienceConfiguration.model_post_init()</span></code></a></li>
 </ul>
 </li>
 </ul>

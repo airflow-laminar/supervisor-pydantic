@@ -278,14 +278,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Fields<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">files</span> <span class="pre">(List[str])</span></code></p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute pydantic_field">
+</details></p><dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="supervisor_pydantic.IncludeConfiguration.files">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">files</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#supervisor_pydantic.IncludeConfiguration.files" title="Link to this definition">¶</a></dt>
 <dd><p>A space-separated sequence of file globs. Each file glob may be absolute or relative. If the file glob is relative, it is considered relative to the location of the configuration file which includes it. A “glob” is a file pattern which matches a specified pattern according to the rules used by the Unix shell. No tilde expansion is done, but <a href="#id1"><span class="problematic" id="id2">*</span></a>, ?, and character ranges expressed with [] will be correctly matched. The string expression is evaluated against a dictionary that includes host_node_name and here (the directory of the supervisord config file). Recursive includes from included files are not supported.</p>

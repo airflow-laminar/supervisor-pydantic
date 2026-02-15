@@ -335,18 +335,7 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-</details></p><dl class="field-list simple">
-<dt class="field-odd">Fields<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">chown</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">file</span> <span class="pre">(pathlib.Path</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">password</span> <span class="pre">(pydantic.types.SecretStr</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">username</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute pydantic_field">
+</details></p><dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="supervisor_pydantic.UnixHttpServerConfiguration.file">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#supervisor_pydantic.UnixHttpServerConfiguration.file" title="Link to this definition">¶</a></dt>
 <dd><p>A path to a UNIX domain socket on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl uses XML-RPC to communicate with supervisord over this port. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.</p>
