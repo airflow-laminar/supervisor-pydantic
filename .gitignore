@@ -141,14 +141,12 @@ js/node_modules
 js/test-results
 js/playwright-report
 js/*.tgz
-supervisor_pydantic/extension
 
 # Jupyter
 .ipynb_checkpoints
 .autoversion
 Untitled*.ipynb
-!supervisor_pydantic/extension/supervisor_pydantic.json
-!supervisor_pydantic/extension/install.json
+supervisor_pydantic/extension
 supervisor_pydantic/nbextension
 supervisor_pydantic/labextension
 
@@ -157,3 +155,7 @@ supervisor_pydantic/labextension
 
 # Rust
 target
+
+# Hydra
+outputs/
+multirun/
