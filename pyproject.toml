@@ -87,6 +87,7 @@ branch = true
 omit = [
     "supervisor_pydantic/tests/integration/",
 ]
+
 [tool.coverage.report]
 exclude_also = [
     "raise NotImplementedError",
