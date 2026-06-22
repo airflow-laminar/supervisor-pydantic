@@ -181,5 +181,5 @@ class ProgramConfiguration(_BaseCfgModel):
     @field_serializer("environment", when_used="json")
     def _dump_environment(self, v):
         if isinstance(v, dict):
-            return ",".join(f"{k}={quote(str(v).lower())}" for k, v in v.items())
+            return ",".join(f"{k}={quote(str(v))}" for k, v in v.items())
         return None

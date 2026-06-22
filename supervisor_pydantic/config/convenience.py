@@ -167,7 +167,8 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
             config.autostart = False
             config.autorestart = False
             config.startsecs = self.startsecs
-            config.startretries = self.startretries
+            if self.startretries is not None:
+                config.startretries = self.startretries
             config.exitcodes = self.exitcodes
             config.stopsignal = self.stopsignal
             config.stopwaitsecs = self.stopwaitsecs
