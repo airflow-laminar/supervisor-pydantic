@@ -27,5 +27,5 @@ def test_autorestart_options():
 
 
 def test_cfg():
-    c = ProgramConfiguration(command="echo 'test'")
-    assert c.to_cfg("name").strip() == "[program:name]\ncommand=echo 'test'"
+    c = ProgramConfiguration(command="echo 'test'", environment={"USER": "test", "HOME": "a blerg's path"})
+    assert c.to_cfg("name").strip() == "[program:name]\ncommand=echo 'test'\nenvironment=USER=test,HOME='a blerg'\"'\"'s path'"

@@ -8,9 +8,11 @@
 [![PyPI](https://img.shields.io/pypi/v/supervisor-pydantic.svg)](https://pypi.python.org/pypi/supervisor-pydantic)
 
 ## Overview
+
 This library provides type-validated [Pydantic](https://docs.pydantic.dev/latest/) models of all configuration options for [supervisor](https://supervisord.org).
 
 It provides:
+
 - `SupervisorConfiguration`: top-level wrapper around all supervisor configuration options, with a utility method to generate a [`supervisord.conf`](https://supervisord.org/configuration.html)
 - `SupervisorConvenienceConfiguration`: wrapper around `SupervisorConfiguration` to make a few things easier to configure, for integration with [airflow-supervisor](https://github.com/airflow-laminar/airflow-supervisor) and other external tools
 - `SupervisordConfiguration`: wrapper around [`supervisord`](https://supervisord.org/configuration.html#supervisord-section-settings)
@@ -23,7 +25,6 @@ It provides:
 - `InetHttpServerConfiguration`: wrapper around [`init-http-server`](https://supervisord.org/configuration.html#inet-http-server-section-settings)
 - `RpcInterfaceConfiguration`: wrapper around [`rpcinterface`](https://supervisord.org/configuration.html#rpcinterface-x-section-settings)
 - `UnixHttpServerConfiguration`: wrapper around [`unix-http-server`](https://supervisord.org/configuration.html#unix-http-server-section-settings)
-- `ConvenienceConfiguration`: Required minimum set of configuration settings to run supervisor using the `SupervisorConvenienceConfiguration`
 
 ```mermaid
 classDiagram
@@ -38,7 +39,6 @@ classDiagram
     SupervisorConfiguration *-- FcgiProgramConfiguration
     SupervisorConfiguration *-- GroupConfiguration
     SupervisorConfiguration *-- RpcInterfaceConfiguration
-    SupervisorConvenienceConfiguration *-- ConvenienceConfiguration
 
     class SupervisorConfiguration {
         supervisord: SupervisordConfiguration
@@ -66,7 +66,19 @@ classDiagram
         kill()
     }
     class SupervisorConvenienceConfiguration {
-        convenience ConvenienceConfiguration
+      startsecs: int
+      startretries: int
+      exitcodes: List~int~
+      stopsignal: Signal
+      stopwaitsecs: int
+      port: str
+      password: str
+      rpcinterface_factory: str
+      local_or_remote: str
+      host: str
+      protocol: str
+      rpcpath: str
+      command_timeout: int
     }
     class SupervisordConfiguration {
       logfile: Path
@@ -162,36 +174,40 @@ classDiagram
       rpcinterface_factory: str
       kwargs: Dict~str, Any~
     }
-    class ConvenienceConfiguration {
-      startsecs: int
-      startretries: int
-      exitcodes: List~int~
-      stopsignal: Signal
-      stopwaitsecs: int
-      port: str
-      password: str
-      rpcinterface_factory: str
-      local_or_remote: str
-      host: str
-      protocol: str
-      rpcpath: str
-      command_timeout: int
-    }
 
 ```
 
 Additionally, this library provides a small convenience CLI (`_supervisor_convenience`) for remotely managing supervisor. It is a simple wrapper around the [`supervisord`](https://supervisord.org/running.html#running-supervisord) and [`supervisorctl`](https://supervisord.org/running.html#running-supervisorctl) CLIs in supervisor.
 
-- `check-programs`:  Check if programs are in a good state.
-- `configure-supervisor`:  Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
-- `force-kill`:  Kill the supervisor instance with os.kill
-- `restart-programs`:  Restart all programs in the supervisor instance
-- `start-programs`:  Start all programs in the supervisor instance
-- `start-supervisor`:  Start a supervisor instance using supervisord in background
-- `stop-programs`:  Stop all programs in the supervisor instance
-- `stop-supervisor`:  Stop the supervisor instance
-- `unconfigure-supervisor`:  Remove the supervisor config file and working directory
+- `check-programs`: Check if programs are in a good state.
+- `configure-supervisor`: Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
+- `force-kill`: Kill the supervisor instance with os.kill
+- `restart-programs`: Restart all programs in the supervisor instance
+- `start-programs`: Start all programs in the supervisor instance
+- `start-supervisor`: Start a supervisor instance using supervisord in background
+- `stop-programs`: Stop all programs in the supervisor instance
+- `stop-supervisor`: Stop the supervisor instance
+- `unconfigure-supervisor`: Remove the supervisor config file and working directory
 
+## Integration with Other Libraries
+
+`supervisor-pydantic` is designed to integrate seamlessly with other libraries in the [airflow-laminar](https://github.com/airflow-laminar) ecosystem:
+
+### airflow-supervisor
+
+[airflow-supervisor](https://github.com/airflow-laminar/airflow-supervisor) uses `supervisor-pydantic` to manage external processes as part of Airflow DAGs. It provides operators and sensors for starting, monitoring, and stopping supervised processes within your Airflow workflows.
+
+### airflow-config
+
+[airflow-config](https://github.com/airflow-laminar/airflow-config) provides configuration management for Airflow, including support for supervisor configurations. You can define your supervisor configurations alongside your DAG configurations for consistent, centralized management.
+
+## Documentation
+
+Full documentation is available at [https://airflow-laminar.github.io/supervisor-pydantic/](https://airflow-laminar.github.io/supervisor-pydantic/).
+
+- [Getting Started](https://airflow-laminar.github.io/supervisor-pydantic/getting-started.html) - Installation and quick start guide
+- [Examples](https://airflow-laminar.github.io/supervisor-pydantic/examples.html) - Practical examples for common use cases
+- [API Reference](https://airflow-laminar.github.io/supervisor-pydantic/API.html) - Complete API documentation
 
 > [!NOTE]
 > This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).

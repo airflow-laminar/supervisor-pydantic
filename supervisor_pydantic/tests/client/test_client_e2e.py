@@ -37,13 +37,13 @@ def test_supervisor_client_changes(supervisor_instance: SupervisorConvenienceCon
 
 
 def test_permissioned_supervisor_client_rejected(permissioned_supervisor_instance: SupervisorConvenienceConfiguration):
-    permissioned_supervisor_instance.convenience.username = "bad-username"
+    permissioned_supervisor_instance.username = "bad-username"
     client = SupervisorRemoteXMLRPCClient(permissioned_supervisor_instance)
     with pytest.raises(xmlrpc.client.ProtocolError):
         client.getProcessInfo("test")
 
 
 def test_permissioned_supervisor_client(permissioned_supervisor_instance: SupervisorConvenienceConfiguration):
-    permissioned_supervisor_instance.convenience.username = "user1"
+    permissioned_supervisor_instance.username = "user1"
     client = SupervisorRemoteXMLRPCClient(permissioned_supervisor_instance)
     _assert_client_actions(client=client)

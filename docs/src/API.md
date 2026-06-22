@@ -23,6 +23,5 @@
     RpcInterfaceConfiguration
     UnixHttpServerConfiguration
 
-    ConvenienceConfiguration
 ```
 
