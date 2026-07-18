@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.ProcessInfo
+================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autopydantic_model:: ProcessInfo

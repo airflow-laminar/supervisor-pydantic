@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.stop\_programs
+===================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autofunction:: stop_programs

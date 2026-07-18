@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.remove\_supervisor\_config
+===============================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autofunction:: remove_supervisor_config

@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.restart\_programs
+======================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autofunction:: restart_programs

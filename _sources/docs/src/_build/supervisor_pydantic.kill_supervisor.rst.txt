@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.kill\_supervisor
+=====================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autofunction:: kill_supervisor

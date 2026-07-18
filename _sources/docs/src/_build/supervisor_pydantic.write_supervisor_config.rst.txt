@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.write\_supervisor\_config
+==============================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autofunction:: write_supervisor_config

@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.start\_supervisor
+======================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autofunction:: start_supervisor

@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.check\_programs
+====================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autofunction:: check_programs

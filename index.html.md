@@ -1,0 +1,47 @@
+# supervisor-pydantic
+
+Typed, YAML-friendly models and lifecycle tools for supervisord.
+
+[![Build Status](https://github.com/airflow-laminar/supervisor-pydantic/actions/workflows/build.yaml/badge.svg?branch=main&event=push)](https://github.com/airflow-laminar/supervisor-pydantic/actions/workflows/build.yaml)
+[![codecov](https://codecov.io/gh/airflow-laminar/supervisor-pydantic/branch/main/graph/badge.svg)](https://codecov.io/gh/airflow-laminar/supervisor-pydantic)
+[![License](https://img.shields.io/github/license/airflow-laminar/supervisor-pydantic)](https://github.com/airflow-laminar/supervisor-pydantic)
+[![PyPI](https://img.shields.io/pypi/v/supervisor-pydantic.svg)](https://pypi.python.org/pypi/supervisor-pydantic)
+
+```python
+from supervisor_pydantic import ProgramConfiguration, SupervisorConvenienceConfiguration
+
+config = SupervisorConvenienceConfiguration(
+    working_dir="/tmp/example-supervisor",
+    program={
+        "worker": ProgramConfiguration(command="python worker.py"),
+    },
+)
+
+print(config.to_cfg())
+```
+
+The package models supervisord configuration sections, renders
+`supervisord.conf`, loads Hydra/YAML configuration, exposes an XML-RPC client,
+and provides the `_supervisor_convenience` lifecycle CLI.
+
+## Documentation
+
+- [Tutorial: render a supervisord configuration](docs/src/tutorial.md)
+- [How-to guides](docs/src/how-to.md)
+- [Why the convenience layer exists](docs/src/explanation.md)
+- [API reference](docs/src/api.md)
+
+Published documentation is available at
+[airflow-laminar.github.io/supervisor-pydantic](https://airflow-laminar.github.io/supervisor-pydantic/).
+
+## Ecosystem
+
+- [systemd-pydantic](https://github.com/airflow-laminar/systemd-pydantic) provides aligned models for systemd services and timers.
+- [cron-pydantic](https://github.com/airflow-laminar/cron-pydantic) models traditional crontabs.
+- [airflow-supervisor](https://github.com/airflow-laminar/airflow-supervisor) orchestrates these configurations from Airflow.
+- [airflow-systemd](https://github.com/airflow-laminar/airflow-systemd) and [airflow-cron](https://github.com/airflow-laminar/airflow-cron) provide alternative Airflow integrations.
+- [airflow-pydantic](https://github.com/airflow-laminar/airflow-pydantic) supplies declarative Airflow models.
+- [airflow-config](https://github.com/airflow-laminar/airflow-config) loads YAML-based Airflow configurations.
+
+#### NOTE
+This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).

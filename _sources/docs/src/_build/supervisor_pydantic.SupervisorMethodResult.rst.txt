@@ -1,0 +1,39 @@
+﻿supervisor\_pydantic.SupervisorMethodResult
+===========================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autoclass:: SupervisorMethodResult
+
+   
+   .. automethod:: __init__
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SupervisorMethodResult.UNKNOWN_METHOD
+      ~SupervisorMethodResult.INCORRECT_PARAMETERS
+      ~SupervisorMethodResult.BAD_ARGUMENTS
+      ~SupervisorMethodResult.SIGNATURE_UNSUPPORTED
+      ~SupervisorMethodResult.SHUTDOWN_STATE
+      ~SupervisorMethodResult.BAD_NAME
+      ~SupervisorMethodResult.BAD_SIGNAL
+      ~SupervisorMethodResult.NO_FILE
+      ~SupervisorMethodResult.NOT_EXECUTABLE
+      ~SupervisorMethodResult.FAILED
+      ~SupervisorMethodResult.ABNORMAL_TERMINATION
+      ~SupervisorMethodResult.SPAWN_ERROR
+      ~SupervisorMethodResult.ALREADY_STARTED
+      ~SupervisorMethodResult.NOT_RUNNING
+      ~SupervisorMethodResult.SUCCESS
+      ~SupervisorMethodResult.ALREADY_ADDED
+      ~SupervisorMethodResult.STILL_RUNNING
+      ~SupervisorMethodResult.CANT_REREAD
+   
+   

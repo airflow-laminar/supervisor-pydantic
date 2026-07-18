@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.load\_convenience\_config
+==============================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autofunction:: load_convenience_config
