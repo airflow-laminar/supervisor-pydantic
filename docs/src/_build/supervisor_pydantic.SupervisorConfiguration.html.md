@@ -16,15 +16,15 @@ Bases: `BaseModel`
 
 #### *field* include *: [IncludeConfiguration](supervisor_pydantic.IncludeConfiguration.md#supervisor_pydantic.IncludeConfiguration) | None* *= None*
 
-#### *field* program *: Dict[str, [ProgramConfiguration](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)]* *[Required]*
+#### *field* program *: dict[str, [ProgramConfiguration](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)]* *[Required]*
 
-#### *field* group *: Dict[str, [GroupConfiguration](supervisor_pydantic.GroupConfiguration.md#supervisor_pydantic.GroupConfiguration)] | None* *= None*
+#### *field* group *: dict[str, [GroupConfiguration](supervisor_pydantic.GroupConfiguration.md#supervisor_pydantic.GroupConfiguration)] | None* *= None*
 
-#### *field* fcgiprogram *: Dict[str, [FcgiProgramConfiguration](supervisor_pydantic.FcgiProgramConfiguration.md#supervisor_pydantic.FcgiProgramConfiguration)] | None* *= None*
+#### *field* fcgiprogram *: dict[str, [FcgiProgramConfiguration](supervisor_pydantic.FcgiProgramConfiguration.md#supervisor_pydantic.FcgiProgramConfiguration)] | None* *= None*
 
-#### *field* eventlistener *: Dict[str, [EventListenerConfiguration](supervisor_pydantic.EventListenerConfiguration.md#supervisor_pydantic.EventListenerConfiguration)] | None* *= None*
+#### *field* eventlistener *: dict[str, [EventListenerConfiguration](supervisor_pydantic.EventListenerConfiguration.md#supervisor_pydantic.EventListenerConfiguration)] | None* *= None*
 
-#### *field* rpcinterface *: Dict[str, [RpcInterfaceConfiguration](supervisor_pydantic.RpcInterfaceConfiguration.md#supervisor_pydantic.RpcInterfaceConfiguration)] | None* *= None*
+#### *field* rpcinterface *: dict[str, [RpcInterfaceConfiguration](supervisor_pydantic.RpcInterfaceConfiguration.md#supervisor_pydantic.RpcInterfaceConfiguration)] | None* *= None*
 
 #### *field* config_path *: Path | None* *= 'supervisord.conf'*
 

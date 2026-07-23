@@ -255,7 +255,7 @@ Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.md#supe
 
 The event listener pool’s event queue buffer size. When a listener pool’s event buffer is overflowed (as can happen when an event listener pool cannot keep up with all of the events sent to it), the oldest event in the buffer is discarded.
 
-#### *field* events *: List[Literal['PROCESS_STATE', 'PROCESS_STATE_STARTING', 'PROCESS_STATE_RUNNING', 'PROCESS_STATE_BACKOFF', 'PROCESS_STATE_STOPPING', 'PROCESS_STATE_EXITED', 'PROCESS_STATE_STOPPED', 'PROCESS_STATE_FATAL', 'PROCESS_STATE_UNKNOWN', 'REMOTE_COMMUNICATION', 'PROCESS_LOG', 'PROCESS_LOG_STDOUT', 'PROCESS_LOG_STDERR', 'PROCESS_COMMUNICATION', 'PROCESS_COMMUNICATION_STDOUT', 'PROCESS_COMMUNICATION_STDERR', 'SUPERVISOR_STATE_CHANGE', 'SUPERVISOR_STATE_CHANGE_RUNNING', 'SUPERVISOR_STATE_CHANGE_STOPPING', 'TICK', 'TICK_5', 'TICK_60', 'TICK_3600', 'PROCESS_GROUP', 'PROCESS_GROUP_ADDED', 'PROCESS_GROUP_REMOVED']] | None* *= None*
+#### *field* events *: list[Literal['PROCESS_STATE', 'PROCESS_STATE_STARTING', 'PROCESS_STATE_RUNNING', 'PROCESS_STATE_BACKOFF', 'PROCESS_STATE_STOPPING', 'PROCESS_STATE_EXITED', 'PROCESS_STATE_STOPPED', 'PROCESS_STATE_FATAL', 'PROCESS_STATE_UNKNOWN', 'REMOTE_COMMUNICATION', 'PROCESS_LOG', 'PROCESS_LOG_STDOUT', 'PROCESS_LOG_STDERR', 'PROCESS_COMMUNICATION', 'PROCESS_COMMUNICATION_STDOUT', 'PROCESS_COMMUNICATION_STDERR', 'SUPERVISOR_STATE_CHANGE', 'SUPERVISOR_STATE_CHANGE_RUNNING', 'SUPERVISOR_STATE_CHANGE_STOPPING', 'TICK', 'TICK_5', 'TICK_60', 'TICK_3600', 'PROCESS_GROUP', 'PROCESS_GROUP_ADDED', 'PROCESS_GROUP_REMOVED']] | None* *= None*
 
 A comma-separated list of event type names that this listener is “interested” in receiving notifications for (see Event Types for a list of valid event type names).
 
@@ -301,7 +301,7 @@ Bases: `_BaseCfgModel`
 
 #### to_cfg(key: str) → str
 
-#### *field* programs *: List[str]* *[Required]*
+#### *field* programs *: list[str]* *[Required]*
 
 A comma-separated list of program names. The programs which are listed become members of the group.
 
@@ -318,7 +318,7 @@ A priority number analogous to a [program:x] priority value assigned to the grou
 
 Bases: `_BaseCfgModel`
 
-#### *field* files *: List[str]* *[Required]*
+#### *field* files *: list[str]* *[Required]*
 
 A space-separated sequence of file globs. Each file glob may be absolute or relative. If the file glob is relative, it is considered relative to the location of the configuration file which includes it. A “glob” is a file pattern which matches a specified pattern according to the rules used by the Unix shell. No tilde expansion is done, but 
 
@@ -478,7 +478,7 @@ The number of serial failure attempts that supervisord will allow when attemptin
 
 Specifies if supervisord should automatically restart a process if it exits when it is in the RUNNING state. May be one of false, unexpected, or true. If false, the process will not be autorestarted. If unexpected, the process will be restarted when the program exits with an exit code that is not one of the exit codes associated with this process’ configuration (see exitcodes). If true, the process will be unconditionally restarted when it exits, without regard to its exit code. autorestart controls whether supervisord will autorestart a program if it exits after it has successfully started up (the process is in the RUNNING state). supervisord has a different restart mechanism for when the process is starting up (the process is in the STARTING state). Retries during process startup are controlled by startsecs and startretries.
 
-#### *field* exitcodes *: List[int] | None* *= None*
+#### *field* exitcodes *: list[int] | None* *= None*
 
 The list of “expected” exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.
 
@@ -554,7 +554,7 @@ If true, PROCESS_LOG_STDERR events will be emitted when the process writes to it
 
 If true, stderr will be directed to syslog along with the process name.
 
-#### *field* environment *: Dict[str, str] | None* *= None*
+#### *field* environment *: dict[str, str] | None* *= None*
 
 A list of key/value pairs in the form KEY=”val”,KEY2=”val2” that will be placed in the child process’ environment. The environment string may contain Python string expressions that will be evaluated against a dictionary containing group_name, host_node_name, process_num, program_name, and here (the directory of the supervisord config file). Values containing non-alphanumeric characters should be quoted (e.g. KEY=”val:123”,KEY2=”val,456”). Otherwise, quoting the values is optional but recommended. Note that the subprocess will inherit the environment variables of the shell used to start “supervisord” except for the ones overridden here. See Subprocess Environment.
 
@@ -585,7 +585,7 @@ Bases: `_BaseCfgModel`
 
 pkg_resources “entry point” dotted name to your RPC interface’s factory function.
 
-#### *field* kwargs *: Dict[str, Any] | None* *= None*
+#### *field* kwargs *: dict[str, Any] | None* *= None*
 
 
 # supervisor_pydantic.SupervisorConfiguration.html.md
@@ -608,15 +608,15 @@ Bases: `BaseModel`
 
 #### *field* include *: [IncludeConfiguration](supervisor_pydantic.IncludeConfiguration.md#supervisor_pydantic.IncludeConfiguration) | None* *= None*
 
-#### *field* program *: Dict[str, [ProgramConfiguration](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)]* *[Required]*
+#### *field* program *: dict[str, [ProgramConfiguration](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)]* *[Required]*
 
-#### *field* group *: Dict[str, [GroupConfiguration](supervisor_pydantic.GroupConfiguration.md#supervisor_pydantic.GroupConfiguration)] | None* *= None*
+#### *field* group *: dict[str, [GroupConfiguration](supervisor_pydantic.GroupConfiguration.md#supervisor_pydantic.GroupConfiguration)] | None* *= None*
 
-#### *field* fcgiprogram *: Dict[str, [FcgiProgramConfiguration](supervisor_pydantic.FcgiProgramConfiguration.md#supervisor_pydantic.FcgiProgramConfiguration)] | None* *= None*
+#### *field* fcgiprogram *: dict[str, [FcgiProgramConfiguration](supervisor_pydantic.FcgiProgramConfiguration.md#supervisor_pydantic.FcgiProgramConfiguration)] | None* *= None*
 
-#### *field* eventlistener *: Dict[str, [EventListenerConfiguration](supervisor_pydantic.EventListenerConfiguration.md#supervisor_pydantic.EventListenerConfiguration)] | None* *= None*
+#### *field* eventlistener *: dict[str, [EventListenerConfiguration](supervisor_pydantic.EventListenerConfiguration.md#supervisor_pydantic.EventListenerConfiguration)] | None* *= None*
 
-#### *field* rpcinterface *: Dict[str, [RpcInterfaceConfiguration](supervisor_pydantic.RpcInterfaceConfiguration.md#supervisor_pydantic.RpcInterfaceConfiguration)] | None* *= None*
+#### *field* rpcinterface *: dict[str, [RpcInterfaceConfiguration](supervisor_pydantic.RpcInterfaceConfiguration.md#supervisor_pydantic.RpcInterfaceConfiguration)] | None* *= None*
 
 #### *field* config_path *: Path | None* *= 'supervisord.conf'*
 
@@ -659,7 +659,7 @@ The total number of seconds which the program needs to stay running after a star
 
 The number of serial failure attempts that supervisord will allow when attempting to start the program before giving up and putting the process into an FATAL state. After each failed restart, process will be put in BACKOFF state and each retry attempt will take increasingly more time.
 
-#### *field* exitcodes *: List[int] | None* *= [0]*
+#### *field* exitcodes *: list[int] | None* *= [0]*
 
 The list of “expected” exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.
 
@@ -945,7 +945,7 @@ The password required for authentication to this HTTP server. This can be a clea
 
 # supervisor_pydantic.check_programs
 
-### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fdd8cf54a50>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf54b10>] = True)
+### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f777405c710>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777405c7d0>] = True)
 
 Check if programs are in a good state.
 
@@ -959,7 +959,7 @@ Check if programs are in a good state.
 
 # supervisor_pydantic.kill_supervisor
 
-### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fdd8cf55090>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf55150>] = True)
+### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f777405cd50>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777405ce10>] = True)
 
 Kill the supervisor instance with os.kill
 
@@ -985,7 +985,7 @@ Kill the supervisor instance with os.kill
 
 # supervisor_pydantic.remove_supervisor_config
 
-### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fdd8cf55210>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf552d0>] = True)
+### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f777405ced0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777405cf90>] = True)
 
 Remove the supervisor config file and working directory
 
@@ -997,7 +997,7 @@ Remove the supervisor config file and working directory
 
 # supervisor_pydantic.restart_programs
 
-### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fdd8cf54d50>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf54e10>] = True)
+### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f777405ca10>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777405cad0>] = True)
 
 Restart all programs in the supervisor instance
 
@@ -1010,7 +1010,7 @@ Restart all programs in the supervisor instance
 
 # supervisor_pydantic.start_programs
 
-### supervisor_pydantic.start_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fdd8cf54910>] = PosixPath('pydantic.json'), restart: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf54990>] = True)
+### supervisor_pydantic.start_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f777416c8d0>] = PosixPath('pydantic.json'), restart: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777416db50>] = True)
 
 Start all programs in the supervisor instance
 
@@ -1023,7 +1023,7 @@ Start all programs in the supervisor instance
 
 # supervisor_pydantic.start_supervisor
 
-### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fdd8d2a1b10>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf54890>] = True)
+### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f77746e83d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777439f8d0>] = True)
 
 Start a supervisor instance using supervisord in background
 
@@ -1035,7 +1035,7 @@ Start a supervisor instance using supervisord in background
 
 # supervisor_pydantic.stop_programs
 
-### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fdd8cf54bd0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf54c90>] = True)
+### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f777405c890>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777405c950>] = True)
 
 Stop all programs in the supervisor instance
 
@@ -1047,7 +1047,7 @@ Stop all programs in the supervisor instance
 
 # supervisor_pydantic.stop_supervisor
 
-### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fdd8cf54f10>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf54fd0>] = True)
+### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f777405cbd0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777405cc90>] = True)
 
 Stop the supervisor instance
 
@@ -1059,7 +1059,7 @@ Stop the supervisor instance
 
 # supervisor_pydantic.write_supervisor_config
 
-### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fdd8cf54790>] = True)
+### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777416c850>] = True)
 
 Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
 

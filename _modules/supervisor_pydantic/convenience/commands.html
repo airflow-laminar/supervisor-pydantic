@@ -187,13 +187,13 @@
 
     <div id="content" role="main">
       <h1>Source code for supervisor_pydantic.convenience.commands</h1><div class="highlight"><pre>
-<span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
-</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
-</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
-</span><span id="line-5">
-</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">typer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Exit</span><span class="p">,</span> <span class="n">Option</span><span class="p">,</span> <span class="n">Typer</span>
-</span><span id="line-7"><span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
+</span><span id="line-5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+</span><span id="line-6">
+</span><span id="line-7"><span class="kn">from</span><span class="w"> </span><span class="nn">typer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Exit</span><span class="p">,</span> <span class="n">Option</span><span class="p">,</span> <span class="n">Typer</span>
 </span><span id="line-8">
 </span><span id="line-9"><span class="kn">from</span><span class="w"> </span><span class="nn">..client</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorRemoteXMLRPCClient</span>
 </span><span id="line-10"><span class="kn">from</span><span class="w"> </span><span class="nn">..config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorConvenienceConfiguration</span>
@@ -202,16 +202,16 @@
 </span><span id="line-13"><span class="n">log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </span><span id="line-14">
 </span><span id="line-15"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="line-16">    <span class="s2">&quot;write_supervisor_config&quot;</span><span class="p">,</span>
-</span><span id="line-17">    <span class="s2">&quot;start_supervisor&quot;</span><span class="p">,</span>
-</span><span id="line-18">    <span class="s2">&quot;start_programs&quot;</span><span class="p">,</span>
-</span><span id="line-19">    <span class="s2">&quot;check_programs&quot;</span><span class="p">,</span>
-</span><span id="line-20">    <span class="s2">&quot;stop_programs&quot;</span><span class="p">,</span>
-</span><span id="line-21">    <span class="s2">&quot;restart_programs&quot;</span><span class="p">,</span>
-</span><span id="line-22">    <span class="s2">&quot;stop_supervisor&quot;</span><span class="p">,</span>
-</span><span id="line-23">    <span class="s2">&quot;kill_supervisor&quot;</span><span class="p">,</span>
-</span><span id="line-24">    <span class="s2">&quot;remove_supervisor_config&quot;</span><span class="p">,</span>
-</span><span id="line-25">    <span class="s2">&quot;main&quot;</span><span class="p">,</span>
+</span><span id="line-16">    <span class="s2">&quot;check_programs&quot;</span><span class="p">,</span>
+</span><span id="line-17">    <span class="s2">&quot;kill_supervisor&quot;</span><span class="p">,</span>
+</span><span id="line-18">    <span class="s2">&quot;main&quot;</span><span class="p">,</span>
+</span><span id="line-19">    <span class="s2">&quot;remove_supervisor_config&quot;</span><span class="p">,</span>
+</span><span id="line-20">    <span class="s2">&quot;restart_programs&quot;</span><span class="p">,</span>
+</span><span id="line-21">    <span class="s2">&quot;start_programs&quot;</span><span class="p">,</span>
+</span><span id="line-22">    <span class="s2">&quot;start_supervisor&quot;</span><span class="p">,</span>
+</span><span id="line-23">    <span class="s2">&quot;stop_programs&quot;</span><span class="p">,</span>
+</span><span id="line-24">    <span class="s2">&quot;stop_supervisor&quot;</span><span class="p">,</span>
+</span><span id="line-25">    <span class="s2">&quot;write_supervisor_config&quot;</span><span class="p">,</span>
 </span><span id="line-26"><span class="p">)</span>
 </span><span id="line-27">
 </span><span id="line-28">
@@ -251,7 +251,7 @@
 </span><span id="line-62">    <span class="k">return</span> <span class="kc">False</span>
 </span><span id="line-63">
 </span><span id="line-64">
-</span><span id="line-65"><span class="k">def</span><span class="w"> </span><span class="nf">_wait_or_while</span><span class="p">(</span><span class="n">until</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">unless</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="line-65"><span class="k">def</span><span class="w"> </span><span class="nf">_wait_or_while</span><span class="p">(</span><span class="n">until</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">unless</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span id="line-66">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
 </span><span id="line-67">    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timeout</span><span class="p">):</span>
 </span><span id="line-68">        <span class="k">if</span> <span class="n">until</span><span class="p">():</span>
@@ -271,7 +271,7 @@
 </span><span id="line-82">    <span class="k">return</span> <span class="n">val</span>
 </span><span id="line-83">
 </span><span id="line-84">
-</span><span id="line-85"><span class="k">def</span><span class="w"> </span><span class="nf">_load_or_pass</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">:</span>
+</span><span id="line-85"><span class="k">def</span><span class="w"> </span><span class="nf">_load_or_pass</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">:</span>
 </span><span id="line-86">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
 </span><span id="line-87">        <span class="n">cfg</span> <span class="o">=</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
 </span><span id="line-88">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>

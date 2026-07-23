@@ -6,7 +6,7 @@ Bases: `_BaseCfgModel`
 
 #### to_cfg(key: str) → str
 
-#### *field* programs *: List[str]* *[Required]*
+#### *field* programs *: list[str]* *[Required]*
 
 A comma-separated list of program names. The programs which are listed become members of the group.
 

@@ -10,4 +10,4 @@ Bases: `_BaseCfgModel`
 
 pkg_resources “entry point” dotted name to your RPC interface’s factory function.
 
-#### *field* kwargs *: Dict[str, Any] | None* *= None*
+#### *field* kwargs *: dict[str, Any] | None* *= None*

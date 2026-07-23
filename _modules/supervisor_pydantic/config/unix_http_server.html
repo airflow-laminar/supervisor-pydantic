@@ -188,39 +188,38 @@
     <div id="content" role="main">
       <h1>Source code for supervisor_pydantic.config.unix_http_server</h1><div class="highlight"><pre>
 <span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
-</span><span id="line-3">
-</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">SecretStr</span><span class="p">,</span> <span class="n">field_serializer</span>
-</span><span id="line-5">
-</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Octal</span><span class="p">,</span> <span class="n">UnixUserName</span><span class="p">,</span> <span class="n">UnixUserNameOrGroup</span><span class="p">,</span> <span class="n">_BaseCfgModel</span>
-</span><span id="line-7">
-</span><span id="line-8"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;UnixHttpServerConfiguration&quot;</span><span class="p">,)</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">SecretStr</span><span class="p">,</span> <span class="n">field_serializer</span>
+</span><span id="line-4">
+</span><span id="line-5"><span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Octal</span><span class="p">,</span> <span class="n">UnixUserName</span><span class="p">,</span> <span class="n">UnixUserNameOrGroup</span><span class="p">,</span> <span class="n">_BaseCfgModel</span>
+</span><span id="line-6">
+</span><span id="line-7"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;UnixHttpServerConfiguration&quot;</span><span class="p">,)</span>
+</span><span id="line-8">
 </span><span id="line-9">
-</span><span id="line-10">
 <div class="viewcode-block" id="UnixHttpServerConfiguration">
 <a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.UnixHttpServerConfiguration.html#supervisor_pydantic.UnixHttpServerConfiguration">[docs]</a>
-</span><span id="line-11"><span class="k">class</span><span class="w"> </span><span class="nc">UnixHttpServerConfiguration</span><span class="p">(</span><span class="n">_BaseCfgModel</span><span class="p">):</span>
-</span><span id="line-12">    <span class="n">file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span id="line-13">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="line-14">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A path to a UNIX domain socket on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl uses XML-RPC to communicate with supervisord over this port. This option can include the value </span><span class="si">%(here)s</span><span class="s2">, which expands to the directory in which the supervisord configuration file was found.&quot;</span><span class="p">,</span>
-</span><span id="line-15">    <span class="p">)</span>
-</span><span id="line-16">    <span class="n">chmod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Octal</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span id="line-17">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="line-18">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Change the UNIX permission mode bits of the UNIX domain socket to this value at startup.&quot;</span><span class="p">,</span>
-</span><span id="line-19">    <span class="p">)</span>
-</span><span id="line-20">    <span class="n">chown</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnixUserNameOrGroup</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span id="line-21">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="line-22">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Change the user and group of the socket file to this value. May be a UNIX username (e.g. chrism) or a UNIX username and group separated by a colon (e.g. chrism:wheel).&quot;</span><span class="p">,</span>
-</span><span id="line-23">    <span class="p">)</span>
-</span><span id="line-24">    <span class="n">username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnixUserName</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The username required for authentication to this HTTP server.&quot;</span><span class="p">)</span>
-</span><span id="line-25">    <span class="n">password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SecretStr</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span id="line-26">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="line-27">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The password required for authentication to this HTTP server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string </span><span class="si">{SHA}</span><span class="s2">. For example, </span><span class="si">{SHA}</span><span class="s2">82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.&quot;</span><span class="p">,</span>
-</span><span id="line-28">    <span class="p">)</span>
-</span><span id="line-29">
-</span><span id="line-30">    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
-</span><span id="line-31">    <span class="k">def</span><span class="w"> </span><span class="nf">_dump_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-</span><span id="line-32">        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="k">else</span> <span class="kc">None</span></div>
+</span><span id="line-10"><span class="k">class</span><span class="w"> </span><span class="nc">UnixHttpServerConfiguration</span><span class="p">(</span><span class="n">_BaseCfgModel</span><span class="p">):</span>
+</span><span id="line-11">    <span class="n">file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span id="line-12">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="line-13">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A path to a UNIX domain socket on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl uses XML-RPC to communicate with supervisord over this port. This option can include the value </span><span class="si">%(here)s</span><span class="s2">, which expands to the directory in which the supervisord configuration file was found.&quot;</span><span class="p">,</span>
+</span><span id="line-14">    <span class="p">)</span>
+</span><span id="line-15">    <span class="n">chmod</span><span class="p">:</span> <span class="n">Octal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span id="line-16">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="line-17">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Change the UNIX permission mode bits of the UNIX domain socket to this value at startup.&quot;</span><span class="p">,</span>
+</span><span id="line-18">    <span class="p">)</span>
+</span><span id="line-19">    <span class="n">chown</span><span class="p">:</span> <span class="n">UnixUserNameOrGroup</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span id="line-20">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="line-21">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Change the user and group of the socket file to this value. May be a UNIX username (e.g. chrism) or a UNIX username and group separated by a colon (e.g. chrism:wheel).&quot;</span><span class="p">,</span>
+</span><span id="line-22">    <span class="p">)</span>
+</span><span id="line-23">    <span class="n">username</span><span class="p">:</span> <span class="n">UnixUserName</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The username required for authentication to this HTTP server.&quot;</span><span class="p">)</span>
+</span><span id="line-24">    <span class="n">password</span><span class="p">:</span> <span class="n">SecretStr</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span id="line-25">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="line-26">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The password required for authentication to this HTTP server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string </span><span class="si">{SHA}</span><span class="s2">. For example, </span><span class="si">{SHA}</span><span class="s2">82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.&quot;</span><span class="p">,</span>
+</span><span id="line-27">    <span class="p">)</span>
+</span><span id="line-28">
+</span><span id="line-29">    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+</span><span id="line-30">    <span class="k">def</span><span class="w"> </span><span class="nf">_dump_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+</span><span id="line-31">        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">get_secret_value</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 </span></code></pre></div>
     </div></div>
