@@ -1,13 +1,12 @@
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
 from xmlrpc.client import Fault, ServerProxy
 
 from pydantic import BaseModel
 
 from ..config import SupervisorConvenienceConfiguration
 
-__all__ = ("SupervisorRemoteXMLRPCClient", "ProcessState", "SupervisorState", "SupervisorMethodResult", "ProcessInfo")
+__all__ = ("ProcessInfo", "ProcessState", "SupervisorMethodResult", "SupervisorRemoteXMLRPCClient", "SupervisorState")
 
 
 class ProcessState(Enum):
@@ -105,7 +104,7 @@ class ProcessInfo(BaseModel):
         )
 
 
-class SupervisorRemoteXMLRPCClient(object):
+class SupervisorRemoteXMLRPCClient:
     """A light wrapper over the supervisor xmlrpc api: http://supervisord.org/api.html"""
 
     def __init__(self, cfg: SupervisorConvenienceConfiguration):
@@ -117,7 +116,7 @@ class SupervisorRemoteXMLRPCClient(object):
         self._rpcurl = self._build_rpcurl(username=cfg.username, password=cfg.password)
         self._client = ServerProxy(self._rpcurl)
 
-    def _build_rpcurl(self, username: Optional[str], password: Optional[str]) -> str:
+    def _build_rpcurl(self, username: str | None, password: str | None) -> str:
         # Forces http or https based on port, otherwise resolves to given protocol
         protocol = {80: "http", 443: "https"}.get(self._port, self._protocol)
         port = "" if self._port in {80, 443} else f":{self._port}"
@@ -127,7 +126,7 @@ class SupervisorRemoteXMLRPCClient(object):
     #######################
     # supervisord methods #
     #######################
-    def getAllProcessInfo(self) -> List[ProcessInfo]:
+    def getAllProcessInfo(self) -> list[ProcessInfo]:
         return [ProcessInfo(**_) for _ in self._client.supervisor.getAllProcessInfo()]
 
     def getState(self) -> SupervisorState:
@@ -169,7 +168,7 @@ class SupervisorRemoteXMLRPCClient(object):
     def readProcessStdoutLog(self, name: str):
         return self._client.supervisor.readProcessStdoutLog()
 
-    def startAllProcesses(self) -> Dict[str, ProcessInfo]:
+    def startAllProcesses(self) -> dict[str, ProcessInfo]:
         # start all
         self._client.supervisor.startAllProcesses()
         return {name: self.getProcessInfo(name) for name in self._cfg.program}
@@ -185,10 +184,10 @@ class SupervisorRemoteXMLRPCClient(object):
                 return self.getProcessInfo(name)
             if f.faultCode == SupervisorMethodResult.SPAWN_ERROR.value:
                 return self.getProcessInfo(name)
-            raise f
+            raise
         return self.getProcessInfo(name)
 
-    def stopAllProcesses(self) -> Dict[str, ProcessInfo]:
+    def stopAllProcesses(self) -> dict[str, ProcessInfo]:
         # start all
         self._client.supervisor.stopAllProcesses()
         return {name: self.getProcessInfo(name) for name in self._cfg.program}
@@ -205,7 +204,7 @@ class SupervisorRemoteXMLRPCClient(object):
         except Fault as f:
             if f.faultCode == SupervisorMethodResult.NOT_RUNNING.value:
                 return self._getProcessInfoInternal(name)
-            raise f
+            raise
         return self._getProcessInfoInternal(name)
 
     def reloadConfig(self, start_new: bool = False) -> SupervisorState:

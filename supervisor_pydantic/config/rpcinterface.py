@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import Field
 
@@ -16,4 +16,4 @@ class RpcInterfaceConfiguration(_BaseCfgModel):
         default="supervisor.rpcinterface:make_main_rpcinterface",
         description="pkg_resources “entry point” dotted name to your RPC interface’s factory function.",
     )
-    kwargs: Optional[Dict[str, Any]] = Field(default=None)  # TODO
+    kwargs: dict[str, Any] | None = Field(default=None)  # TODO

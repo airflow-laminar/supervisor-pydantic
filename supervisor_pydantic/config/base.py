@@ -1,10 +1,10 @@
 import re
+from collections.abc import Callable
 from json import loads
-from typing import Callable, Literal, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel
 from pydantic.functional_validators import AfterValidator, BeforeValidator
-from typing_extensions import Annotated
 
 _un_regex = re.compile(r"^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$")
 _snake_regex = re.compile(r"(?<!^)(?=[A-Z])")
@@ -40,7 +40,7 @@ def _is_host_port(v: str) -> str:
     return v
 
 
-def _convert_to_host_port(v: Union[str, int]) -> str:
+def _convert_to_host_port(v: str | int) -> str:
     if isinstance(v, int):
         v = f"*:{v}"
     return v

@@ -29,6 +29,7 @@ def _supervisord_available() -> bool:
         result = subprocess.run(
             ["supervisord", "--version"],
             capture_output=True,
+            check=False,
             timeout=5,
         )
         return result.returncode == 0

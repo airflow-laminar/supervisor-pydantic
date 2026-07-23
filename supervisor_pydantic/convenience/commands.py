@@ -1,10 +1,10 @@
+from collections.abc import Callable
 from logging import getLogger
 from pathlib import Path
 from time import sleep
-from typing import Callable, Optional, Union
+from typing import Annotated
 
 from typer import Argument, Exit, Option, Typer
-from typing_extensions import Annotated
 
 from ..client import SupervisorRemoteXMLRPCClient
 from ..config import SupervisorConvenienceConfiguration
@@ -13,16 +13,16 @@ from .common import SupervisorTaskStep
 log = getLogger(__name__)
 
 __all__ = (
-    "write_supervisor_config",
-    "start_supervisor",
-    "start_programs",
     "check_programs",
-    "stop_programs",
-    "restart_programs",
-    "stop_supervisor",
     "kill_supervisor",
-    "remove_supervisor_config",
     "main",
+    "remove_supervisor_config",
+    "restart_programs",
+    "start_programs",
+    "start_supervisor",
+    "stop_programs",
+    "stop_supervisor",
+    "write_supervisor_config",
 )
 
 
@@ -62,7 +62,7 @@ def _check_running(cfg: SupervisorConvenienceConfiguration) -> bool:
     return False
 
 
-def _wait_or_while(until: Callable, unless: Optional[Callable] = None, timeout: int = 5) -> bool:
+def _wait_or_while(until: Callable, unless: Callable | None = None, timeout: int = 5) -> bool:
     log.info(f"Waiting for {timeout} seconds")
     for _ in range(timeout):
         if until():
@@ -82,7 +82,7 @@ def _raise_or_exit(val: bool, exit: bool):
     return val
 
 
-def _load_or_pass(cfg: Union[str, SupervisorConvenienceConfiguration]) -> SupervisorConvenienceConfiguration:
+def _load_or_pass(cfg: str | SupervisorConvenienceConfiguration) -> SupervisorConvenienceConfiguration:
     if isinstance(cfg, Path):
         cfg = SupervisorConvenienceConfiguration.model_validate_json(cfg.read_text())
     if isinstance(cfg, str):
