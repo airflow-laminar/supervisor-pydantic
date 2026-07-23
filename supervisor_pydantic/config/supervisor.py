@@ -6,7 +6,6 @@ from shutil import rmtree
 from signal import SIGKILL, SIGTERM
 from subprocess import Popen
 from tempfile import gettempdir
-from typing import Dict, Optional
 
 from hydra import compose, initialize_config_dir
 from hydra.utils import instantiate
@@ -59,22 +58,22 @@ class SupervisorConfiguration(BaseModel):
         return ret
 
     # supervisor setup
-    unix_http_server: Optional[UnixHttpServerConfiguration] = Field(default=None)
-    inet_http_server: Optional[InetHttpServerConfiguration] = Field(default=None)
+    unix_http_server: UnixHttpServerConfiguration | None = Field(default=None)
+    inet_http_server: InetHttpServerConfiguration | None = Field(default=None)
     supervisord: SupervisordConfiguration = Field(default=SupervisordConfiguration())
     supervisorctl: SupervisorctlConfiguration = Field(default=SupervisorctlConfiguration())
-    include: Optional[IncludeConfiguration] = Field(default=None)
+    include: IncludeConfiguration | None = Field(default=None)
 
-    program: Dict[str, ProgramConfiguration]
-    group: Optional[Dict[str, GroupConfiguration]] = Field(default=None)
+    program: dict[str, ProgramConfiguration]
+    group: dict[str, GroupConfiguration] | None = Field(default=None)
 
-    fcgiprogram: Optional[Dict[str, FcgiProgramConfiguration]] = Field(default=None)
-    eventlistener: Optional[Dict[str, EventListenerConfiguration]] = Field(default=None)
-    rpcinterface: Optional[Dict[str, RpcInterfaceConfiguration]] = Field(default=None)
+    fcgiprogram: dict[str, FcgiProgramConfiguration] | None = Field(default=None)
+    eventlistener: dict[str, EventListenerConfiguration] | None = Field(default=None)
+    rpcinterface: dict[str, RpcInterfaceConfiguration] | None = Field(default=None)
 
     # other configuration
-    config_path: Optional[Path] = Field(default="supervisord.conf", description="Path to supervisor configuration file, relative to `working_dir`")
-    working_dir: Optional[Path] = Field(default="", description="Path to supervisor working directory")
+    config_path: Path | None = Field(default="supervisord.conf", description="Path to supervisor configuration file, relative to `working_dir`")
+    working_dir: Path | None = Field(default="", description="Path to supervisor working directory")
 
     @model_validator(mode="after")
     def _setup_config_and_working_dir(self):
@@ -142,7 +141,7 @@ class SupervisorConfiguration(BaseModel):
         cls: "SupervisorConfiguration",
         config_dir: str = "config",
         config_name: str = "",
-        overrides: Optional[list[str]] = None,
+        overrides: list[str] | None = None,
         *,
         basepath: str = "",
         _offset: int = 3,
@@ -195,9 +194,9 @@ class SupervisorConfiguration(BaseModel):
         _log.info(f"Starting supervisord: {self.config_path}")
         if not self.running():
             if daemon is False:
-                Popen(f"supervisord -n -c {str(self.config_path)}", shell=True)
+                Popen(f"supervisord -n -c {self.config_path!s}", shell=True)
                 return
-            Popen(f"supervisord -c {str(self.config_path)}", close_fds=True, shell=True)
+            Popen(f"supervisord -c {self.config_path!s}", close_fds=True, shell=True)
 
     def running(self):
         # grab the pidfile, find the process with the pid, and kill

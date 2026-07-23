@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from supervisor_pydantic.client import ProcessInfo, ProcessState
 
@@ -9,9 +9,9 @@ def _gen() -> ProcessInfo:
         group="test",
         state=ProcessState.UNKNOWN,
         description="",
-        start=datetime.now(),
-        stop=datetime.now(),
-        now=datetime.now(),
+        start=datetime.now(UTC),
+        stop=datetime.now(UTC),
+        now=datetime.now(UTC),
         spawner="",
         exitstatus=0,
         logfile="",

@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from pydantic import Field, field_serializer, field_validator
 
 from .base import EventType
@@ -13,15 +11,15 @@ class EventListenerConfiguration(ProgramConfiguration):
         # Overload to require key
         return super().to_cfg(key=key).replace("[event_listener", "[eventlistener")
 
-    buffer_size: Optional[int] = Field(
+    buffer_size: int | None = Field(
         default=None,
         description="The event listener pool’s event queue buffer size. When a listener pool’s event buffer is overflowed (as can happen when an event listener pool cannot keep up with all of the events sent to it), the oldest event in the buffer is discarded.",
     )
-    events: Optional[List[EventType]] = Field(
+    events: list[EventType] | None = Field(
         default=None,
         description="A comma-separated list of event type names that this listener is “interested” in receiving notifications for (see Event Types for a list of valid event type names).",
     )
-    result_handler: Optional[str] = Field(
+    result_handler: str | None = Field(
         default=None,
         description="A pkg_resources entry point string that resolves to a Python callable. The default value is supervisor.dispatchers:default_handler. Specifying an alternate result handler is a very uncommon thing to need to do, and as a result, how to create one is not documented.",
     )

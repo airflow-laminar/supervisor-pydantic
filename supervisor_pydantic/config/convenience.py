@@ -1,6 +1,5 @@
 from logging import getLogger
 from pathlib import Path
-from typing import List, Optional
 
 from pydantic import Field, PrivateAttr, SecretStr, field_serializer, field_validator, model_validator
 
@@ -24,31 +23,31 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
     ############
     # autostart = False
     # autorestart = False
-    startsecs: Optional[int] = Field(
+    startsecs: int | None = Field(
         default=1,
         description="The total number of seconds which the program needs to stay running after a startup to consider the start successful (moving the process from the STARTING state to the RUNNING state). Set to 0 to indicate that the program needn’t stay running for any particular amount of time. Even if a process exits with an “expected” exit code (see exitcodes), the start will still be considered a failure if the process exits quicker than startsecs.",
     )
-    startretries: Optional[int] = Field(
+    startretries: int | None = Field(
         default=None,
         description="The number of serial failure attempts that supervisord will allow when attempting to start the program before giving up and putting the process into an FATAL state. After each failed restart, process will be put in BACKOFF state and each retry attempt will take increasingly more time.",
     )
-    exitcodes: Optional[List[int]] = Field(
+    exitcodes: list[int] | None = Field(
         default=[0],
         description="The list of “expected” exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.",
     )
-    stopsignal: Optional[Signal] = Field(
+    stopsignal: Signal | None = Field(
         default="TERM",
         description="The signal used to kill the program when a stop is requested. This can be specified using the signal’s name or its number. It is normally one of: TERM, HUP, INT, QUIT, KILL, USR1, or USR2.",
     )
-    stopwaitsecs: Optional[int] = Field(
+    stopwaitsecs: int | None = Field(
         default=30,
         description="The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.",
     )
-    stopasgroup: Optional[bool] = Field(
+    stopasgroup: bool | None = Field(
         default=True,
         description="If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.",
     )
-    killasgroup: Optional[bool] = Field(
+    killasgroup: bool | None = Field(
         default=True,
         description="If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.",
     )
@@ -61,8 +60,8 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
         default="*:9001",
         description="A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl will use XML-RPC to communicate with supervisord over this port. To listen on all interfaces in the machine, use :9001 or *:9001. Please read the security warning above.",
     )
-    username: Optional[UnixUserName] = Field(default=None, description="The username required for authentication to the HTTP/Unix Server.")
-    password: Optional[SecretStr] = Field(
+    username: UnixUserName | None = Field(default=None, description="The username required for authentication to the HTTP/Unix Server.")
+    password: SecretStr | None = Field(
         default=None,
         description="The password required for authentication to the HTTP/Unix server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.",
     )
@@ -78,7 +77,7 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
     #########
     # Other #
     #########
-    local_or_remote: Optional[SupervisorLocation] = Field(
+    local_or_remote: SupervisorLocation | None = Field(
         default="local",
         description="Location of supervisor, either local for same-machine or remote. If same-machine, communicates via Unix sockets by default, if remote, communicates via inet http server",
     )

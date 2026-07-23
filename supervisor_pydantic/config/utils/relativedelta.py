@@ -1,6 +1,6 @@
 # https://github.com/jrdnh
 # Pydantic-compatible wrapper for dateutil.relativedelta.relativedelta
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 from dateutil.relativedelta import relativedelta, weekday
 from pydantic import BaseModel, Field, model_serializer, model_validator
@@ -45,12 +45,12 @@ class RelativeDeltaAnnotation(BaseModel):
     year: int | None = None
     # recommended way to avoid potential errors for compound types with constraints
     # https://docs.pydantic.dev/dev/concepts/fields/#numeric-constraints
-    month: Optional[Annotated[int, Field(ge=1, le=12)]] = None
-    day: Optional[Annotated[int, Field(ge=0, le=31)]] = None
-    hour: Optional[Annotated[int, Field(ge=0, le=23)]] = None
-    minute: Optional[Annotated[int, Field(ge=0, le=59)]] = None
-    second: Optional[Annotated[int, Field(ge=0, le=59)]] = None
-    microsecond: Optional[Annotated[int, Field(ge=0, le=999999)]] = None
+    month: Annotated[int, Field(ge=1, le=12)] | None = None
+    day: Annotated[int, Field(ge=0, le=31)] | None = None
+    hour: Annotated[int, Field(ge=0, le=23)] | None = None
+    minute: Annotated[int, Field(ge=0, le=59)] | None = None
+    second: Annotated[int, Field(ge=0, le=59)] | None = None
+    microsecond: Annotated[int, Field(ge=0, le=999999)] | None = None
     weekday: Weekday | None = None
     leapdays: int | None = None
     # validation only fields

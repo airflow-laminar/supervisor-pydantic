@@ -1,9 +1,9 @@
 import shutil
 import socket
 import subprocess
+from collections.abc import Iterator
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from time import sleep
-from typing import Iterator
 
 import pytest
 from pytest import fixture
@@ -19,6 +19,7 @@ def _supervisord_available() -> bool:
         result = subprocess.run(
             ["supervisord", "--version"],
             capture_output=True,
+            check=False,
             timeout=5,
         )
         return result.returncode == 0
@@ -35,7 +36,7 @@ def _wait_for_server_ready(port: int, timeout: int = 10) -> bool:
             s.connect(("127.0.0.1", port))
             s.close()
             return True
-        except (ConnectionRefusedError, socket.timeout, OSError):
+        except (TimeoutError, ConnectionRefusedError, OSError):
             sleep(0.1)
     return False
 
