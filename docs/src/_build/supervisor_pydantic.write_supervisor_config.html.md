@@ -1,6 +1,6 @@
 # supervisor_pydantic.write_supervisor_config
 
-### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f777416c850>] = True)
+### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f65fa888190>] = True)
 
 Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
 
