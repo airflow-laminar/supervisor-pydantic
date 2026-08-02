@@ -1,6 +1,6 @@
 # supervisor_pydantic.stop_programs
 
-### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca172210>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca1722d0>] = True)
+### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b81f90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82050>] = True)
 
 Stop all programs in the supervisor instance
 

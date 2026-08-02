@@ -48,6 +48,8 @@ Published documentation is available at
 #### NOTE
 This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).
 
+> Install the [Python Templates Copier Update GitHub App](https://github.com/apps/python-templates-copier-update) to receive weekly template update pull requests.
+
 
 # api.html.md
 
@@ -945,7 +947,7 @@ The password required for authentication to this HTTP server. This can be a clea
 
 # supervisor_pydantic.check_programs
 
-### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca172090>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca172150>] = True)
+### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b81e10>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b81ed0>] = True)
 
 Check if programs are in a good state.
 
@@ -959,7 +961,7 @@ Check if programs are in a good state.
 
 # supervisor_pydantic.kill_supervisor
 
-### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca1726d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca172790>] = True)
+### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b82450>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82510>] = True)
 
 Kill the supervisor instance with os.kill
 
@@ -985,7 +987,7 @@ Kill the supervisor instance with os.kill
 
 # supervisor_pydantic.remove_supervisor_config
 
-### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca172850>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca172910>] = True)
+### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b825d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82690>] = True)
 
 Remove the supervisor config file and working directory
 
@@ -997,7 +999,7 @@ Remove the supervisor config file and working directory
 
 # supervisor_pydantic.restart_programs
 
-### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca172390>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca172450>] = True)
+### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b82110>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b821d0>] = True)
 
 Restart all programs in the supervisor instance
 
@@ -1010,7 +1012,7 @@ Restart all programs in the supervisor instance
 
 # supervisor_pydantic.start_programs
 
-### supervisor_pydantic.start_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca297210>] = PosixPath('pydantic.json'), restart: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca171f90>] = True)
+### supervisor_pydantic.start_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31c9b110>] = PosixPath('pydantic.json'), restart: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b81d10>] = True)
 
 Start all programs in the supervisor instance
 
@@ -1023,7 +1025,7 @@ Start all programs in the supervisor instance
 
 # supervisor_pydantic.start_supervisor
 
-### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca4ce190>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca295dd0>] = True)
+### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31eeae90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31c99c50>] = True)
 
 Start a supervisor instance using supervisord in background
 
@@ -1035,7 +1037,7 @@ Start a supervisor instance using supervisord in background
 
 # supervisor_pydantic.stop_programs
 
-### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca172210>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca1722d0>] = True)
+### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b81f90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82050>] = True)
 
 Stop all programs in the supervisor instance
 
@@ -1047,7 +1049,7 @@ Stop all programs in the supervisor instance
 
 # supervisor_pydantic.stop_supervisor
 
-### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fe3ca172550>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca172610>] = True)
+### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b822d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82390>] = True)
 
 Stop the supervisor instance
 
@@ -1059,7 +1061,7 @@ Stop the supervisor instance
 
 # supervisor_pydantic.write_supervisor_config
 
-### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fe3ca295f10>] = True)
+### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31c99d90>] = True)
 
 Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
 
