@@ -2,45 +2,42 @@
 
 > Pydantic models and lifecycle tools for supervisord
 
-
-the supervisor-pydantic authors
-
 ## Pages
 
 - [supervisor-pydantic](index.html.md): Typed, YAML-friendly models and lifecycle tools for supervisord.
-- [API reference](docs/src/api.html.md): | [`SupervisorConfiguration`](_build/supervisor_pydantic.SupervisorConfiguration.md#supervisor_pydan...
-- [Why the convenience layer exists](docs/src/explanation.html.md): `SupervisorConfiguration` mirrors supervisord’s native configuration structure.
+- [Tutorial: render a supervisord configuration](docs/src/tutorial.html.md): In this tutorial, we will model one worker process, render its supervisord configuration, and write the files to a temporary directory.
 - [How-to guides](docs/src/how-to.html.md): These guides cover configuration loading, process control, and integrations.
-- [supervisor_pydantic.EventListenerConfiguration](docs/src/_build/supervisor_pydantic.EventListenerConfiguration.html.md): Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.Prog...
-- [supervisor_pydantic.FcgiProgramConfiguration](docs/src/_build/supervisor_pydantic.FcgiProgramConfiguration.html.md): Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.Prog...
-- [supervisor_pydantic.GroupConfiguration](docs/src/_build/supervisor_pydantic.GroupConfiguration.html.md): Bases: `_BaseCfgModel`
-- [supervisor_pydantic.IncludeConfiguration](docs/src/_build/supervisor_pydantic.IncludeConfiguration.html.md): Bases: `_BaseCfgModel`
-- [supervisor_pydantic.InetHttpServerConfiguration](docs/src/_build/supervisor_pydantic.InetHttpServerConfiguration.html.md): Bases: `_BaseCfgModel`
-- [supervisor_pydantic.ProcessInfo](docs/src/_build/supervisor_pydantic.ProcessInfo.html.md): Bases: `BaseModel`
-- [supervisor_pydantic.ProcessState](docs/src/_build/supervisor_pydantic.ProcessState.html.md): Bases: `Enum`
-- [supervisor_pydantic.ProgramConfiguration](docs/src/_build/supervisor_pydantic.ProgramConfiguration.html.md): Bases: `_BaseCfgModel`
-- [supervisor_pydantic.RpcInterfaceConfiguration](docs/src/_build/supervisor_pydantic.RpcInterfaceConfiguration.html.md): Bases: `_BaseCfgModel`
-- [supervisor_pydantic.SupervisorConfiguration](docs/src/_build/supervisor_pydantic.SupervisorConfiguration.html.md): Bases: `BaseModel`
-- [supervisor_pydantic.SupervisorConvenienceConfiguration](docs/src/_build/supervisor_pydantic.SupervisorConvenienceConfiguration.html.md): Bases: [`SupervisorConfiguration`](supervisor_pydantic.SupervisorConfiguration.md#supervisor_pydanti...
-- [supervisor_pydantic.SupervisorMethodResult](docs/src/_build/supervisor_pydantic.SupervisorMethodResult.html.md): Bases: `Enum`
-- [supervisor_pydantic.SupervisorRemoteXMLRPCClient](docs/src/_build/supervisor_pydantic.SupervisorRemoteXMLRPCClient.html.md): Bases: `object`
-- [supervisor_pydantic.SupervisorState](docs/src/_build/supervisor_pydantic.SupervisorState.html.md): Bases: `Enum`
-- [supervisor_pydantic.SupervisorctlConfiguration](docs/src/_build/supervisor_pydantic.SupervisorctlConfiguration.html.md): Bases: `_BaseCfgModel`
-- [supervisor_pydantic.SupervisordConfiguration](docs/src/_build/supervisor_pydantic.SupervisordConfiguration.html.md): Bases: `_BaseCfgModel`
-- [supervisor_pydantic.UnixHttpServerConfiguration](docs/src/_build/supervisor_pydantic.UnixHttpServerConfiguration.html.md): Bases: `_BaseCfgModel`
-- [supervisor_pydantic.check_programs](docs/src/_build/supervisor_pydantic.check_programs.html.md): Check if programs are in a good state.
-- [supervisor_pydantic.kill_supervisor](docs/src/_build/supervisor_pydantic.kill_supervisor.html.md): Kill the supervisor instance with os.kill
-- [supervisor_pydantic.load_config](docs/src/_build/supervisor_pydantic.load_config.html.md): Page content
-- [supervisor_pydantic.load_convenience_config](docs/src/_build/supervisor_pydantic.load_convenience_config.html.md): Page content
-- [supervisor_pydantic.remove_supervisor_config](docs/src/_build/supervisor_pydantic.remove_supervisor_config.html.md): Remove the supervisor config file and working directory
-- [supervisor_pydantic.restart_programs](docs/src/_build/supervisor_pydantic.restart_programs.html.md): Restart all programs in the supervisor instance
-- [supervisor_pydantic.start_programs](docs/src/_build/supervisor_pydantic.start_programs.html.md): Start all programs in the supervisor instance
+- [Why the convenience layer exists](docs/src/explanation.html.md): SupervisorConfiguration mirrors supervisord’s native configuration structure. It is appropriate when every section and directive should be selected directly....
+- [API reference](docs/src/api.html.md): SupervisorConfiguration
+- [supervisor_pydantic.SupervisorConfiguration](docs/src/_build/supervisor_pydantic.SupervisorConfiguration.html.md): Bases: BaseModel
+- [supervisor_pydantic.SupervisorConvenienceConfiguration](docs/src/_build/supervisor_pydantic.SupervisorConvenienceConfiguration.html.md): Bases: SupervisorConfiguration
+- [supervisor_pydantic.SupervisordConfiguration](docs/src/_build/supervisor_pydantic.SupervisordConfiguration.html.md): Bases: _BaseCfgModel
+- [supervisor_pydantic.SupervisorctlConfiguration](docs/src/_build/supervisor_pydantic.SupervisorctlConfiguration.html.md): Bases: _BaseCfgModel
+- [supervisor_pydantic.ProgramConfiguration](docs/src/_build/supervisor_pydantic.ProgramConfiguration.html.md): Bases: _BaseCfgModel
+- [supervisor_pydantic.EventListenerConfiguration](docs/src/_build/supervisor_pydantic.EventListenerConfiguration.html.md): Bases: ProgramConfiguration
+- [supervisor_pydantic.FcgiProgramConfiguration](docs/src/_build/supervisor_pydantic.FcgiProgramConfiguration.html.md): Bases: ProgramConfiguration
+- [supervisor_pydantic.GroupConfiguration](docs/src/_build/supervisor_pydantic.GroupConfiguration.html.md): Bases: _BaseCfgModel
+- [supervisor_pydantic.IncludeConfiguration](docs/src/_build/supervisor_pydantic.IncludeConfiguration.html.md): Bases: _BaseCfgModel
+- [supervisor_pydantic.InetHttpServerConfiguration](docs/src/_build/supervisor_pydantic.InetHttpServerConfiguration.html.md): Bases: _BaseCfgModel
+- [supervisor_pydantic.RpcInterfaceConfiguration](docs/src/_build/supervisor_pydantic.RpcInterfaceConfiguration.html.md): Bases: _BaseCfgModel
+- [supervisor_pydantic.UnixHttpServerConfiguration](docs/src/_build/supervisor_pydantic.UnixHttpServerConfiguration.html.md): Bases: _BaseCfgModel
+- [supervisor_pydantic.load_config](docs/src/_build/supervisor_pydantic.load_config.html.md): Documentation page.
+- [supervisor_pydantic.load_convenience_config](docs/src/_build/supervisor_pydantic.load_convenience_config.html.md): Documentation page.
+- [supervisor_pydantic.SupervisorRemoteXMLRPCClient](docs/src/_build/supervisor_pydantic.SupervisorRemoteXMLRPCClient.html.md): Bases: object
+- [supervisor_pydantic.ProcessInfo](docs/src/_build/supervisor_pydantic.ProcessInfo.html.md): Bases: BaseModel
+- [supervisor_pydantic.ProcessState](docs/src/_build/supervisor_pydantic.ProcessState.html.md): Bases: Enum
+- [supervisor_pydantic.SupervisorState](docs/src/_build/supervisor_pydantic.SupervisorState.html.md): Bases: Enum
+- [supervisor_pydantic.SupervisorMethodResult](docs/src/_build/supervisor_pydantic.SupervisorMethodResult.html.md): Bases: Enum
+- [supervisor_pydantic.write_supervisor_config](docs/src/_build/supervisor_pydantic.write_supervisor_config.html.md): Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
 - [supervisor_pydantic.start_supervisor](docs/src/_build/supervisor_pydantic.start_supervisor.html.md): Start a supervisor instance using supervisord in background
+- [supervisor_pydantic.start_programs](docs/src/_build/supervisor_pydantic.start_programs.html.md): Start all programs in the supervisor instance
+- [supervisor_pydantic.check_programs](docs/src/_build/supervisor_pydantic.check_programs.html.md): Check if programs are in a good state.
+- [supervisor_pydantic.restart_programs](docs/src/_build/supervisor_pydantic.restart_programs.html.md): Restart all programs in the supervisor instance
 - [supervisor_pydantic.stop_programs](docs/src/_build/supervisor_pydantic.stop_programs.html.md): Stop all programs in the supervisor instance
 - [supervisor_pydantic.stop_supervisor](docs/src/_build/supervisor_pydantic.stop_supervisor.html.md): Stop the supervisor instance
-- [supervisor_pydantic.write_supervisor_config](docs/src/_build/supervisor_pydantic.write_supervisor_config.html.md): Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
-- [Tutorial: render a supervisord configuration](docs/src/tutorial.html.md): In this tutorial, we will model one worker process, render its supervisord
+- [supervisor_pydantic.kill_supervisor](docs/src/_build/supervisor_pydantic.kill_supervisor.html.md): Kill the supervisor instance with os.kill
+- [supervisor_pydantic.remove_supervisor_config](docs/src/_build/supervisor_pydantic.remove_supervisor_config.html.md): Remove the supervisor config file and working directory
 
----
+## Full documentation
 
-For more comprehensive documentation, see [llms-full.txt](llms-full.txt)
+- [llms-full.txt](llms-full.txt): All pages in one document.

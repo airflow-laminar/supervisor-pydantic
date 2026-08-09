@@ -1,6 +1,6 @@
 # supervisor_pydantic.IncludeConfiguration
 
-### *pydantic model* supervisor_pydantic.IncludeConfiguration
+### *pydantic model* supervisor_pydantic.IncludeConfiguration[[source]](../../../_modules/supervisor_pydantic/config/include.html.md#IncludeConfiguration)
 
 Bases: `_BaseCfgModel`
 

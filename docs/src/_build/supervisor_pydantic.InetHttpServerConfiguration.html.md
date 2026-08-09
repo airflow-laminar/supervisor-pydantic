@@ -1,10 +1,10 @@
 # supervisor_pydantic.InetHttpServerConfiguration
 
-### *pydantic model* supervisor_pydantic.InetHttpServerConfiguration
+### *pydantic model* supervisor_pydantic.InetHttpServerConfiguration[[source]](../../../_modules/supervisor_pydantic/config/inet_http_server.html.md#InetHttpServerConfiguration)
 
 Bases: `_BaseCfgModel`
 
-#### to_cfg() → str
+#### to_cfg() → str[[source]](../../../_modules/supervisor_pydantic/config/inet_http_server.html.md#InetHttpServerConfiguration.to_cfg)
 
 #### *field* port *: Annotated[str, BeforeValidator(func=\_convert_to_host_port, json_schema_input_type=PydanticUndefined), AfterValidator(func=\_is_host_port)] | None* *= None*
 

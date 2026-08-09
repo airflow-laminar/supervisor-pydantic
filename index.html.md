@@ -26,10 +26,10 @@ and provides the `_supervisor_convenience` lifecycle CLI.
 
 ## Documentation
 
-- [Tutorial: render a supervisord configuration](docs/src/tutorial.md)
-- [How-to guides](docs/src/how-to.md)
-- [Why the convenience layer exists](docs/src/explanation.md)
-- [API reference](docs/src/api.md)
+- [Tutorial: render a supervisord configuration](docs/src/tutorial.html.md)
+- [How-to guides](docs/src/how-to.html.md)
+- [Why the convenience layer exists](docs/src/explanation.html.md)
+- [API reference](docs/src/api.html.md)
 
 Published documentation is available at
 [airflow-laminar.github.io/supervisor-pydantic](https://airflow-laminar.github.io/supervisor-pydantic/).
@@ -45,5 +45,3 @@ Published documentation is available at
 
 #### NOTE
 This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).
-
-> Install the [Python Templates Copier Update GitHub App](https://github.com/apps/python-templates-copier-update) to receive weekly template update pull requests.

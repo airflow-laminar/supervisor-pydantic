@@ -1,6 +1,6 @@
 # supervisor_pydantic.SupervisorMethodResult
 
-### *class* supervisor_pydantic.SupervisorMethodResult(value)
+### *class* supervisor_pydantic.SupervisorMethodResult(value)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#SupervisorMethodResult)
 
 Bases: `Enum`
 

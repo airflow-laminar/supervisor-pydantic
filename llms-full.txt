@@ -1,4 +1,4 @@
-# index.html.md
+<!-- index.html.md -->
 
 # supervisor-pydantic
 
@@ -28,10 +28,10 @@ and provides the `_supervisor_convenience` lifecycle CLI.
 
 ## Documentation
 
-- [Tutorial: render a supervisord configuration](docs/src/tutorial.md)
-- [How-to guides](docs/src/how-to.md)
-- [Why the convenience layer exists](docs/src/explanation.md)
-- [API reference](docs/src/api.md)
+- [Tutorial: render a supervisord configuration](docs/src/tutorial.html.md)
+- [How-to guides](docs/src/how-to.html.md)
+- [Why the convenience layer exists](docs/src/explanation.html.md)
+- [API reference](docs/src/api.html.md)
 
 Published documentation is available at
 [airflow-laminar.github.io/supervisor-pydantic](https://airflow-laminar.github.io/supervisor-pydantic/).
@@ -48,97 +48,69 @@ Published documentation is available at
 #### NOTE
 This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).
 
-> Install the [Python Templates Copier Update GitHub App](https://github.com/apps/python-templates-copier-update) to receive weekly template update pull requests.
+<!-- docs/src/tutorial.html.md -->
 
+# Tutorial: render a supervisord configuration
 
-# api.html.md
+In this tutorial, we will model one worker process, render its supervisord
+configuration, and write the files to a temporary directory.
 
-# API reference
+## Install the package
 
-## Configuration models
+```bash
+pip install supervisor-pydantic
+```
 
-| [`SupervisorConfiguration`](_build/supervisor_pydantic.SupervisorConfiguration.md#supervisor_pydantic.SupervisorConfiguration)                                  |                                                                               |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
-| [`SupervisorConvenienceConfiguration`](_build/supervisor_pydantic.SupervisorConvenienceConfiguration.md#supervisor_pydantic.SupervisorConvenienceConfiguration) | Convenience layer, settings that MUST be set when running via convenience API |
-| [`SupervisordConfiguration`](_build/supervisor_pydantic.SupervisordConfiguration.md#supervisor_pydantic.SupervisordConfiguration)                               |                                                                               |
-| [`SupervisorctlConfiguration`](_build/supervisor_pydantic.SupervisorctlConfiguration.md#supervisor_pydantic.SupervisorctlConfiguration)                         |                                                                               |
-| [`ProgramConfiguration`](_build/supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)                                           |                                                                               |
-| [`EventListenerConfiguration`](_build/supervisor_pydantic.EventListenerConfiguration.md#supervisor_pydantic.EventListenerConfiguration)                         |                                                                               |
-| [`FcgiProgramConfiguration`](_build/supervisor_pydantic.FcgiProgramConfiguration.md#supervisor_pydantic.FcgiProgramConfiguration)                               |                                                                               |
-| [`GroupConfiguration`](_build/supervisor_pydantic.GroupConfiguration.md#supervisor_pydantic.GroupConfiguration)                                                 |                                                                               |
-| [`IncludeConfiguration`](_build/supervisor_pydantic.IncludeConfiguration.md#supervisor_pydantic.IncludeConfiguration)                                           |                                                                               |
-| [`InetHttpServerConfiguration`](_build/supervisor_pydantic.InetHttpServerConfiguration.md#supervisor_pydantic.InetHttpServerConfiguration)                      |                                                                               |
-| [`RpcInterfaceConfiguration`](_build/supervisor_pydantic.RpcInterfaceConfiguration.md#supervisor_pydantic.RpcInterfaceConfiguration)                            |                                                                               |
-| [`UnixHttpServerConfiguration`](_build/supervisor_pydantic.UnixHttpServerConfiguration.md#supervisor_pydantic.UnixHttpServerConfiguration)                      |                                                                               |
-| [`load_config`](_build/supervisor_pydantic.load_config.md#supervisor_pydantic.load_config)([config_dir, config_name, ...])                                      |                                                                               |
-| [`load_convenience_config`](_build/supervisor_pydantic.load_convenience_config.md#supervisor_pydantic.load_convenience_config)([config_dir, ...])               |                                                                               |
+## Create the model
 
-## Runtime client
+Create `example.py`:
 
-| [`SupervisorRemoteXMLRPCClient`](_build/supervisor_pydantic.SupervisorRemoteXMLRPCClient.md#supervisor_pydantic.SupervisorRemoteXMLRPCClient)(cfg)   | A light wrapper over the supervisor xmlrpc api: [http://supervisord.org/api.html](http://supervisord.org/api.html)   |
-|------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| [`ProcessInfo`](_build/supervisor_pydantic.ProcessInfo.md#supervisor_pydantic.ProcessInfo)                                                           |                                                                                                                      |
-| [`ProcessState`](_build/supervisor_pydantic.ProcessState.md#supervisor_pydantic.ProcessState)(value)                                                 |                                                                                                                      |
-| [`SupervisorState`](_build/supervisor_pydantic.SupervisorState.md#supervisor_pydantic.SupervisorState)(value)                                        |                                                                                                                      |
-| [`SupervisorMethodResult`](_build/supervisor_pydantic.SupervisorMethodResult.md#supervisor_pydantic.SupervisorMethodResult)(value)                   |                                                                                                                      |
+```python
+from supervisor_pydantic import ProgramConfiguration, SupervisorConvenienceConfiguration
 
-## Convenience operations
+config = SupervisorConvenienceConfiguration(
+    working_dir="/tmp/tutorial-supervisor",
+    port="127.0.0.1:9001",
+    program={
+        "worker": ProgramConfiguration(
+            command="python -m http.server 8080",
+            environment={"MODE": "tutorial"},
+        )
+    },
+)
 
-| [`write_supervisor_config`](_build/supervisor_pydantic.write_supervisor_config.md#supervisor_pydantic.write_supervisor_config)(cfg_json[, \_exit])   | Write a SupervisorConvenienceConfiguration JSON as a supervisor config file   |
-|------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
-| [`start_supervisor`](_build/supervisor_pydantic.start_supervisor.md#supervisor_pydantic.start_supervisor)([cfg, \_exit])                             | Start a supervisor instance using supervisord in background                   |
-| [`start_programs`](_build/supervisor_pydantic.start_programs.md#supervisor_pydantic.start_programs)([cfg, restart, \_exit])                          | Start all programs in the supervisor instance                                 |
-| [`check_programs`](_build/supervisor_pydantic.check_programs.md#supervisor_pydantic.check_programs)([cfg, check_running, ...])                       | Check if programs are in a good state.                                        |
-| [`restart_programs`](_build/supervisor_pydantic.restart_programs.md#supervisor_pydantic.restart_programs)([cfg, force, \_exit])                      | Restart all programs in the supervisor instance                               |
-| [`stop_programs`](_build/supervisor_pydantic.stop_programs.md#supervisor_pydantic.stop_programs)([cfg, \_exit])                                      | Stop all programs in the supervisor instance                                  |
-| [`stop_supervisor`](_build/supervisor_pydantic.stop_supervisor.md#supervisor_pydantic.stop_supervisor)([cfg, \_exit])                                | Stop the supervisor instance                                                  |
-| [`kill_supervisor`](_build/supervisor_pydantic.kill_supervisor.md#supervisor_pydantic.kill_supervisor)([cfg, \_exit])                                | Kill the supervisor instance with os.kill                                     |
-| [`remove_supervisor_config`](_build/supervisor_pydantic.remove_supervisor_config.md#supervisor_pydantic.remove_supervisor_config)([cfg, \_exit])     | Remove the supervisor config file and working directory                       |
+print(config.to_cfg())
+config.write()
+print(config.config_path)
+```
 
+Run it:
 
-# explanation.html.md
+```bash
+python example.py
+```
 
-# Why the convenience layer exists
+The rendered text contains `[program:worker]`, its command, and the environment
+setting. The final line points to:
 
-`SupervisorConfiguration` mirrors supervisord’s native configuration structure.
-It is appropriate when every section and directive should be selected directly.
-External orchestrators need a smaller, stable contract: consistent process
-defaults, predictable file locations, a control endpoint, and persisted state
-that later lifecycle steps can reload.
+```text
+/tmp/tutorial-supervisor/supervisord.conf
+```
 
-`SupervisorConvenienceConfiguration` provides that contract. It applies common
-start, stop, signal, exit-code, and logging defaults across programs. It also
-builds the HTTP/XML-RPC sections and stores a Pydantic JSON file beside the
-rendered configuration. The `_supervisor_convenience` CLI and
-[airflow-supervisor](https://github.com/airflow-laminar/airflow-supervisor) use
-that persisted model to perform separate lifecycle steps safely.
+## Inspect the generated layout
 
-## Configuration and runtime layers
+List the directory:
 
-Section models such as `ProgramConfiguration` and
-`SupervisordConfiguration` describe the file. `SupervisorConfiguration`
-assembles and persists it. `SupervisorRemoteXMLRPCClient` communicates with a
-running daemon. Convenience commands combine those pieces into coarse operations
-such as configure, start, check, and remove.
+```bash
+find /tmp/tutorial-supervisor -maxdepth 2 -type f
+```
 
-This separation keeps rendering usable without installing Supervisor while
-making runtime dependencies explicit when lifecycle methods are called.
+The configuration file exists, and the worker directory has been created for
+its output and error logs. No supervisord process has been started.
 
-## Relationship to systemd and cron
+You have now built and persisted a validated supervisord configuration.
 
-Supervisord creates a dedicated process manager for the modeled programs. That
-can be useful inside application-owned environments where depending on the host
-service manager is undesirable.
-
-[systemd-pydantic](https://github.com/airflow-laminar/systemd-pydantic) instead
-uses the host’s existing service manager and its unit lifecycle.
-[cron-pydantic](https://github.com/airflow-laminar/cron-pydantic) models launch
-schedules but does not supervise the processes it starts. The aligned model
-names and convenience layers make the supervisor and systemd integrations
-familiar without hiding their different ownership models.
-
-
-# how-to.html.md
+<!-- docs/src/how-to.html.md -->
 
 # How-to guides
 
@@ -242,106 +214,182 @@ Commands configure and remove files, start and stop supervisord, and start,
 check, restart, or stop all configured programs. Use the API reference for the
 corresponding Python callables.
 
+<!-- docs/src/explanation.html.md -->
 
-# supervisor_pydantic.EventListenerConfiguration.html.md
+# Why the convenience layer exists
 
-# supervisor_pydantic.EventListenerConfiguration
+`SupervisorConfiguration` mirrors supervisord’s native configuration structure.
+It is appropriate when every section and directive should be selected directly.
+External orchestrators need a smaller, stable contract: consistent process
+defaults, predictable file locations, a control endpoint, and persisted state
+that later lifecycle steps can reload.
 
-### *pydantic model* supervisor_pydantic.EventListenerConfiguration
+`SupervisorConvenienceConfiguration` provides that contract. It applies common
+start, stop, signal, exit-code, and logging defaults across programs. It also
+builds the HTTP/XML-RPC sections and stores a Pydantic JSON file beside the
+rendered configuration. The `_supervisor_convenience` CLI and
+[airflow-supervisor](https://github.com/airflow-laminar/airflow-supervisor) use
+that persisted model to perform separate lifecycle steps safely.
 
-Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)
+## Configuration and runtime layers
 
-#### to_cfg(key: str) → str
+Section models such as `ProgramConfiguration` and
+`SupervisordConfiguration` describe the file. `SupervisorConfiguration`
+assembles and persists it. `SupervisorRemoteXMLRPCClient` communicates with a
+running daemon. Convenience commands combine those pieces into coarse operations
+such as configure, start, check, and remove.
 
-#### *field* buffer_size *: int | None* *= None*
+This separation keeps rendering usable without installing Supervisor while
+making runtime dependencies explicit when lifecycle methods are called.
 
-The event listener pool’s event queue buffer size. When a listener pool’s event buffer is overflowed (as can happen when an event listener pool cannot keep up with all of the events sent to it), the oldest event in the buffer is discarded.
+## Relationship to systemd and cron
 
-#### *field* events *: list[Literal['PROCESS_STATE', 'PROCESS_STATE_STARTING', 'PROCESS_STATE_RUNNING', 'PROCESS_STATE_BACKOFF', 'PROCESS_STATE_STOPPING', 'PROCESS_STATE_EXITED', 'PROCESS_STATE_STOPPED', 'PROCESS_STATE_FATAL', 'PROCESS_STATE_UNKNOWN', 'REMOTE_COMMUNICATION', 'PROCESS_LOG', 'PROCESS_LOG_STDOUT', 'PROCESS_LOG_STDERR', 'PROCESS_COMMUNICATION', 'PROCESS_COMMUNICATION_STDOUT', 'PROCESS_COMMUNICATION_STDERR', 'SUPERVISOR_STATE_CHANGE', 'SUPERVISOR_STATE_CHANGE_RUNNING', 'SUPERVISOR_STATE_CHANGE_STOPPING', 'TICK', 'TICK_5', 'TICK_60', 'TICK_3600', 'PROCESS_GROUP', 'PROCESS_GROUP_ADDED', 'PROCESS_GROUP_REMOVED']] | None* *= None*
+Supervisord creates a dedicated process manager for the modeled programs. That
+can be useful inside application-owned environments where depending on the host
+service manager is undesirable.
 
-A comma-separated list of event type names that this listener is “interested” in receiving notifications for (see Event Types for a list of valid event type names).
+[systemd-pydantic](https://github.com/airflow-laminar/systemd-pydantic) instead
+uses the host’s existing service manager and its unit lifecycle.
+[cron-pydantic](https://github.com/airflow-laminar/cron-pydantic) models launch
+schedules but does not supervise the processes it starts. The aligned model
+names and convenience layers make the supervisor and systemd integrations
+familiar without hiding their different ownership models.
 
-#### *field* result_handler *: str | None* *= None*
+<!-- docs/src/api.html.md -->
 
-A pkg_resources entry point string that resolves to a Python callable. The default value is supervisor.dispatchers:default_handler. Specifying an alternate result handler is a very uncommon thing to need to do, and as a result, how to create one is not documented.
+# API reference
 
+## Configuration models
 
-# supervisor_pydantic.FcgiProgramConfiguration.html.md
+| [`SupervisorConfiguration`](_build/supervisor_pydantic.SupervisorConfiguration.html.md#supervisor_pydantic.SupervisorConfiguration)                                  |                                                                               |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| [`SupervisorConvenienceConfiguration`](_build/supervisor_pydantic.SupervisorConvenienceConfiguration.html.md#supervisor_pydantic.SupervisorConvenienceConfiguration) | Convenience layer, settings that MUST be set when running via convenience API |
+| [`SupervisordConfiguration`](_build/supervisor_pydantic.SupervisordConfiguration.html.md#supervisor_pydantic.SupervisordConfiguration)                               |                                                                               |
+| [`SupervisorctlConfiguration`](_build/supervisor_pydantic.SupervisorctlConfiguration.html.md#supervisor_pydantic.SupervisorctlConfiguration)                         |                                                                               |
+| [`ProgramConfiguration`](_build/supervisor_pydantic.ProgramConfiguration.html.md#supervisor_pydantic.ProgramConfiguration)                                           |                                                                               |
+| [`EventListenerConfiguration`](_build/supervisor_pydantic.EventListenerConfiguration.html.md#supervisor_pydantic.EventListenerConfiguration)                         |                                                                               |
+| [`FcgiProgramConfiguration`](_build/supervisor_pydantic.FcgiProgramConfiguration.html.md#supervisor_pydantic.FcgiProgramConfiguration)                               |                                                                               |
+| [`GroupConfiguration`](_build/supervisor_pydantic.GroupConfiguration.html.md#supervisor_pydantic.GroupConfiguration)                                                 |                                                                               |
+| [`IncludeConfiguration`](_build/supervisor_pydantic.IncludeConfiguration.html.md#supervisor_pydantic.IncludeConfiguration)                                           |                                                                               |
+| [`InetHttpServerConfiguration`](_build/supervisor_pydantic.InetHttpServerConfiguration.html.md#supervisor_pydantic.InetHttpServerConfiguration)                      |                                                                               |
+| [`RpcInterfaceConfiguration`](_build/supervisor_pydantic.RpcInterfaceConfiguration.html.md#supervisor_pydantic.RpcInterfaceConfiguration)                            |                                                                               |
+| [`UnixHttpServerConfiguration`](_build/supervisor_pydantic.UnixHttpServerConfiguration.html.md#supervisor_pydantic.UnixHttpServerConfiguration)                      |                                                                               |
+| [`load_config`](_build/supervisor_pydantic.load_config.html.md#supervisor_pydantic.load_config)([config_dir, config_name, ...])                                      |                                                                               |
+| [`load_convenience_config`](_build/supervisor_pydantic.load_convenience_config.html.md#supervisor_pydantic.load_convenience_config)([config_dir, ...])               |                                                                               |
 
-# supervisor_pydantic.FcgiProgramConfiguration
+## Runtime client
 
-### *pydantic model* supervisor_pydantic.FcgiProgramConfiguration
+| [`SupervisorRemoteXMLRPCClient`](_build/supervisor_pydantic.SupervisorRemoteXMLRPCClient.html.md#supervisor_pydantic.SupervisorRemoteXMLRPCClient)(cfg)   | A light wrapper over the supervisor xmlrpc api: [http://supervisord.org/api.html](http://supervisord.org/api.html)   |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| [`ProcessInfo`](_build/supervisor_pydantic.ProcessInfo.html.md#supervisor_pydantic.ProcessInfo)                                                           |                                                                                                                      |
+| [`ProcessState`](_build/supervisor_pydantic.ProcessState.html.md#supervisor_pydantic.ProcessState)(value)                                                 |                                                                                                                      |
+| [`SupervisorState`](_build/supervisor_pydantic.SupervisorState.html.md#supervisor_pydantic.SupervisorState)(value)                                        |                                                                                                                      |
+| [`SupervisorMethodResult`](_build/supervisor_pydantic.SupervisorMethodResult.html.md#supervisor_pydantic.SupervisorMethodResult)(value)                   |                                                                                                                      |
 
-Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)
+## Convenience operations
 
-#### to_cfg(key: str) → str
+| [`write_supervisor_config`](_build/supervisor_pydantic.write_supervisor_config.html.md#supervisor_pydantic.write_supervisor_config)(cfg_json[, \_exit])   | Write a SupervisorConvenienceConfiguration JSON as a supervisor config file   |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| [`start_supervisor`](_build/supervisor_pydantic.start_supervisor.html.md#supervisor_pydantic.start_supervisor)([cfg, \_exit])                             | Start a supervisor instance using supervisord in background                   |
+| [`start_programs`](_build/supervisor_pydantic.start_programs.html.md#supervisor_pydantic.start_programs)([cfg, restart, \_exit])                          | Start all programs in the supervisor instance                                 |
+| [`check_programs`](_build/supervisor_pydantic.check_programs.html.md#supervisor_pydantic.check_programs)([cfg, check_running, ...])                       | Check if programs are in a good state.                                        |
+| [`restart_programs`](_build/supervisor_pydantic.restart_programs.html.md#supervisor_pydantic.restart_programs)([cfg, force, \_exit])                      | Restart all programs in the supervisor instance                               |
+| [`stop_programs`](_build/supervisor_pydantic.stop_programs.html.md#supervisor_pydantic.stop_programs)([cfg, \_exit])                                      | Stop all programs in the supervisor instance                                  |
+| [`stop_supervisor`](_build/supervisor_pydantic.stop_supervisor.html.md#supervisor_pydantic.stop_supervisor)([cfg, \_exit])                                | Stop the supervisor instance                                                  |
+| [`kill_supervisor`](_build/supervisor_pydantic.kill_supervisor.html.md#supervisor_pydantic.kill_supervisor)([cfg, \_exit])                                | Kill the supervisor instance with os.kill                                     |
+| [`remove_supervisor_config`](_build/supervisor_pydantic.remove_supervisor_config.html.md#supervisor_pydantic.remove_supervisor_config)([cfg, \_exit])     | Remove the supervisor config file and working directory                       |
 
-#### *field* socket *: str* *[Required]*
+<!-- docs/src/_build/supervisor_pydantic.SupervisorConfiguration.html.md -->
 
-The FastCGI socket for this program, either TCP or UNIX domain socket. For TCP sockets, use this format: [tcp://localhost:9002](tcp://localhost:9002). For UNIX domain sockets, use unix:///absolute/path/to/file.sock. String expressions are evaluated against a dictionary containing the keys “program_name” and “here” (the directory of the supervisord config file).
+# supervisor_pydantic.SupervisorConfiguration
 
-#### *field* socket_backlog *: str | None* *= None*
+### *pydantic model* supervisor_pydantic.SupervisorConfiguration[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration)
 
-Sets socket listen(2) backlog.
+Bases: `BaseModel`
 
-#### *field* socket_owner *: Annotated[str, AfterValidator(func=\_is_username_or_usernamegroup)] | None* *= None*
+#### to_cfg() → str[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration.to_cfg)
 
-For UNIX domain sockets, this parameter can be used to specify the user and group for the FastCGI socket. May be a UNIX username (e.g. chrism) or a UNIX username and group separated by a colon (e.g. chrism:wheel).
+#### *field* unix_http_server *: [UnixHttpServerConfiguration](supervisor_pydantic.UnixHttpServerConfiguration.html.md#supervisor_pydantic.UnixHttpServerConfiguration) | None* *= None*
 
-#### *field* socket_mode *: \_check_is_octal)] | None* *= None*
+#### *field* inet_http_server *: [InetHttpServerConfiguration](supervisor_pydantic.InetHttpServerConfiguration.html.md#supervisor_pydantic.InetHttpServerConfiguration) | None* *= None*
 
-For UNIX domain sockets, this parameter can be used to specify the permission mode.
+#### *field* supervisord *: [SupervisordConfiguration](supervisor_pydantic.SupervisordConfiguration.html.md#supervisor_pydantic.SupervisordConfiguration)* *= SupervisordConfiguration(logfile=None, logfile_maxbytes=None, logfile_backups=None, loglevel=None, pidfile=None, umask=None, nodaemon=None, silent=None, minfds=None, minprocs=None, nocleanup=None, childlogdir=None, user=None, directory=None, strip_ansi=None, environment=None, identifier=None)*
 
+#### *field* supervisorctl *: [SupervisorctlConfiguration](supervisor_pydantic.SupervisorctlConfiguration.html.md#supervisor_pydantic.SupervisorctlConfiguration)* *= SupervisorctlConfiguration(serverurl=None, username=None, password=None, prompt=None, history_file=None)*
 
-# supervisor_pydantic.GroupConfiguration.html.md
+#### *field* include *: [IncludeConfiguration](supervisor_pydantic.IncludeConfiguration.html.md#supervisor_pydantic.IncludeConfiguration) | None* *= None*
 
-# supervisor_pydantic.GroupConfiguration
+#### *field* program *: dict[str, [ProgramConfiguration](supervisor_pydantic.ProgramConfiguration.html.md#supervisor_pydantic.ProgramConfiguration)]* *[Required]*
 
-### *pydantic model* supervisor_pydantic.GroupConfiguration
+#### *field* group *: dict[str, [GroupConfiguration](supervisor_pydantic.GroupConfiguration.html.md#supervisor_pydantic.GroupConfiguration)] | None* *= None*
 
-Bases: `_BaseCfgModel`
+#### *field* fcgiprogram *: dict[str, [FcgiProgramConfiguration](supervisor_pydantic.FcgiProgramConfiguration.html.md#supervisor_pydantic.FcgiProgramConfiguration)] | None* *= None*
 
-#### to_cfg(key: str) → str
+#### *field* eventlistener *: dict[str, [EventListenerConfiguration](supervisor_pydantic.EventListenerConfiguration.html.md#supervisor_pydantic.EventListenerConfiguration)] | None* *= None*
 
-#### *field* programs *: list[str]* *[Required]*
+#### *field* rpcinterface *: dict[str, [RpcInterfaceConfiguration](supervisor_pydantic.RpcInterfaceConfiguration.html.md#supervisor_pydantic.RpcInterfaceConfiguration)] | None* *= None*
 
-A comma-separated list of program names. The programs which are listed become members of the group.
+#### *field* config_path *: Path | None* *= 'supervisord.conf'*
 
-#### *field* priority *: int | None* *= None*
+Path to supervisor configuration file, relative to working_dir
 
-A priority number analogous to a [program:x] priority value assigned to the group.
+#### *field* working_dir *: Path | None* *= ''*
 
+Path to supervisor working directory
 
-# supervisor_pydantic.IncludeConfiguration.html.md
+#### *classmethod* load(config_dir: str = 'config', config_name: str = '', overrides: list[str] | None = None, , basepath: str = '', \_offset: int = 3) → [SupervisorConfiguration](#supervisor_pydantic.SupervisorConfiguration)[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration.load)
 
-# supervisor_pydantic.IncludeConfiguration
+#### write()[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration.write)
 
-### *pydantic model* supervisor_pydantic.IncludeConfiguration
+#### rmdir()[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration.rmdir)
 
-Bases: `_BaseCfgModel`
+#### start(daemon: bool = False)[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration.start)
 
-#### *field* files *: list[str]* *[Required]*
+#### running()[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration.running)
 
-A space-separated sequence of file globs. Each file glob may be absolute or relative. If the file glob is relative, it is considered relative to the location of the configuration file which includes it. A “glob” is a file pattern which matches a specified pattern according to the rules used by the Unix shell. No tilde expansion is done, but 
+#### stop()[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration.stop)
 
-```
-*
-```
+#### kill()[[source]](../../../_modules/supervisor_pydantic/config/supervisor.html.md#SupervisorConfiguration.kill)
 
-, ?, and character ranges expressed with [] will be correctly matched. The string expression is evaluated against a dictionary that includes host_node_name and here (the directory of the supervisord config file). Recursive includes from included files are not supported.
+<!-- docs/src/_build/supervisor_pydantic.SupervisorConvenienceConfiguration.html.md -->
 
+# supervisor_pydantic.SupervisorConvenienceConfiguration
 
-# supervisor_pydantic.InetHttpServerConfiguration.html.md
+### *pydantic model* supervisor_pydantic.SupervisorConvenienceConfiguration[[source]](../../../_modules/supervisor_pydantic/config/convenience.html.md#SupervisorConvenienceConfiguration)
 
-# supervisor_pydantic.InetHttpServerConfiguration
+Bases: [`SupervisorConfiguration`](supervisor_pydantic.SupervisorConfiguration.html.md#supervisor_pydantic.SupervisorConfiguration)
 
-### *pydantic model* supervisor_pydantic.InetHttpServerConfiguration
+Convenience layer, settings that MUST be set when running via convenience API
 
-Bases: `_BaseCfgModel`
+#### *field* startsecs *: int | None* *= 1*
 
-#### to_cfg() → str
+The total number of seconds which the program needs to stay running after a startup to consider the start successful (moving the process from the STARTING state to the RUNNING state). Set to 0 to indicate that the program needn’t stay running for any particular amount of time. Even if a process exits with an “expected” exit code (see exitcodes), the start will still be considered a failure if the process exits quicker than startsecs.
 
-#### *field* port *: Annotated[str, BeforeValidator(func=\_convert_to_host_port, json_schema_input_type=PydanticUndefined), AfterValidator(func=\_is_host_port)] | None* *= None*
+#### *field* startretries *: int | None* *= None*
+
+The number of serial failure attempts that supervisord will allow when attempting to start the program before giving up and putting the process into an FATAL state. After each failed restart, process will be put in BACKOFF state and each retry attempt will take increasingly more time.
+
+#### *field* exitcodes *: list[int] | None* *= [0]*
+
+The list of “expected” exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.
+
+#### *field* stopsignal *: Literal['TERM', 'HUP', 'INT', 'QUIT', 'KILL', 'USR1', 'USR2'] | None* *= 'TERM'*
+
+The signal used to kill the program when a stop is requested. This can be specified using the signal’s name or its number. It is normally one of: TERM, HUP, INT, QUIT, KILL, USR1, or USR2.
+
+#### *field* stopwaitsecs *: int | None* *= 30*
+
+The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.
+
+#### *field* stopasgroup *: bool | None* *= True*
+
+If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.
+
+#### *field* killasgroup *: bool | None* *= True*
+
+If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.
+
+#### *field* port *: Annotated[str, BeforeValidator(func=\_convert_to_host_port, json_schema_input_type=PydanticUndefined), AfterValidator(func=\_is_host_port)]* *= '\*:9001'*
 
 A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl will use XML-RPC to communicate with supervisord over this port. To listen on all interfaces in the machine, use :9001 or 
 
@@ -353,90 +401,149 @@ A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen f
 
 #### *field* username *: Annotated[str, AfterValidator(func=\_is_username)] | None* *= None*
 
-The username required for authentication to this HTTP server.
+The username required for authentication to the HTTP/Unix Server.
 
 #### *field* password *: SecretStr | None* *= None*
 
-he password required for authentication to this HTTP server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.
+The password required for authentication to the HTTP/Unix server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.
 
+#### *field* rpcinterface_factory *: str* *= 'supervisor.rpcinterface:make_main_rpcinterface'*
 
-# supervisor_pydantic.ProcessInfo.html.md
+pkg_resources “entry point” dotted name to your RPC interface’s factory function.
 
-# supervisor_pydantic.ProcessInfo
+#### *field* local_or_remote *: Literal['local', 'remote'] | None* *= 'local'*
 
-### *pydantic model* supervisor_pydantic.ProcessInfo
+Location of supervisor, either local for same-machine or remote. If same-machine, communicates via Unix sockets by default, if remote, communicates via inet http server
 
-Bases: `BaseModel`
+#### *field* host *: str* *= 'localhost'*
 
-#### *field* name *: str* *[Required]*
+Hostname of the supervisor host. Used by the XMLRPC client
 
-#### *field* group *: str* *[Required]*
+#### *field* protocol *: str* *= 'http'*
 
-#### *field* state *: [ProcessState](supervisor_pydantic.ProcessState.md#supervisor_pydantic.ProcessState)* *[Required]*
+Protocol of the supervisor XMLRPC HTTP API. Used by the XMLRPC client
 
-#### *field* description *: str* *[Required]*
+#### *field* rpcpath *: str* *= '/RPC2'*
 
-#### *field* start *: datetime* *[Required]*
+Path for supervisor XMLRPC HTTP API. Used by the XMLRPC client
 
-#### *field* stop *: datetime* *[Required]*
+#### *field* command_timeout *: int* *= 60*
 
-#### *field* now *: datetime* *[Required]*
+Timeout for convenience commands sent to the supervisor, in seconds
 
-#### *field* spawner *: str* *= ''*
+<!-- docs/src/_build/supervisor_pydantic.SupervisordConfiguration.html.md -->
 
-#### *field* exitstatus *: int* *[Required]*
+# supervisor_pydantic.SupervisordConfiguration
 
-#### *field* logfile *: str* *[Required]*
-
-#### *field* stdout_logfile *: str* *[Required]*
-
-#### *field* stderr_logfile *: str* *[Required]*
-
-#### *field* pid *: int* *[Required]*
-
-#### running()
-
-#### stopped()
-
-#### done(ok_exitstatuses=None)
-
-#### ok(ok_exitstatuses=None)
-
-#### bad(ok_exitstatuses=None)
-
-
-# supervisor_pydantic.ProcessState.html.md
-
-# supervisor_pydantic.ProcessState
-
-### *class* supervisor_pydantic.ProcessState(value)
-
-Bases: `Enum`
-
-#### \_\_init_\_(\*args, \*\*kwds)
-
-### Attributes
-
-| `STOPPED`   |    |
-|-------------|----|
-| `STARTING`  |    |
-| `RUNNING`   |    |
-| `BACKOFF`   |    |
-| `STOPPING`  |    |
-| `EXITED`    |    |
-| `FATAL`     |    |
-| `UNKNOWN`   |    |
-
-
-# supervisor_pydantic.ProgramConfiguration.html.md
-
-# supervisor_pydantic.ProgramConfiguration
-
-### *pydantic model* supervisor_pydantic.ProgramConfiguration
+### *pydantic model* supervisor_pydantic.SupervisordConfiguration[[source]](../../../_modules/supervisor_pydantic/config/supervisord.html.md#SupervisordConfiguration)
 
 Bases: `_BaseCfgModel`
 
-#### to_cfg(key: str) → str
+#### *field* logfile *: Path | None* *= None*
+
+The path to the activity log of the supervisord process. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
+
+#### *field* logfile_maxbytes *: str | None* *= None*
+
+The maximum number of bytes that may be consumed by the activity log file before it is rotated (suffix multipliers like “KB”, “MB”, and “GB” can be used in the value). Set this value to 0 to indicate an unlimited log size.
+
+#### *field* logfile_backups *: int | None* *= None*
+
+The number of backups to keep around resulting from activity log file rotation. If set to 0, no backups will be kept.
+
+#### *field* loglevel *: Literal['critical', 'error', 'warn', 'info', 'debug', 'trace', 'blather'] | None* *= None*
+
+The logging level, dictating what is written to the supervisord activity log. One of critical, error, warn, info, debug, trace, or blather. Note that at log level debug, the supervisord log file will record the stderr/stdout output of its child processes and extended info about process state changes, which is useful for debugging a process which isn’t starting properly. See also: Activity Log Levels.
+
+#### *field* pidfile *: Path | None* *= None*
+
+The location in which supervisord keeps its pid file. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
+
+#### *field* umask *: \_check_is_octal)] | None* *= None*
+
+The umask of the supervisord process.
+
+#### *field* nodaemon *: bool | None* *= None*
+
+If true, supervisord will start in the foreground instead of daemonizing.
+
+#### *field* silent *: bool | None* *= None*
+
+If true and not daemonized, logs will not be directed to stdout.
+
+#### *field* minfds *: int | None* *= None*
+
+The minimum number of file descriptors that must be available before supervisord will start successfully. A call to setrlimit will be made to attempt to raise the soft and hard limits of the supervisord process to satisfy minfds. The hard limit may only be raised if supervisord is run as root. supervisord uses file descriptors liberally, and will enter a failure mode when one cannot be obtained from the OS, so it’s useful to be able to specify a minimum value to ensure it doesn’t run out of them during execution. These limits will be inherited by the managed subprocesses. This option is particularly useful on Solaris, which has a low per-process fd limit by default.
+
+#### *field* minprocs *: int | None* *= None*
+
+The minimum number of process descriptors that must be available before supervisord will start successfully. A call to setrlimit will be made to attempt to raise the soft and hard limits of the supervisord process to satisfy minprocs. The hard limit may only be raised if supervisord is run as root. supervisord will enter a failure mode when the OS runs out of process descriptors, so it’s useful to ensure that enough process descriptors are available upon supervisord startup.
+
+#### *field* nocleanup *: bool | None* *= None*
+
+Prevent supervisord from clearing any existing AUTO child log files at startup time. Useful for debugging.
+
+#### *field* childlogdir *: Path | None* *= None*
+
+The directory used for AUTO child log files. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
+
+#### *field* user *: Annotated[str, AfterValidator(func=\_is_username)] | None* *= None*
+
+Instruct supervisord to switch users to this UNIX user account before doing any meaningful processing. The user can only be switched if supervisord is started as the root user.
+
+#### *field* directory *: Path | None* *= None*
+
+When supervisord daemonizes, switch to this directory. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
+
+#### *field* strip_ansi *: bool | None* *= None*
+
+Strip all ANSI escape sequences from child log files.
+
+#### *field* environment *: dict | None* *= None*
+
+A list of key/value pairs in the form KEY=”val”,KEY2=”val2” that will be placed in the environment of all child processes. This does not change the environment of supervisord itself. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found. Values containing non-alphanumeric characters should be quoted (e.g. KEY=”val:123”,KEY2=”val,456”). Otherwise, quoting the values is optional but recommended. To escape percent characters, simply use two. (e.g. URI=”/first%%20name”) Note that subprocesses will inherit the environment variables of the shell used to start supervisord except for the ones overridden here and within the program’s environment option. See Subprocess Environment.
+
+#### *field* identifier *: str | None* *= None*
+
+The identifier string for this supervisor process, used by the RPC interface.
+
+<!-- docs/src/_build/supervisor_pydantic.SupervisorctlConfiguration.html.md -->
+
+# supervisor_pydantic.SupervisorctlConfiguration
+
+### *pydantic model* supervisor_pydantic.SupervisorctlConfiguration[[source]](../../../_modules/supervisor_pydantic/config/supervisorctl.html.md#SupervisorctlConfiguration)
+
+Bases: `_BaseCfgModel`
+
+#### *field* serverurl *: AnyUrl | None* *= None*
+
+The URL that should be used to access the supervisord server, e.g. [http://localhost:9001](http://localhost:9001). For UNIX domain sockets, use unix:///absolute/path/to/file.sock.
+
+#### *field* username *: Annotated[str, AfterValidator(func=\_is_username)] | None* *= None*
+
+The username to pass to the supervisord server for use in authentication. This should be same as username from the supervisord server configuration for the port or UNIX domain socket you’re attempting to access.
+
+#### *field* password *: SecretStr | None* *= None*
+
+The password to pass to the supervisord server for use in authentication. This should be the cleartext version of password from the supervisord server configuration for the port or UNIX domain socket you’re attempting to access. This value cannot be passed as a SHA hash. Unlike other passwords specified in this file, it must be provided in cleartext.
+
+#### *field* prompt *: str | None* *= None*
+
+String used as supervisorctl prompt.
+
+#### *field* history_file *: Path | None* *= None*
+
+A path to use as the readline persistent history file. If you enable this feature by choosing a path, your supervisorctl commands will be kept in the file, and you can use readline (e.g. arrow-up) to invoke commands you performed in your last supervisorctl session.
+
+<!-- docs/src/_build/supervisor_pydantic.ProgramConfiguration.html.md -->
+
+# supervisor_pydantic.ProgramConfiguration
+
+### *pydantic model* supervisor_pydantic.ProgramConfiguration[[source]](../../../_modules/supervisor_pydantic/config/program.html.md#ProgramConfiguration)
+
+Bases: `_BaseCfgModel`
+
+#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/program.html.md#ProgramConfiguration.to_cfg)
 
 #### *field* command *: str* *[Required]*
 
@@ -572,116 +679,101 @@ An octal number (e.g. 002, 022) representing the umask of the process.
 
 The URL passed in the environment to the subprocess process as SUPERVISOR_SERVER_URL (see supervisor.childutils) to allow the subprocess to easily communicate with the internal HTTP server. If provided, it should have the same syntax and structure as the [supervisorctl] section option of the same name. If this is set to AUTO, or is unset, supervisor will automatically construct a server URL, giving preference to a server that listens on UNIX domain sockets over one that listens on an internet socket.
 
+<!-- docs/src/_build/supervisor_pydantic.EventListenerConfiguration.html.md -->
 
-# supervisor_pydantic.RpcInterfaceConfiguration.html.md
+# supervisor_pydantic.EventListenerConfiguration
 
-# supervisor_pydantic.RpcInterfaceConfiguration
+### *pydantic model* supervisor_pydantic.EventListenerConfiguration[[source]](../../../_modules/supervisor_pydantic/config/eventlistener.html.md#EventListenerConfiguration)
 
-### *pydantic model* supervisor_pydantic.RpcInterfaceConfiguration
+Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.html.md#supervisor_pydantic.ProgramConfiguration)
+
+#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/eventlistener.html.md#EventListenerConfiguration.to_cfg)
+
+#### *field* buffer_size *: int | None* *= None*
+
+The event listener pool’s event queue buffer size. When a listener pool’s event buffer is overflowed (as can happen when an event listener pool cannot keep up with all of the events sent to it), the oldest event in the buffer is discarded.
+
+#### *field* events *: list[Literal['PROCESS_STATE', 'PROCESS_STATE_STARTING', 'PROCESS_STATE_RUNNING', 'PROCESS_STATE_BACKOFF', 'PROCESS_STATE_STOPPING', 'PROCESS_STATE_EXITED', 'PROCESS_STATE_STOPPED', 'PROCESS_STATE_FATAL', 'PROCESS_STATE_UNKNOWN', 'REMOTE_COMMUNICATION', 'PROCESS_LOG', 'PROCESS_LOG_STDOUT', 'PROCESS_LOG_STDERR', 'PROCESS_COMMUNICATION', 'PROCESS_COMMUNICATION_STDOUT', 'PROCESS_COMMUNICATION_STDERR', 'SUPERVISOR_STATE_CHANGE', 'SUPERVISOR_STATE_CHANGE_RUNNING', 'SUPERVISOR_STATE_CHANGE_STOPPING', 'TICK', 'TICK_5', 'TICK_60', 'TICK_3600', 'PROCESS_GROUP', 'PROCESS_GROUP_ADDED', 'PROCESS_GROUP_REMOVED']] | None* *= None*
+
+A comma-separated list of event type names that this listener is “interested” in receiving notifications for (see Event Types for a list of valid event type names).
+
+#### *field* result_handler *: str | None* *= None*
+
+A pkg_resources entry point string that resolves to a Python callable. The default value is supervisor.dispatchers:default_handler. Specifying an alternate result handler is a very uncommon thing to need to do, and as a result, how to create one is not documented.
+
+<!-- docs/src/_build/supervisor_pydantic.FcgiProgramConfiguration.html.md -->
+
+# supervisor_pydantic.FcgiProgramConfiguration
+
+### *pydantic model* supervisor_pydantic.FcgiProgramConfiguration[[source]](../../../_modules/supervisor_pydantic/config/fcgiprogram.html.md#FcgiProgramConfiguration)
+
+Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.html.md#supervisor_pydantic.ProgramConfiguration)
+
+#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/fcgiprogram.html.md#FcgiProgramConfiguration.to_cfg)
+
+#### *field* socket *: str* *[Required]*
+
+The FastCGI socket for this program, either TCP or UNIX domain socket. For TCP sockets, use this format: [tcp://localhost:9002](tcp://localhost:9002). For UNIX domain sockets, use unix:///absolute/path/to/file.sock. String expressions are evaluated against a dictionary containing the keys “program_name” and “here” (the directory of the supervisord config file).
+
+#### *field* socket_backlog *: str | None* *= None*
+
+Sets socket listen(2) backlog.
+
+#### *field* socket_owner *: Annotated[str, AfterValidator(func=\_is_username_or_usernamegroup)] | None* *= None*
+
+For UNIX domain sockets, this parameter can be used to specify the user and group for the FastCGI socket. May be a UNIX username (e.g. chrism) or a UNIX username and group separated by a colon (e.g. chrism:wheel).
+
+#### *field* socket_mode *: \_check_is_octal)] | None* *= None*
+
+For UNIX domain sockets, this parameter can be used to specify the permission mode.
+
+<!-- docs/src/_build/supervisor_pydantic.GroupConfiguration.html.md -->
+
+# supervisor_pydantic.GroupConfiguration
+
+### *pydantic model* supervisor_pydantic.GroupConfiguration[[source]](../../../_modules/supervisor_pydantic/config/group.html.md#GroupConfiguration)
 
 Bases: `_BaseCfgModel`
 
-#### to_cfg(key: str) → str
+#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/group.html.md#GroupConfiguration.to_cfg)
 
-#### *field* rpcinterface_factory *: str* *= 'supervisor.rpcinterface:make_main_rpcinterface'*
+#### *field* programs *: list[str]* *[Required]*
 
-pkg_resources “entry point” dotted name to your RPC interface’s factory function.
+A comma-separated list of program names. The programs which are listed become members of the group.
 
-#### *field* kwargs *: dict[str, Any] | None* *= None*
+#### *field* priority *: int | None* *= None*
 
+A priority number analogous to a [program:x] priority value assigned to the group.
 
-# supervisor_pydantic.SupervisorConfiguration.html.md
+<!-- docs/src/_build/supervisor_pydantic.IncludeConfiguration.html.md -->
 
-# supervisor_pydantic.SupervisorConfiguration
+# supervisor_pydantic.IncludeConfiguration
 
-### *pydantic model* supervisor_pydantic.SupervisorConfiguration
+### *pydantic model* supervisor_pydantic.IncludeConfiguration[[source]](../../../_modules/supervisor_pydantic/config/include.html.md#IncludeConfiguration)
 
-Bases: `BaseModel`
+Bases: `_BaseCfgModel`
 
-#### to_cfg() → str
+#### *field* files *: list[str]* *[Required]*
 
-#### *field* unix_http_server *: [UnixHttpServerConfiguration](supervisor_pydantic.UnixHttpServerConfiguration.md#supervisor_pydantic.UnixHttpServerConfiguration) | None* *= None*
+A space-separated sequence of file globs. Each file glob may be absolute or relative. If the file glob is relative, it is considered relative to the location of the configuration file which includes it. A “glob” is a file pattern which matches a specified pattern according to the rules used by the Unix shell. No tilde expansion is done, but 
 
-#### *field* inet_http_server *: [InetHttpServerConfiguration](supervisor_pydantic.InetHttpServerConfiguration.md#supervisor_pydantic.InetHttpServerConfiguration) | None* *= None*
+```
+*
+```
 
-#### *field* supervisord *: [SupervisordConfiguration](supervisor_pydantic.SupervisordConfiguration.md#supervisor_pydantic.SupervisordConfiguration)* *= SupervisordConfiguration(logfile=None, logfile_maxbytes=None, logfile_backups=None, loglevel=None, pidfile=None, umask=None, nodaemon=None, silent=None, minfds=None, minprocs=None, nocleanup=None, childlogdir=None, user=None, directory=None, strip_ansi=None, environment=None, identifier=None)*
+, ?, and character ranges expressed with [] will be correctly matched. The string expression is evaluated against a dictionary that includes host_node_name and here (the directory of the supervisord config file). Recursive includes from included files are not supported.
 
-#### *field* supervisorctl *: [SupervisorctlConfiguration](supervisor_pydantic.SupervisorctlConfiguration.md#supervisor_pydantic.SupervisorctlConfiguration)* *= SupervisorctlConfiguration(serverurl=None, username=None, password=None, prompt=None, history_file=None)*
+<!-- docs/src/_build/supervisor_pydantic.InetHttpServerConfiguration.html.md -->
 
-#### *field* include *: [IncludeConfiguration](supervisor_pydantic.IncludeConfiguration.md#supervisor_pydantic.IncludeConfiguration) | None* *= None*
+# supervisor_pydantic.InetHttpServerConfiguration
 
-#### *field* program *: dict[str, [ProgramConfiguration](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)]* *[Required]*
+### *pydantic model* supervisor_pydantic.InetHttpServerConfiguration[[source]](../../../_modules/supervisor_pydantic/config/inet_http_server.html.md#InetHttpServerConfiguration)
 
-#### *field* group *: dict[str, [GroupConfiguration](supervisor_pydantic.GroupConfiguration.md#supervisor_pydantic.GroupConfiguration)] | None* *= None*
+Bases: `_BaseCfgModel`
 
-#### *field* fcgiprogram *: dict[str, [FcgiProgramConfiguration](supervisor_pydantic.FcgiProgramConfiguration.md#supervisor_pydantic.FcgiProgramConfiguration)] | None* *= None*
+#### to_cfg() → str[[source]](../../../_modules/supervisor_pydantic/config/inet_http_server.html.md#InetHttpServerConfiguration.to_cfg)
 
-#### *field* eventlistener *: dict[str, [EventListenerConfiguration](supervisor_pydantic.EventListenerConfiguration.md#supervisor_pydantic.EventListenerConfiguration)] | None* *= None*
-
-#### *field* rpcinterface *: dict[str, [RpcInterfaceConfiguration](supervisor_pydantic.RpcInterfaceConfiguration.md#supervisor_pydantic.RpcInterfaceConfiguration)] | None* *= None*
-
-#### *field* config_path *: Path | None* *= 'supervisord.conf'*
-
-Path to supervisor configuration file, relative to working_dir
-
-#### *field* working_dir *: Path | None* *= ''*
-
-Path to supervisor working directory
-
-#### *classmethod* load(config_dir: str = 'config', config_name: str = '', overrides: list[str] | None = None, , basepath: str = '', \_offset: int = 3) → [SupervisorConfiguration](#supervisor_pydantic.SupervisorConfiguration)
-
-#### write()
-
-#### rmdir()
-
-#### start(daemon: bool = False)
-
-#### running()
-
-#### stop()
-
-#### kill()
-
-
-# supervisor_pydantic.SupervisorConvenienceConfiguration.html.md
-
-# supervisor_pydantic.SupervisorConvenienceConfiguration
-
-### *pydantic model* supervisor_pydantic.SupervisorConvenienceConfiguration
-
-Bases: [`SupervisorConfiguration`](supervisor_pydantic.SupervisorConfiguration.md#supervisor_pydantic.SupervisorConfiguration)
-
-Convenience layer, settings that MUST be set when running via convenience API
-
-#### *field* startsecs *: int | None* *= 1*
-
-The total number of seconds which the program needs to stay running after a startup to consider the start successful (moving the process from the STARTING state to the RUNNING state). Set to 0 to indicate that the program needn’t stay running for any particular amount of time. Even if a process exits with an “expected” exit code (see exitcodes), the start will still be considered a failure if the process exits quicker than startsecs.
-
-#### *field* startretries *: int | None* *= None*
-
-The number of serial failure attempts that supervisord will allow when attempting to start the program before giving up and putting the process into an FATAL state. After each failed restart, process will be put in BACKOFF state and each retry attempt will take increasingly more time.
-
-#### *field* exitcodes *: list[int] | None* *= [0]*
-
-The list of “expected” exit codes for this program used with autorestart. If the autorestart parameter is set to unexpected, and the process exits in any other way than as a result of a supervisor stop request, supervisord will restart the process if it exits with an exit code that is not defined in this list.
-
-#### *field* stopsignal *: Literal['TERM', 'HUP', 'INT', 'QUIT', 'KILL', 'USR1', 'USR2'] | None* *= 'TERM'*
-
-The signal used to kill the program when a stop is requested. This can be specified using the signal’s name or its number. It is normally one of: TERM, HUP, INT, QUIT, KILL, USR1, or USR2.
-
-#### *field* stopwaitsecs *: int | None* *= 30*
-
-The number of seconds to wait for the OS to return a SIGCHLD to supervisord after the program has been sent a stopsignal. If this number of seconds elapses before supervisord receives a SIGCHLD from the process, supervisord will attempt to kill it with a final SIGKILL.
-
-#### *field* stopasgroup *: bool | None* *= True*
-
-If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.
-
-#### *field* killasgroup *: bool | None* *= True*
-
-If True, the stopsignal will be sent to the process group of the program, rather than just the program itself. This is useful for programs that spawn child processes.
-
-#### *field* port *: Annotated[str, BeforeValidator(func=\_convert_to_host_port, json_schema_input_type=PydanticUndefined), AfterValidator(func=\_is_host_port)]* *= '\*:9001'*
+#### *field* port *: Annotated[str, BeforeValidator(func=\_convert_to_host_port, json_schema_input_type=PydanticUndefined), AfterValidator(func=\_is_host_port)] | None* *= None*
 
 A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl will use XML-RPC to communicate with supervisord over this port. To listen on all interfaces in the machine, use :9001 or 
 
@@ -693,42 +785,188 @@ A TCP host:port value or (e.g. 127.0.0.1:9001) on which supervisor will listen f
 
 #### *field* username *: Annotated[str, AfterValidator(func=\_is_username)] | None* *= None*
 
-The username required for authentication to the HTTP/Unix Server.
+The username required for authentication to this HTTP server.
 
 #### *field* password *: SecretStr | None* *= None*
 
-The password required for authentication to the HTTP/Unix server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.
+he password required for authentication to this HTTP server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.
+
+<!-- docs/src/_build/supervisor_pydantic.RpcInterfaceConfiguration.html.md -->
+
+# supervisor_pydantic.RpcInterfaceConfiguration
+
+### *pydantic model* supervisor_pydantic.RpcInterfaceConfiguration[[source]](../../../_modules/supervisor_pydantic/config/rpcinterface.html.md#RpcInterfaceConfiguration)
+
+Bases: `_BaseCfgModel`
+
+#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/rpcinterface.html.md#RpcInterfaceConfiguration.to_cfg)
 
 #### *field* rpcinterface_factory *: str* *= 'supervisor.rpcinterface:make_main_rpcinterface'*
 
 pkg_resources “entry point” dotted name to your RPC interface’s factory function.
 
-#### *field* local_or_remote *: Literal['local', 'remote'] | None* *= 'local'*
+#### *field* kwargs *: dict[str, Any] | None* *= None*
 
-Location of supervisor, either local for same-machine or remote. If same-machine, communicates via Unix sockets by default, if remote, communicates via inet http server
+<!-- docs/src/_build/supervisor_pydantic.UnixHttpServerConfiguration.html.md -->
 
-#### *field* host *: str* *= 'localhost'*
+# supervisor_pydantic.UnixHttpServerConfiguration
 
-Hostname of the supervisor host. Used by the XMLRPC client
+### *pydantic model* supervisor_pydantic.UnixHttpServerConfiguration[[source]](../../../_modules/supervisor_pydantic/config/unix_http_server.html.md#UnixHttpServerConfiguration)
 
-#### *field* protocol *: str* *= 'http'*
+Bases: `_BaseCfgModel`
 
-Protocol of the supervisor XMLRPC HTTP API. Used by the XMLRPC client
+#### *field* file *: Path | None* *= None*
 
-#### *field* rpcpath *: str* *= '/RPC2'*
+A path to a UNIX domain socket on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl uses XML-RPC to communicate with supervisord over this port. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
 
-Path for supervisor XMLRPC HTTP API. Used by the XMLRPC client
+#### *field* chmod *: \_check_is_octal)] | None* *= None*
 
-#### *field* command_timeout *: int* *= 60*
+Change the UNIX permission mode bits of the UNIX domain socket to this value at startup.
 
-Timeout for convenience commands sent to the supervisor, in seconds
+#### *field* chown *: Annotated[str, AfterValidator(func=\_is_username_or_usernamegroup)] | None* *= None*
 
+Change the user and group of the socket file to this value. May be a UNIX username (e.g. chrism) or a UNIX username and group separated by a colon (e.g. chrism:wheel).
 
-# supervisor_pydantic.SupervisorMethodResult.html.md
+#### *field* username *: Annotated[str, AfterValidator(func=\_is_username)] | None* *= None*
+
+The username required for authentication to this HTTP server.
+
+#### *field* password *: SecretStr | None* *= None*
+
+The password required for authentication to this HTTP server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.
+
+<!-- docs/src/_build/supervisor_pydantic.load_config.html.md -->
+
+# supervisor_pydantic.load_config
+
+### supervisor_pydantic.load_config(config_dir: str = 'config', config_name: str = '', overrides: list[str] | None = None, , basepath: str = '', \_offset: int = 3) → [SupervisorConfiguration](supervisor_pydantic.SupervisorConfiguration.html.md#supervisor_pydantic.SupervisorConfiguration)
+
+<!-- docs/src/_build/supervisor_pydantic.load_convenience_config.html.md -->
+
+# supervisor_pydantic.load_convenience_config
+
+### supervisor_pydantic.load_convenience_config(config_dir: str = 'config', config_name: str = '', overrides: list[str] | None = None, , basepath: str = '', \_offset: int = 3) → [SupervisorConfiguration](supervisor_pydantic.SupervisorConfiguration.html.md#supervisor_pydantic.SupervisorConfiguration)
+
+<!-- docs/src/_build/supervisor_pydantic.SupervisorRemoteXMLRPCClient.html.md -->
+
+# supervisor_pydantic.SupervisorRemoteXMLRPCClient
+
+### *class* supervisor_pydantic.SupervisorRemoteXMLRPCClient(cfg: [SupervisorConvenienceConfiguration](supervisor_pydantic.SupervisorConvenienceConfiguration.html.md#supervisor_pydantic.SupervisorConvenienceConfiguration))[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#SupervisorRemoteXMLRPCClient)
+
+Bases: `object`
+
+A light wrapper over the supervisor xmlrpc api: [http://supervisord.org/api.html](http://supervisord.org/api.html)
+
+#### \_\_init_\_(cfg: [SupervisorConvenienceConfiguration](supervisor_pydantic.SupervisorConvenienceConfiguration.html.md#supervisor_pydantic.SupervisorConvenienceConfiguration))[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#SupervisorRemoteXMLRPCClient.__init__)
+
+### Methods
+
+| [`__init__`](#supervisor_pydantic.SupervisorRemoteXMLRPCClient.__init__)(cfg)   |    |
+|---------------------------------------------------------------------------------|----|
+| `getAllProcessInfo`()                                                           |    |
+| `getProcessInfo`(name)                                                          |    |
+| `getState`()                                                                    |    |
+| `readProcessLog`(name)                                                          |    |
+| `readProcessStderrLog`(name)                                                    |    |
+| `readProcessStdoutLog`(name)                                                    |    |
+| `reloadConfig`([start_new])                                                     |    |
+| `restart`()                                                                     |    |
+| `shutdown`()                                                                    |    |
+| `signalProcess`(name, signal)                                                   |    |
+| `startAllProcesses`()                                                           |    |
+| `startProcess`(name)                                                            |    |
+| `stopAllProcesses`()                                                            |    |
+| `stopProcess`(name)                                                             |    |
+
+<!-- docs/src/_build/supervisor_pydantic.ProcessInfo.html.md -->
+
+# supervisor_pydantic.ProcessInfo
+
+### *pydantic model* supervisor_pydantic.ProcessInfo[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo)
+
+Bases: `BaseModel`
+
+#### *field* name *: str* *[Required]*
+
+#### *field* group *: str* *[Required]*
+
+#### *field* state *: [ProcessState](supervisor_pydantic.ProcessState.html.md#supervisor_pydantic.ProcessState)* *[Required]*
+
+#### *field* description *: str* *[Required]*
+
+#### *field* start *: datetime* *[Required]*
+
+#### *field* stop *: datetime* *[Required]*
+
+#### *field* now *: datetime* *[Required]*
+
+#### *field* spawner *: str* *= ''*
+
+#### *field* exitstatus *: int* *[Required]*
+
+#### *field* logfile *: str* *[Required]*
+
+#### *field* stdout_logfile *: str* *[Required]*
+
+#### *field* stderr_logfile *: str* *[Required]*
+
+#### *field* pid *: int* *[Required]*
+
+#### running()[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.running)
+
+#### stopped()[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.stopped)
+
+#### done(ok_exitstatuses=None)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.done)
+
+#### ok(ok_exitstatuses=None)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.ok)
+
+#### bad(ok_exitstatuses=None)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.bad)
+
+<!-- docs/src/_build/supervisor_pydantic.ProcessState.html.md -->
+
+# supervisor_pydantic.ProcessState
+
+### *class* supervisor_pydantic.ProcessState(value)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessState)
+
+Bases: `Enum`
+
+#### \_\_init_\_(\*args, \*\*kwds)
+
+### Attributes
+
+| `STOPPED`   |    |
+|-------------|----|
+| `STARTING`  |    |
+| `RUNNING`   |    |
+| `BACKOFF`   |    |
+| `STOPPING`  |    |
+| `EXITED`    |    |
+| `FATAL`     |    |
+| `UNKNOWN`   |    |
+
+<!-- docs/src/_build/supervisor_pydantic.SupervisorState.html.md -->
+
+# supervisor_pydantic.SupervisorState
+
+### *class* supervisor_pydantic.SupervisorState(value)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#SupervisorState)
+
+Bases: `Enum`
+
+#### \_\_init_\_(\*args, \*\*kwds)
+
+### Attributes
+
+| `FATAL`      |    |
+|--------------|----|
+| `RUNNING`    |    |
+| `RESTARTING` |    |
+| `SHUTDOWN`   |    |
+
+<!-- docs/src/_build/supervisor_pydantic.SupervisorMethodResult.html.md -->
 
 # supervisor_pydantic.SupervisorMethodResult
 
-### *class* supervisor_pydantic.SupervisorMethodResult(value)
+### *class* supervisor_pydantic.SupervisorMethodResult(value)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#SupervisorMethodResult)
 
 Bases: `Enum`
 
@@ -756,198 +994,45 @@ Bases: `Enum`
 | `STILL_RUNNING`         |    |
 | `CANT_REREAD`           |    |
 
+<!-- docs/src/_build/supervisor_pydantic.write_supervisor_config.html.md -->
 
-# supervisor_pydantic.SupervisorRemoteXMLRPCClient.html.md
+# supervisor_pydantic.write_supervisor_config
 
-# supervisor_pydantic.SupervisorRemoteXMLRPCClient
+### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c369a10>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#write_supervisor_config)
 
-### *class* supervisor_pydantic.SupervisorRemoteXMLRPCClient(cfg: [SupervisorConvenienceConfiguration](supervisor_pydantic.SupervisorConvenienceConfiguration.md#supervisor_pydantic.SupervisorConvenienceConfiguration))
+Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
 
-Bases: `object`
+* **Parameters:**
+  **cfg_json** (*str*) – JSON string of SupervisorConvenienceConfiguration
 
-A light wrapper over the supervisor xmlrpc api: [http://supervisord.org/api.html](http://supervisord.org/api.html)
+<!-- docs/src/_build/supervisor_pydantic.start_supervisor.html.md -->
 
-#### \_\_init_\_(cfg: [SupervisorConvenienceConfiguration](supervisor_pydantic.SupervisorConvenienceConfiguration.md#supervisor_pydantic.SupervisorConvenienceConfiguration))
+# supervisor_pydantic.start_supervisor
 
-### Methods
+### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f4d2c3699d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c36a290>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#start_supervisor)
 
-| [`__init__`](#supervisor_pydantic.SupervisorRemoteXMLRPCClient.__init__)(cfg)   |    |
-|---------------------------------------------------------------------------------|----|
-| `getAllProcessInfo`()                                                           |    |
-| `getProcessInfo`(name)                                                          |    |
-| `getState`()                                                                    |    |
-| `readProcessLog`(name)                                                          |    |
-| `readProcessStderrLog`(name)                                                    |    |
-| `readProcessStdoutLog`(name)                                                    |    |
-| `reloadConfig`([start_new])                                                     |    |
-| `restart`()                                                                     |    |
-| `shutdown`()                                                                    |    |
-| `signalProcess`(name, signal)                                                   |    |
-| `startAllProcesses`()                                                           |    |
-| `startProcess`(name)                                                            |    |
-| `stopAllProcesses`()                                                            |    |
-| `stopProcess`(name)                                                             |    |
+Start a supervisor instance using supervisord in background
 
+* **Parameters:**
+  **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
 
-# supervisor_pydantic.SupervisorState.html.md
+<!-- docs/src/_build/supervisor_pydantic.start_programs.html.md -->
 
-# supervisor_pydantic.SupervisorState
+# supervisor_pydantic.start_programs
 
-### *class* supervisor_pydantic.SupervisorState(value)
+### supervisor_pydantic.start_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f4d2c3d0fd0>] = PosixPath('pydantic.json'), restart: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c2329d0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#start_programs)
 
-Bases: `Enum`
+Start all programs in the supervisor instance
 
-#### \_\_init_\_(\*args, \*\*kwds)
+* **Parameters:**
+  * **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
+  * **restart** (*bool* *,* *optional*) – if true, restart all programs. Defaults to False.
 
-### Attributes
-
-| `FATAL`      |    |
-|--------------|----|
-| `RUNNING`    |    |
-| `RESTARTING` |    |
-| `SHUTDOWN`   |    |
-
-
-# supervisor_pydantic.SupervisorctlConfiguration.html.md
-
-# supervisor_pydantic.SupervisorctlConfiguration
-
-### *pydantic model* supervisor_pydantic.SupervisorctlConfiguration
-
-Bases: `_BaseCfgModel`
-
-#### *field* serverurl *: AnyUrl | None* *= None*
-
-The URL that should be used to access the supervisord server, e.g. [http://localhost:9001](http://localhost:9001). For UNIX domain sockets, use unix:///absolute/path/to/file.sock.
-
-#### *field* username *: Annotated[str, AfterValidator(func=\_is_username)] | None* *= None*
-
-The username to pass to the supervisord server for use in authentication. This should be same as username from the supervisord server configuration for the port or UNIX domain socket you’re attempting to access.
-
-#### *field* password *: SecretStr | None* *= None*
-
-The password to pass to the supervisord server for use in authentication. This should be the cleartext version of password from the supervisord server configuration for the port or UNIX domain socket you’re attempting to access. This value cannot be passed as a SHA hash. Unlike other passwords specified in this file, it must be provided in cleartext.
-
-#### *field* prompt *: str | None* *= None*
-
-String used as supervisorctl prompt.
-
-#### *field* history_file *: Path | None* *= None*
-
-A path to use as the readline persistent history file. If you enable this feature by choosing a path, your supervisorctl commands will be kept in the file, and you can use readline (e.g. arrow-up) to invoke commands you performed in your last supervisorctl session.
-
-
-# supervisor_pydantic.SupervisordConfiguration.html.md
-
-# supervisor_pydantic.SupervisordConfiguration
-
-### *pydantic model* supervisor_pydantic.SupervisordConfiguration
-
-Bases: `_BaseCfgModel`
-
-#### *field* logfile *: Path | None* *= None*
-
-The path to the activity log of the supervisord process. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
-
-#### *field* logfile_maxbytes *: str | None* *= None*
-
-The maximum number of bytes that may be consumed by the activity log file before it is rotated (suffix multipliers like “KB”, “MB”, and “GB” can be used in the value). Set this value to 0 to indicate an unlimited log size.
-
-#### *field* logfile_backups *: int | None* *= None*
-
-The number of backups to keep around resulting from activity log file rotation. If set to 0, no backups will be kept.
-
-#### *field* loglevel *: Literal['critical', 'error', 'warn', 'info', 'debug', 'trace', 'blather'] | None* *= None*
-
-The logging level, dictating what is written to the supervisord activity log. One of critical, error, warn, info, debug, trace, or blather. Note that at log level debug, the supervisord log file will record the stderr/stdout output of its child processes and extended info about process state changes, which is useful for debugging a process which isn’t starting properly. See also: Activity Log Levels.
-
-#### *field* pidfile *: Path | None* *= None*
-
-The location in which supervisord keeps its pid file. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
-
-#### *field* umask *: \_check_is_octal)] | None* *= None*
-
-The umask of the supervisord process.
-
-#### *field* nodaemon *: bool | None* *= None*
-
-If true, supervisord will start in the foreground instead of daemonizing.
-
-#### *field* silent *: bool | None* *= None*
-
-If true and not daemonized, logs will not be directed to stdout.
-
-#### *field* minfds *: int | None* *= None*
-
-The minimum number of file descriptors that must be available before supervisord will start successfully. A call to setrlimit will be made to attempt to raise the soft and hard limits of the supervisord process to satisfy minfds. The hard limit may only be raised if supervisord is run as root. supervisord uses file descriptors liberally, and will enter a failure mode when one cannot be obtained from the OS, so it’s useful to be able to specify a minimum value to ensure it doesn’t run out of them during execution. These limits will be inherited by the managed subprocesses. This option is particularly useful on Solaris, which has a low per-process fd limit by default.
-
-#### *field* minprocs *: int | None* *= None*
-
-The minimum number of process descriptors that must be available before supervisord will start successfully. A call to setrlimit will be made to attempt to raise the soft and hard limits of the supervisord process to satisfy minprocs. The hard limit may only be raised if supervisord is run as root. supervisord will enter a failure mode when the OS runs out of process descriptors, so it’s useful to ensure that enough process descriptors are available upon supervisord startup.
-
-#### *field* nocleanup *: bool | None* *= None*
-
-Prevent supervisord from clearing any existing AUTO child log files at startup time. Useful for debugging.
-
-#### *field* childlogdir *: Path | None* *= None*
-
-The directory used for AUTO child log files. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
-
-#### *field* user *: Annotated[str, AfterValidator(func=\_is_username)] | None* *= None*
-
-Instruct supervisord to switch users to this UNIX user account before doing any meaningful processing. The user can only be switched if supervisord is started as the root user.
-
-#### *field* directory *: Path | None* *= None*
-
-When supervisord daemonizes, switch to this directory. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
-
-#### *field* strip_ansi *: bool | None* *= None*
-
-Strip all ANSI escape sequences from child log files.
-
-#### *field* environment *: dict | None* *= None*
-
-A list of key/value pairs in the form KEY=”val”,KEY2=”val2” that will be placed in the environment of all child processes. This does not change the environment of supervisord itself. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found. Values containing non-alphanumeric characters should be quoted (e.g. KEY=”val:123”,KEY2=”val,456”). Otherwise, quoting the values is optional but recommended. To escape percent characters, simply use two. (e.g. URI=”/first%%20name”) Note that subprocesses will inherit the environment variables of the shell used to start supervisord except for the ones overridden here and within the program’s environment option. See Subprocess Environment.
-
-#### *field* identifier *: str | None* *= None*
-
-The identifier string for this supervisor process, used by the RPC interface.
-
-
-# supervisor_pydantic.UnixHttpServerConfiguration.html.md
-
-# supervisor_pydantic.UnixHttpServerConfiguration
-
-### *pydantic model* supervisor_pydantic.UnixHttpServerConfiguration
-
-Bases: `_BaseCfgModel`
-
-#### *field* file *: Path | None* *= None*
-
-A path to a UNIX domain socket on which supervisor will listen for HTTP/XML-RPC requests. supervisorctl uses XML-RPC to communicate with supervisord over this port. This option can include the value %(here)s, which expands to the directory in which the supervisord configuration file was found.
-
-#### *field* chmod *: \_check_is_octal)] | None* *= None*
-
-Change the UNIX permission mode bits of the UNIX domain socket to this value at startup.
-
-#### *field* chown *: Annotated[str, AfterValidator(func=\_is_username_or_usernamegroup)] | None* *= None*
-
-Change the user and group of the socket file to this value. May be a UNIX username (e.g. chrism) or a UNIX username and group separated by a colon (e.g. chrism:wheel).
-
-#### *field* username *: Annotated[str, AfterValidator(func=\_is_username)] | None* *= None*
-
-The username required for authentication to this HTTP server.
-
-#### *field* password *: SecretStr | None* *= None*
-
-The password required for authentication to this HTTP server. This can be a cleartext password, or can be specified as a SHA-1 hash if prefixed by the string {SHA}. For example, {SHA}82ab876d1387bfafe46cc1c8a2ef074eae50cb1d is the SHA-stored version of the password “thepassword”. Note that hashed password must be in hex format.
-
-
-# supervisor_pydantic.check_programs.html.md
+<!-- docs/src/_build/supervisor_pydantic.check_programs.html.md -->
 
 # supervisor_pydantic.check_programs
 
-### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b81e10>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b81ed0>] = True)
+### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f4d2c232e10>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c232e90>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#check_programs)
 
 Check if programs are in a good state.
 
@@ -956,50 +1041,11 @@ Check if programs are in a good state.
   * **check_running** (*bool* *,* *optional*) – if true, only return true if they’re running
   * **check_done** (*bool* *,* *optional*) – if true, only return true if they’re done (cleanly)
 
-
-# supervisor_pydantic.kill_supervisor.html.md
-
-# supervisor_pydantic.kill_supervisor
-
-### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b82450>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82510>] = True)
-
-Kill the supervisor instance with os.kill
-
-* **Parameters:**
-  **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
-
-
-# supervisor_pydantic.load_config.html.md
-
-# supervisor_pydantic.load_config
-
-### supervisor_pydantic.load_config(config_dir: str = 'config', config_name: str = '', overrides: list[str] | None = None, , basepath: str = '', \_offset: int = 3) → [SupervisorConfiguration](supervisor_pydantic.SupervisorConfiguration.md#supervisor_pydantic.SupervisorConfiguration)
-
-
-# supervisor_pydantic.load_convenience_config.html.md
-
-# supervisor_pydantic.load_convenience_config
-
-### supervisor_pydantic.load_convenience_config(config_dir: str = 'config', config_name: str = '', overrides: list[str] | None = None, , basepath: str = '', \_offset: int = 3) → [SupervisorConfiguration](supervisor_pydantic.SupervisorConfiguration.md#supervisor_pydantic.SupervisorConfiguration)
-
-
-# supervisor_pydantic.remove_supervisor_config.html.md
-
-# supervisor_pydantic.remove_supervisor_config
-
-### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b825d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82690>] = True)
-
-Remove the supervisor config file and working directory
-
-* **Parameters:**
-  **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
-
-
-# supervisor_pydantic.restart_programs.html.md
+<!-- docs/src/_build/supervisor_pydantic.restart_programs.html.md -->
 
 # supervisor_pydantic.restart_programs
 
-### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b82110>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b821d0>] = True)
+### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f4d2c233050>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c233110>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#restart_programs)
 
 Restart all programs in the supervisor instance
 
@@ -1007,128 +1053,46 @@ Restart all programs in the supervisor instance
   * **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
   * **force** (*bool* *,* *optional*) – if true, force restart. Defaults to False.
 
-
-# supervisor_pydantic.start_programs.html.md
-
-# supervisor_pydantic.start_programs
-
-### supervisor_pydantic.start_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31c9b110>] = PosixPath('pydantic.json'), restart: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b81d10>] = True)
-
-Start all programs in the supervisor instance
-
-* **Parameters:**
-  * **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
-  * **restart** (*bool* *,* *optional*) – if true, restart all programs. Defaults to False.
-
-
-# supervisor_pydantic.start_supervisor.html.md
-
-# supervisor_pydantic.start_supervisor
-
-### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31eeae90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31c99c50>] = True)
-
-Start a supervisor instance using supervisord in background
-
-* **Parameters:**
-  **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
-
-
-# supervisor_pydantic.stop_programs.html.md
+<!-- docs/src/_build/supervisor_pydantic.stop_programs.html.md -->
 
 # supervisor_pydantic.stop_programs
 
-### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b81f90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82050>] = True)
+### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f4d2c232f10>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c232f90>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#stop_programs)
 
 Stop all programs in the supervisor instance
 
 * **Parameters:**
   **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
 
-
-# supervisor_pydantic.stop_supervisor.html.md
+<!-- docs/src/_build/supervisor_pydantic.stop_supervisor.html.md -->
 
 # supervisor_pydantic.stop_supervisor
 
-### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fbf31b822d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31b82390>] = True)
+### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f4d2c233210>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c2332d0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#stop_supervisor)
 
 Stop the supervisor instance
 
 * **Parameters:**
   **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
 
+<!-- docs/src/_build/supervisor_pydantic.kill_supervisor.html.md -->
 
-# supervisor_pydantic.write_supervisor_config.html.md
+# supervisor_pydantic.kill_supervisor
 
-# supervisor_pydantic.write_supervisor_config
+### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f4d2c233390>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c233450>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#kill_supervisor)
 
-### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fbf31c99d90>] = True)
-
-Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
+Kill the supervisor instance with os.kill
 
 * **Parameters:**
-  **cfg_json** (*str*) – JSON string of SupervisorConvenienceConfiguration
+  **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration
 
+<!-- docs/src/_build/supervisor_pydantic.remove_supervisor_config.html.md -->
 
-# tutorial.html.md
+# supervisor_pydantic.remove_supervisor_config
 
-# Tutorial: render a supervisord configuration
+### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f4d2c233510>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f4d2c2335d0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#remove_supervisor_config)
 
-In this tutorial, we will model one worker process, render its supervisord
-configuration, and write the files to a temporary directory.
+Remove the supervisor config file and working directory
 
-## Install the package
-
-```bash
-pip install supervisor-pydantic
-```
-
-## Create the model
-
-Create `example.py`:
-
-```python
-from supervisor_pydantic import ProgramConfiguration, SupervisorConvenienceConfiguration
-
-config = SupervisorConvenienceConfiguration(
-    working_dir="/tmp/tutorial-supervisor",
-    port="127.0.0.1:9001",
-    program={
-        "worker": ProgramConfiguration(
-            command="python -m http.server 8080",
-            environment={"MODE": "tutorial"},
-        )
-    },
-)
-
-print(config.to_cfg())
-config.write()
-print(config.config_path)
-```
-
-Run it:
-
-```bash
-python example.py
-```
-
-The rendered text contains `[program:worker]`, its command, and the environment
-setting. The final line points to:
-
-```text
-/tmp/tutorial-supervisor/supervisord.conf
-```
-
-## Inspect the generated layout
-
-List the directory:
-
-```bash
-find /tmp/tutorial-supervisor -maxdepth 2 -type f
-```
-
-The configuration file exists, and the worker directory has been created for
-its output and error logs. No supervisord process has been started.
-
-You have now built and persisted a validated supervisord configuration.
-
-
+* **Parameters:**
+  **cfg** (*Annotated* *[**Path* *,* *Option* *,* *optional*) – Path to JSON file of SupervisorConvenienceConfiguration

@@ -1,6 +1,6 @@
 # supervisor_pydantic.SupervisorctlConfiguration
 
-### *pydantic model* supervisor_pydantic.SupervisorctlConfiguration
+### *pydantic model* supervisor_pydantic.SupervisorctlConfiguration[[source]](../../../_modules/supervisor_pydantic/config/supervisorctl.html.md#SupervisorctlConfiguration)
 
 Bases: `_BaseCfgModel`
 

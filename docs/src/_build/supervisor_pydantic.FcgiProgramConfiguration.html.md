@@ -1,10 +1,10 @@
 # supervisor_pydantic.FcgiProgramConfiguration
 
-### *pydantic model* supervisor_pydantic.FcgiProgramConfiguration
+### *pydantic model* supervisor_pydantic.FcgiProgramConfiguration[[source]](../../../_modules/supervisor_pydantic/config/fcgiprogram.html.md#FcgiProgramConfiguration)
 
-Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.md#supervisor_pydantic.ProgramConfiguration)
+Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.html.md#supervisor_pydantic.ProgramConfiguration)
 
-#### to_cfg(key: str) → str
+#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/fcgiprogram.html.md#FcgiProgramConfiguration.to_cfg)
 
 #### *field* socket *: str* *[Required]*
 

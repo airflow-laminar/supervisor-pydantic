@@ -1,6 +1,6 @@
 # supervisor_pydantic.ProcessState
 
-### *class* supervisor_pydantic.ProcessState(value)
+### *class* supervisor_pydantic.ProcessState(value)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessState)
 
 Bases: `Enum`
 

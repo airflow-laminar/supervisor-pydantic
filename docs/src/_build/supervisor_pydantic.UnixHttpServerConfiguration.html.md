@@ -1,6 +1,6 @@
 # supervisor_pydantic.UnixHttpServerConfiguration
 
-### *pydantic model* supervisor_pydantic.UnixHttpServerConfiguration
+### *pydantic model* supervisor_pydantic.UnixHttpServerConfiguration[[source]](../../../_modules/supervisor_pydantic/config/unix_http_server.html.md#UnixHttpServerConfiguration)
 
 Bases: `_BaseCfgModel`
 

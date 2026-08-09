@@ -1,6 +1,6 @@
 # supervisor_pydantic.SupervisorState
 
-### *class* supervisor_pydantic.SupervisorState(value)
+### *class* supervisor_pydantic.SupervisorState(value)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#SupervisorState)
 
 Bases: `Enum`
 

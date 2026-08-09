@@ -1,8 +1,8 @@
 # supervisor_pydantic.SupervisorConvenienceConfiguration
 
-### *pydantic model* supervisor_pydantic.SupervisorConvenienceConfiguration
+### *pydantic model* supervisor_pydantic.SupervisorConvenienceConfiguration[[source]](../../../_modules/supervisor_pydantic/config/convenience.html.md#SupervisorConvenienceConfiguration)
 
-Bases: [`SupervisorConfiguration`](supervisor_pydantic.SupervisorConfiguration.md#supervisor_pydantic.SupervisorConfiguration)
+Bases: [`SupervisorConfiguration`](supervisor_pydantic.SupervisorConfiguration.html.md#supervisor_pydantic.SupervisorConfiguration)
 
 Convenience layer, settings that MUST be set when running via convenience API
 

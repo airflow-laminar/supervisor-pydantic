@@ -1,10 +1,10 @@
 # supervisor_pydantic.GroupConfiguration
 
-### *pydantic model* supervisor_pydantic.GroupConfiguration
+### *pydantic model* supervisor_pydantic.GroupConfiguration[[source]](../../../_modules/supervisor_pydantic/config/group.html.md#GroupConfiguration)
 
 Bases: `_BaseCfgModel`
 
-#### to_cfg(key: str) → str
+#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/group.html.md#GroupConfiguration.to_cfg)
 
 #### *field* programs *: list[str]* *[Required]*
 

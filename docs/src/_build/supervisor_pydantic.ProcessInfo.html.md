@@ -1,6 +1,6 @@
 # supervisor_pydantic.ProcessInfo
 
-### *pydantic model* supervisor_pydantic.ProcessInfo
+### *pydantic model* supervisor_pydantic.ProcessInfo[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo)
 
 Bases: `BaseModel`
 
@@ -8,7 +8,7 @@ Bases: `BaseModel`
 
 #### *field* group *: str* *[Required]*
 
-#### *field* state *: [ProcessState](supervisor_pydantic.ProcessState.md#supervisor_pydantic.ProcessState)* *[Required]*
+#### *field* state *: [ProcessState](supervisor_pydantic.ProcessState.html.md#supervisor_pydantic.ProcessState)* *[Required]*
 
 #### *field* description *: str* *[Required]*
 
@@ -30,12 +30,12 @@ Bases: `BaseModel`
 
 #### *field* pid *: int* *[Required]*
 
-#### running()
+#### running()[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.running)
 
-#### stopped()
+#### stopped()[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.stopped)
 
-#### done(ok_exitstatuses=None)
+#### done(ok_exitstatuses=None)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.done)
 
-#### ok(ok_exitstatuses=None)
+#### ok(ok_exitstatuses=None)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.ok)
 
-#### bad(ok_exitstatuses=None)
+#### bad(ok_exitstatuses=None)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.bad)

@@ -1,12 +1,12 @@
 # supervisor_pydantic.SupervisorRemoteXMLRPCClient
 
-### *class* supervisor_pydantic.SupervisorRemoteXMLRPCClient(cfg: [SupervisorConvenienceConfiguration](supervisor_pydantic.SupervisorConvenienceConfiguration.md#supervisor_pydantic.SupervisorConvenienceConfiguration))
+### *class* supervisor_pydantic.SupervisorRemoteXMLRPCClient(cfg: [SupervisorConvenienceConfiguration](supervisor_pydantic.SupervisorConvenienceConfiguration.html.md#supervisor_pydantic.SupervisorConvenienceConfiguration))[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#SupervisorRemoteXMLRPCClient)
 
 Bases: `object`
 
 A light wrapper over the supervisor xmlrpc api: [http://supervisord.org/api.html](http://supervisord.org/api.html)
 
-#### \_\_init_\_(cfg: [SupervisorConvenienceConfiguration](supervisor_pydantic.SupervisorConvenienceConfiguration.md#supervisor_pydantic.SupervisorConvenienceConfiguration))
+#### \_\_init_\_(cfg: [SupervisorConvenienceConfiguration](supervisor_pydantic.SupervisorConvenienceConfiguration.html.md#supervisor_pydantic.SupervisorConvenienceConfiguration))[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#SupervisorRemoteXMLRPCClient.__init__)
 
 ### Methods
 
