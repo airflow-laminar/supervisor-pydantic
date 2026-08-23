@@ -192,7 +192,7 @@
 </span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventType</span>
 </span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">.program</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgramConfiguration</span>
 </span><span id="line-5">
-</span><span id="line-6"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;EventListenerConfiguration&quot;</span><span class="p">,)</span>
+</span><span id="line-6"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"EventListenerConfiguration"</span><span class="p">,)</span>
 </span><span id="line-7">
 </span><span id="line-8">
 <div class="viewcode-block" id="EventListenerConfiguration">
@@ -202,41 +202,41 @@
 <a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.EventListenerConfiguration.html#supervisor_pydantic.EventListenerConfiguration.to_cfg">[docs]</a>
 </span><span id="line-10">    <span class="k">def</span><span class="w"> </span><span class="nf">to_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="line-11">        <span class="c1"># Overload to require key</span>
-</span><span id="line-12">        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_cfg</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[event_listener&quot;</span><span class="p">,</span> <span class="s2">&quot;[eventlistener&quot;</span><span class="p">)</span></div>
+</span><span id="line-12">        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_cfg</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"[event_listener"</span><span class="p">,</span> <span class="s2">"[eventlistener"</span><span class="p">)</span></div>
 
 </span><span id="line-13">
 </span><span id="line-14">    <span class="n">buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 </span><span id="line-15">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="line-16">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The event listener pool’s event queue buffer size. When a listener pool’s event buffer is overflowed (as can happen when an event listener pool cannot keep up with all of the events sent to it), the oldest event in the buffer is discarded.&quot;</span><span class="p">,</span>
+</span><span id="line-16">        <span class="n">description</span><span class="o">=</span><span class="s2">"The event listener pool’s event queue buffer size. When a listener pool’s event buffer is overflowed (as can happen when an event listener pool cannot keep up with all of the events sent to it), the oldest event in the buffer is discarded."</span><span class="p">,</span>
 </span><span id="line-17">    <span class="p">)</span>
 </span><span id="line-18">    <span class="n">events</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EventType</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 </span><span id="line-19">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="line-20">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A comma-separated list of event type names that this listener is “interested” in receiving notifications for (see Event Types for a list of valid event type names).&quot;</span><span class="p">,</span>
+</span><span id="line-20">        <span class="n">description</span><span class="o">=</span><span class="s2">"A comma-separated list of event type names that this listener is “interested” in receiving notifications for (see Event Types for a list of valid event type names)."</span><span class="p">,</span>
 </span><span id="line-21">    <span class="p">)</span>
 </span><span id="line-22">    <span class="n">result_handler</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 </span><span id="line-23">        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-</span><span id="line-24">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A pkg_resources entry point string that resolves to a Python callable. The default value is supervisor.dispatchers:default_handler. Specifying an alternate result handler is a very uncommon thing to need to do, and as a result, how to create one is not documented.&quot;</span><span class="p">,</span>
+</span><span id="line-24">        <span class="n">description</span><span class="o">=</span><span class="s2">"A pkg_resources entry point string that resolves to a Python callable. The default value is supervisor.dispatchers:default_handler. Specifying an alternate result handler is a very uncommon thing to need to do, and as a result, how to create one is not documented."</span><span class="p">,</span>
 </span><span id="line-25">    <span class="p">)</span>
 </span><span id="line-26">
-</span><span id="line-27">    <span class="c1"># TODO can&#39;t inherit stdout_capture_maxbytes</span>
-</span><span id="line-28">    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;stdout_capture_maxbytes&quot;</span><span class="p">)</span>
+</span><span id="line-27">    <span class="c1"># TODO can't inherit stdout_capture_maxbytes</span>
+</span><span id="line-28">    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"stdout_capture_maxbytes"</span><span class="p">)</span>
 </span><span id="line-29">    <span class="nd">@classmethod</span>
 </span><span id="line-30">    <span class="k">def</span><span class="w"> </span><span class="nf">_event_listener_cant_use_stdout_capture_maxbytes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="line-31">        <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
-</span><span id="line-32">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;eventlistener cannot use stdout_capture_maxbytes&quot;</span><span class="p">)</span>
+</span><span id="line-32">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"eventlistener cannot use stdout_capture_maxbytes"</span><span class="p">)</span>
 </span><span id="line-33">        <span class="k">return</span> <span class="kc">None</span>
 </span><span id="line-34">
-</span><span id="line-35">    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+</span><span id="line-35">    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">"events"</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span>
 </span><span id="line-36">    <span class="k">def</span><span class="w"> </span><span class="nf">_dump_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 </span><span id="line-37">        <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
-</span><span id="line-38">            <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span id="line-38">            <span class="k">return</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 </span><span id="line-39">        <span class="k">return</span> <span class="kc">None</span>
 </span><span id="line-40">
-</span><span id="line-41">    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+</span><span id="line-41">    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"events"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
 </span><span id="line-42">    <span class="nd">@classmethod</span>
 </span><span id="line-43">    <span class="k">def</span><span class="w"> </span><span class="nf">_load_events</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 </span><span id="line-44">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="line-45">            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+</span><span id="line-45">            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span>
 </span><span id="line-46">        <span class="k">return</span> <span class="n">v</span></div>
 
 </span></code></pre></div>

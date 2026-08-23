@@ -191,7 +191,7 @@
 </span><span id="line-2">
 </span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">_BaseCfgModel</span>
 </span><span id="line-4">
-</span><span id="line-5"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;GroupConfiguration&quot;</span><span class="p">,)</span>
+</span><span id="line-5"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"GroupConfiguration"</span><span class="p">,)</span>
 </span><span id="line-6">
 </span><span id="line-7">
 <div class="viewcode-block" id="GroupConfiguration">
@@ -204,20 +204,20 @@
 </span><span id="line-11">        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_cfg</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span></div>
 
 </span><span id="line-12">
-</span><span id="line-13">    <span class="n">programs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;A comma-separated list of program names. The programs which are listed become members of the group.&quot;</span><span class="p">)</span>
-</span><span id="line-14">    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;A priority number analogous to a [program:x] priority value assigned to the group.&quot;</span><span class="p">)</span>
+</span><span id="line-13">    <span class="n">programs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"A comma-separated list of program names. The programs which are listed become members of the group."</span><span class="p">)</span>
+</span><span id="line-14">    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"A priority number analogous to a [program:x] priority value assigned to the group."</span><span class="p">)</span>
 </span><span id="line-15">
-</span><span id="line-16">    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">&quot;programs&quot;</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+</span><span id="line-16">    <span class="nd">@field_serializer</span><span class="p">(</span><span class="s2">"programs"</span><span class="p">,</span> <span class="n">when_used</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span>
 </span><span id="line-17">    <span class="k">def</span><span class="w"> </span><span class="nf">_dump_programs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 </span><span id="line-18">        <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
-</span><span id="line-19">            <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span id="line-19">            <span class="k">return</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 </span><span id="line-20">        <span class="k">return</span> <span class="kc">None</span>
 </span><span id="line-21">
-</span><span id="line-22">    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;programs&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+</span><span id="line-22">    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"programs"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
 </span><span id="line-23">    <span class="nd">@classmethod</span>
 </span><span id="line-24">    <span class="k">def</span><span class="w"> </span><span class="nf">_load_programs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 </span><span id="line-25">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="line-26">            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+</span><span id="line-26">            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span>
 </span><span id="line-27">        <span class="k">return</span> <span class="n">v</span></div>
 
 </span></code></pre></div>

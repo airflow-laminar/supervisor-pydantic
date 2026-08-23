@@ -193,7 +193,7 @@
 </span><span id="line-4">
 </span><span id="line-5"><span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">_BaseCfgModel</span>
 </span><span id="line-6">
-</span><span id="line-7"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;RpcInterfaceConfiguration&quot;</span><span class="p">,)</span>
+</span><span id="line-7"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"RpcInterfaceConfiguration"</span><span class="p">,)</span>
 </span><span id="line-8">
 </span><span id="line-9">
 <div class="viewcode-block" id="RpcInterfaceConfiguration">
@@ -203,12 +203,12 @@
 <a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.RpcInterfaceConfiguration.html#supervisor_pydantic.RpcInterfaceConfiguration.to_cfg">[docs]</a>
 </span><span id="line-11">    <span class="k">def</span><span class="w"> </span><span class="nf">to_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="line-12">        <span class="c1"># Overload to require key</span>
-</span><span id="line-13">        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_cfg</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;[rpc_interface&quot;</span><span class="p">,</span> <span class="s2">&quot;[rpcinterface&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;rpcinterface_factory=&quot;</span><span class="p">,</span> <span class="s2">&quot;supervisor.rpcinterface_factory=&quot;</span><span class="p">)</span></div>
+</span><span id="line-13">        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_cfg</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"[rpc_interface"</span><span class="p">,</span> <span class="s2">"[rpcinterface"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"rpcinterface_factory="</span><span class="p">,</span> <span class="s2">"supervisor.rpcinterface_factory="</span><span class="p">)</span></div>
 
 </span><span id="line-14">
 </span><span id="line-15">    <span class="n">rpcinterface_factory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span id="line-16">        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;supervisor.rpcinterface:make_main_rpcinterface&quot;</span><span class="p">,</span>
-</span><span id="line-17">        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;pkg_resources “entry point” dotted name to your RPC interface’s factory function.&quot;</span><span class="p">,</span>
+</span><span id="line-16">        <span class="n">default</span><span class="o">=</span><span class="s2">"supervisor.rpcinterface:make_main_rpcinterface"</span><span class="p">,</span>
+</span><span id="line-17">        <span class="n">description</span><span class="o">=</span><span class="s2">"pkg_resources “entry point” dotted name to your RPC interface’s factory function."</span><span class="p">,</span>
 </span><span id="line-18">    <span class="p">)</span>
 </span><span id="line-19">    <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># TODO</span></div>
 
