@@ -86,16 +86,22 @@ class ProcessInfo(BaseModel):
 
     def done(self, ok_exitstatuses=None):
         ok_exitstatuses = ok_exitstatuses or (0,)
-        return self.state in (ProcessState.STOPPED,) or (self.state == ProcessState.EXITED and self.exitstatus in ok_exitstatuses)
+        return (self.state == ProcessState.STOPPED and self.start.timestamp() > 0) or (
+            self.state == ProcessState.EXITED and self.exitstatus in ok_exitstatuses
+        )
 
     def ok(self, ok_exitstatuses=None):
         ok_exitstatuses = ok_exitstatuses or (0,)
-        return self.state in (
-            # ProcessState.STARTING,
-            ProcessState.RUNNING,
-            ProcessState.STOPPING,
-            ProcessState.STOPPED,
-        ) or (self.state == ProcessState.EXITED and self.exitstatus in ok_exitstatuses)
+        return (
+            self.state
+            in (
+                # ProcessState.STARTING,
+                ProcessState.RUNNING,
+                ProcessState.STOPPING,
+            )
+            or (self.state == ProcessState.STOPPED and self.start.timestamp() > 0)
+            or (self.state == ProcessState.EXITED and self.exitstatus in ok_exitstatuses)
+        )
 
     def bad(self, ok_exitstatuses=None):
         ok_exitstatuses = ok_exitstatuses or (0,)
