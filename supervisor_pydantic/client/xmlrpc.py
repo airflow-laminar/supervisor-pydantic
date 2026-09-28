@@ -71,7 +71,7 @@ class ProcessInfo(BaseModel):
     start: datetime
     stop: datetime
     now: datetime
-    spawner: str = ""
+    spawnerr: str = ""
     exitstatus: int
     logfile: str
     stdout_logfile: str
@@ -165,14 +165,16 @@ class SupervisorRemoteXMLRPCClient:
             raise RuntimeError(f"Unknown process: {name}")
         return self._client.supervisor.readProcessLog(name, 0, 0)
 
-    def readProcessStderrLog(self, name: str):
+    def readProcessStderrLog(self, name: str, offset: int = 0, length: int = 0):
         if name not in self._cfg.program:
             raise RuntimeError(f"Unknown process: {name}")
 
-        return self._client.supervisor.readProcessStderrLog()
+        return self._client.supervisor.readProcessStderrLog(name, offset, length)
 
-    def readProcessStdoutLog(self, name: str):
-        return self._client.supervisor.readProcessStdoutLog()
+    def readProcessStdoutLog(self, name: str, offset: int = 0, length: int = 0):
+        if name not in self._cfg.program:
+            raise RuntimeError(f"Unknown process: {name}")
+        return self._client.supervisor.readProcessStdoutLog(name, offset, length)
 
     def startAllProcesses(self) -> dict[str, ProcessInfo]:
         # start all
@@ -220,6 +222,8 @@ class SupervisorRemoteXMLRPCClient:
             proc_infos.append(self._stopProcessInternal(name))
         for name in changed:
             self._stopProcessInternal(name)
+            self._client.supervisor.removeProcessGroup(name)
+            self._client.supervisor.addProcessGroup(name)
             proc_infos.append(self.startProcess(name))
         # Don't need to start as we'll do this separately
         for name in added:
@@ -234,4 +238,4 @@ class SupervisorRemoteXMLRPCClient:
     def signalProcess(self, name: str, signal):
         if name not in self._cfg.program:
             raise RuntimeError(f"Unknown process: {name}")
-        return self._client.supervisor.signalProcess()
+        return self._client.supervisor.signalProcess(name, signal)
