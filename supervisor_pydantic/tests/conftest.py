@@ -77,7 +77,7 @@ def supervisor_convenience_configuration(open_port: int) -> Iterator[SupervisorC
             working_dir=td,
             program={
                 "test": ProgramConfiguration(
-                    command="bash -c 'sleep 1; exit 1'",
+                    command="bash -c 'sleep 3; exit 1'",
                 )
             },
         )
@@ -96,7 +96,7 @@ def permissioned_supervisor_convenience_configuration(
             path=tf.name,
             program={
                 "test": ProgramConfiguration(
-                    command="bash -c 'sleep 1; exit 1'",
+                    command="bash -c 'sleep 3; exit 1'",
                 )
             },
         )
