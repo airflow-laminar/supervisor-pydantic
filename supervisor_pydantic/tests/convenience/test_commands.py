@@ -58,6 +58,39 @@ def test_start_stop(supervisor_convenience_configuration: SupervisorConvenienceC
     supervisor_convenience_configuration.rmdir()
 
 
+def test_start_supervisor_with_changed_config_and_stopped_daemon(supervisor_convenience_configuration: SupervisorConvenienceConfiguration):
+    supervisor_convenience_configuration._write_self()
+    supervisor_convenience_configuration.config_path.write_text("different content")
+
+    with (
+        patch("supervisor_pydantic.convenience.commands.SupervisorRemoteXMLRPCClient") as client,
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.start") as start,
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", side_effect=[False, True]),
+    ):
+        assert start_supervisor(supervisor_convenience_configuration, _exit=False)
+
+    client.assert_not_called()
+    start.assert_called_once_with(daemon=True)
+    assert _check_same(supervisor_convenience_configuration)
+
+
+def test_start_supervisor_with_changed_config_and_running_daemon(supervisor_convenience_configuration: SupervisorConvenienceConfiguration):
+    supervisor_convenience_configuration._write_self()
+    supervisor_convenience_configuration.config_path.write_text("different content")
+
+    with (
+        patch("supervisor_pydantic.convenience.commands.SupervisorRemoteXMLRPCClient") as client,
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.start") as start,
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", return_value=True),
+    ):
+        assert start_supervisor(supervisor_convenience_configuration, _exit=False)
+
+    client.assert_called_once_with(cfg=supervisor_convenience_configuration)
+    client.return_value.reloadConfig.assert_called_once_with()
+    start.assert_not_called()
+    assert _check_same(supervisor_convenience_configuration)
+
+
 # Unit tests for helper functions
 
 

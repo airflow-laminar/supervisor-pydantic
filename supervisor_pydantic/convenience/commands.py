@@ -124,6 +124,7 @@ def start_supervisor(
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
+    running = cfg_obj.running()
 
     if not _check_same(cfg_obj):
         log.critical("Configurations don't match while writing supervisor config. This may lead to zombie supervisors")
@@ -135,11 +136,12 @@ def start_supervisor(
         log.info("Writing supervisor config to {cfg_obj.config_path}")
         cfg_obj._write_self()
 
-        log.info("Reloading supervisor config")
-        client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
-        client.reloadConfig()
+        if running:
+            log.info("Reloading supervisor config")
+            client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
+            client.reloadConfig()
 
-    if _check_running(cfg_obj):
+    if running:
         log.info("Supervisor is already running")
         return _raise_or_exit(True, _exit)
 
