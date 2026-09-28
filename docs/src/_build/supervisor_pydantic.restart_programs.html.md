@@ -1,6 +1,6 @@
 # supervisor_pydantic.restart_programs
 
-### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f03089bcc50>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f03089bcd10>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#restart_programs)
+### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fba92bc92d0>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fba92bc9390>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#restart_programs)
 
 Restart all programs in the supervisor instance
 
