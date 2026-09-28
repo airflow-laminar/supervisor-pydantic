@@ -28,3 +28,13 @@ def test_ok():
     x.state = ProcessState.EXITED
     x.exitstatus = 0
     assert x.ok()
+
+
+def test_never_started_is_not_done_or_ok():
+    x = _gen()
+    x.state = ProcessState.STOPPED
+    x.description = "Not started"
+    x.start = datetime.fromtimestamp(0, UTC)
+
+    assert not x.done()
+    assert not x.ok()
