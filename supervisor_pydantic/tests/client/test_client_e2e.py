@@ -1,5 +1,5 @@
 import xmlrpc
-from time import sleep
+from time import monotonic, sleep
 
 import pytest
 
@@ -7,12 +7,20 @@ from supervisor_pydantic import SupervisorConvenienceConfiguration, SupervisorRe
 from supervisor_pydantic.client.xmlrpc import ProcessState
 
 
+def _wait_for_state(client: SupervisorRemoteXMLRPCClient, name: str, state: ProcessState, timeout: float = 10) -> ProcessState:
+    deadline = monotonic() + timeout
+    while monotonic() < deadline:
+        current = client.getProcessInfo(name).state
+        if current == state:
+            return current
+        sleep(0.1)
+    return client.getProcessInfo(name).state
+
+
 def _assert_client_actions(client: SupervisorRemoteXMLRPCClient, name: str = "test"):
     assert client.getProcessInfo(name).state == ProcessState.STOPPED
-    sleep(1)
     assert client.startAllProcesses()[name].state == ProcessState.RUNNING
-    sleep(1)
-    assert client.getProcessInfo(name).state == ProcessState.EXITED
+    assert _wait_for_state(client, name, ProcessState.EXITED) == ProcessState.EXITED
     assert client.startProcess(name).state == ProcessState.RUNNING
     assert client.stopProcess(name).state == ProcessState.STOPPED
     assert client.startProcess(name).state == ProcessState.RUNNING
