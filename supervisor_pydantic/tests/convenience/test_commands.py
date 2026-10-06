@@ -2,7 +2,8 @@ import shutil
 import subprocess
 from subprocess import check_call
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+from xmlrpc.client import Fault
 
 import pytest
 from typer import Exit
@@ -15,6 +16,9 @@ from supervisor_pydantic.convenience.commands import (
     _load_or_pass,
     _raise_or_exit,
     _wait_or_while,
+    kill_supervisor,
+    remove_supervisor_config,
+    restart_programs,
     start_supervisor,
     stop_supervisor,
     write_supervisor_config,
@@ -307,3 +311,79 @@ def test_main_creates_app():
 
     # Verify the command was added
     assert any(cmd.name == "configure-supervisor" for cmd in app.registered_commands)
+
+
+@pytest.mark.parametrize("stopped", [False, True])
+def test_kill_reports_whether_supervisor_stopped(stopped):
+    cfg = Mock(command_timeout=1)
+    cfg.running.return_value = not stopped
+    with (
+        patch("supervisor_pydantic.convenience.commands._load_or_pass", return_value=cfg),
+        patch("supervisor_pydantic.convenience.commands.stop_programs", return_value=True),
+        patch("supervisor_pydantic.convenience.commands.sleep"),
+    ):
+        assert kill_supervisor(cfg, _exit=False) is stopped
+    cfg.kill.assert_called_once_with()
+
+
+@pytest.mark.parametrize("stop_succeeds, kill_succeeds", [(True, False), (False, True), (False, False)])
+def test_remove_requires_successful_shutdown(stop_succeeds, kill_succeeds):
+    cfg = Mock(command_timeout=1)
+    with (
+        patch("supervisor_pydantic.convenience.commands._load_or_pass", return_value=cfg),
+        patch("supervisor_pydantic.convenience.commands.stop_supervisor", return_value=stop_succeeds),
+        patch("supervisor_pydantic.convenience.commands.kill_supervisor", return_value=kill_succeeds) as kill,
+        patch("supervisor_pydantic.convenience.commands.sleep"),
+    ):
+        assert remove_supervisor_config(cfg, _exit=False) is (stop_succeeds or kill_succeeds)
+    if stop_succeeds:
+        kill.assert_not_called()
+    else:
+        kill.assert_called_once_with(cfg, _exit=False)
+    if stop_succeeds or kill_succeeds:
+        cfg.rmdir.assert_called_once_with()
+    else:
+        cfg.rmdir.assert_not_called()
+
+
+@pytest.mark.parametrize("stop_succeeds, start_succeeds", [(True, True), (False, True), (True, False)])
+def test_restart_returns_api_boolean(stop_succeeds, start_succeeds):
+    cfg = Mock()
+    with (
+        patch("supervisor_pydantic.convenience.commands.stop_programs", return_value=stop_succeeds) as stop,
+        patch("supervisor_pydantic.convenience.commands.start_programs", return_value=start_succeeds) as start,
+    ):
+        assert restart_programs(cfg, force=True, _exit=False) is (stop_succeeds and start_succeeds)
+    stop.assert_called_once_with(cfg, _exit=False)
+    if stop_succeeds:
+        start.assert_called_once_with(cfg, _exit=False)
+    else:
+        start.assert_not_called()
+
+
+@pytest.mark.parametrize("fault_code", [6, 10])
+def test_force_kill_accepts_only_shutdown_rpc_fault(fault_code):
+    cfg = Mock(command_timeout=1)
+    cfg.running.return_value = False
+    with (
+        patch("supervisor_pydantic.convenience.commands._load_or_pass", return_value=cfg),
+        patch("supervisor_pydantic.convenience.commands.stop_programs", side_effect=Fault(fault_code, "Supervisor error")),
+    ):
+        if fault_code == 6:
+            assert kill_supervisor(cfg, _exit=False)
+            cfg.kill.assert_called_once_with()
+        else:
+            with pytest.raises(Fault):
+                kill_supervisor(cfg, _exit=False)
+            cfg.kill.assert_not_called()
+
+
+def test_restart_without_force_does_not_stop_programs():
+    cfg = Mock()
+    with (
+        patch("supervisor_pydantic.convenience.commands.stop_programs") as stop,
+        patch("supervisor_pydantic.convenience.commands.start_programs", return_value=True) as start,
+    ):
+        assert restart_programs(cfg, _exit=False)
+    stop.assert_not_called()
+    start.assert_called_once_with(cfg, _exit=False)
