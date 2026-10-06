@@ -80,6 +80,16 @@ propagate. The default `_exit=True` exits with a CLI status code instead.
 `kill_supervisor()` succeeds when the daemon stops; `remove_supervisor_config()`
 requires successful shutdown before removing its working directory.
 
+`write_supervisor_config()` stops a running daemon before replacing a changed
+configuration. It uses the existing config’s PID file path, including when the
+new config changes that path. A shutdown timeout returns `False` without
+overwriting either `supervisord.conf` or `pydantic.json`.
+
+`start_supervisor()` applies the same shutdown-before-write behavior for changed
+configs, then starts the daemon. Unchanged running configs return success
+without restarting. These operations interrupt managed programs when the config
+changes; `start_programs()` starts workloads after daemon startup.
+
 | [`write_supervisor_config`](_build/supervisor_pydantic.write_supervisor_config.html.md#supervisor_pydantic.write_supervisor_config)(cfg_json[, \_exit])   | Write a SupervisorConvenienceConfiguration JSON as a supervisor config file   |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
 | [`start_supervisor`](_build/supervisor_pydantic.start_supervisor.html.md#supervisor_pydantic.start_supervisor)([cfg, \_exit])                             | Start a supervisor instance using supervisord in background                   |

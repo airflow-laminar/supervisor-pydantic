@@ -271,6 +271,14 @@ when their checks fail. Configuration, transport, and filesystem exceptions
 propagate. The default <code class="docutils literal notranslate"><span class="pre">_exit=True</span></code> exits with a CLI status code instead.
 <code class="docutils literal notranslate"><span class="pre">kill_supervisor()</span></code> succeeds when the daemon stops; <code class="docutils literal notranslate"><span class="pre">remove_supervisor_config()</span></code>
 requires successful shutdown before removing its working directory.</p>
+<p><code class="docutils literal notranslate"><span class="pre">write_supervisor_config()</span></code> stops a running daemon before replacing a changed
+configuration. It uses the existing config’s PID file path, including when the
+new config changes that path. A shutdown timeout returns <code class="docutils literal notranslate"><span class="pre">False</span></code> without
+overwriting either <code class="docutils literal notranslate"><span class="pre">supervisord.conf</span></code> or <code class="docutils literal notranslate"><span class="pre">pydantic.json</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">start_supervisor()</span></code> applies the same shutdown-before-write behavior for changed
+configs, then starts the daemon. Unchanged running configs return success
+without restarting. These operations interrupt managed programs when the config
+changes; <code class="docutils literal notranslate"><span class="pre">start_programs()</span></code> starts workloads after daemon startup.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_build/supervisor_pydantic.write_supervisor_config.html#supervisor_pydantic.write_supervisor_config" title="supervisor_pydantic.write_supervisor_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_supervisor_config</span></code></a>(cfg_json[, _exit])</p></td>

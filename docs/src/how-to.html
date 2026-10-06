@@ -178,6 +178,26 @@
 <p>Call <code class="docutils literal notranslate"><span class="pre">kill()</span></code> only when graceful shutdown does not complete. Call <code class="docutils literal notranslate"><span class="pre">rmdir()</span></code> only
 after the instance has stopped.</p>
 </section>
+<section id="how-to-replace-a-running-instance-s-configuration">
+<h2>How to replace a running instance’s configuration<a class="headerlink" href="#how-to-replace-a-running-instance-s-configuration" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-replace-a-running-instance-s-configuration'">¶</a></h2>
+<p>Create a convenience configuration with the same working directory and config
+path as the existing instance. Apply it through the convenience commands:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">supervisor_pydantic.convenience</span><span class="w"> </span><span class="kn">import</span> <span class="n">start_programs</span><span class="p">,</span> <span class="n">start_supervisor</span><span class="p">,</span> <span class="n">write_supervisor_config</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="k">if</span> <span class="ow">not</span> <span class="n">write_supervisor_config</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(),</span> <span class="n">_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span><span id="line-4">    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Supervisor did not stop; existing configuration was preserved"</span><span class="p">)</span>
+</span><span id="line-5"><span class="k">if</span> <span class="ow">not</span> <span class="n">start_supervisor</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span><span id="line-6">    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Supervisor did not start"</span><span class="p">)</span>
+</span><span id="line-7"><span class="k">if</span> <span class="ow">not</span> <span class="n">start_programs</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span><span id="line-8">    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Programs did not start"</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+<p>Plan for an interruption: a changed configuration stops supervisord and its
+managed processes before replacing the files. Keep the existing
+<code class="docutils literal notranslate"><span class="pre">supervisord.conf</span></code> until the convenience command applies the new settings.
+Unchanged configurations leave the running daemon in place. If graceful shutdown
+times out, resolve the shutdown failure before retrying; the files remain intact.</p>
+</section>
 <section id="how-to-control-programs-over-xml-rpc">
 <h2>How to control programs over XML-RPC<a class="headerlink" href="#how-to-control-programs-over-xml-rpc" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-control-programs-over-xml-rpc'">¶</a></h2>
 <p>Create a client from the same convenience configuration:</p>
@@ -282,6 +302,7 @@ corresponding Python callables.</p>
 <ul>
 <li><a :data-current="activeSection === '#how-to-load-yaml-with-hydra'" class="reference internal" href="#how-to-load-yaml-with-hydra">How to load YAML with Hydra</a></li>
 <li><a :data-current="activeSection === '#how-to-manage-a-supervisord-instance'" class="reference internal" href="#how-to-manage-a-supervisord-instance">How to manage a supervisord instance</a></li>
+<li><a :data-current="activeSection === '#how-to-replace-a-running-instance-s-configuration'" class="reference internal" href="#how-to-replace-a-running-instance-s-configuration">How to replace a running instance’s configuration</a></li>
 <li><a :data-current="activeSection === '#how-to-control-programs-over-xml-rpc'" class="reference internal" href="#how-to-control-programs-over-xml-rpc">How to control programs over XML-RPC</a></li>
 <li><a :data-current="activeSection === '#how-to-forward-program-output-incrementally'" class="reference internal" href="#how-to-forward-program-output-incrementally">How to forward program output incrementally</a></li>
 <li><a :data-current="activeSection === '#how-to-check-workloads-while-an-event-listener-runs'" class="reference internal" href="#how-to-check-workloads-while-an-event-listener-runs">How to check workloads while an event listener runs</a></li>

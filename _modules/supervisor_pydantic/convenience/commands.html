@@ -190,155 +190,155 @@
     <div id="content" role="main">
       <h1>Source code for supervisor_pydantic.convenience.commands</h1><div class="highlight"><pre>
 <span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
-</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
-</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
-</span><span id="line-5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
-</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">xmlrpc.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fault</span>
-</span><span id="line-7">
-</span><span id="line-8"><span class="kn">from</span><span class="w"> </span><span class="nn">typer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Exit</span><span class="p">,</span> <span class="n">Option</span><span class="p">,</span> <span class="n">Typer</span>
-</span><span id="line-9">
-</span><span id="line-10"><span class="kn">from</span><span class="w"> </span><span class="nn">..client</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorMethodResult</span><span class="p">,</span> <span class="n">SupervisorRemoteXMLRPCClient</span>
-</span><span id="line-11"><span class="kn">from</span><span class="w"> </span><span class="nn">..config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorConvenienceConfiguration</span>
-</span><span id="line-12"><span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorTaskStep</span>
-</span><span id="line-13">
-</span><span id="line-14"><span class="n">log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-</span><span id="line-15">
-</span><span id="line-16"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="line-17">    <span class="s2">"check_programs"</span><span class="p">,</span>
-</span><span id="line-18">    <span class="s2">"kill_supervisor"</span><span class="p">,</span>
-</span><span id="line-19">    <span class="s2">"main"</span><span class="p">,</span>
-</span><span id="line-20">    <span class="s2">"remove_supervisor_config"</span><span class="p">,</span>
-</span><span id="line-21">    <span class="s2">"restart_programs"</span><span class="p">,</span>
-</span><span id="line-22">    <span class="s2">"start_programs"</span><span class="p">,</span>
-</span><span id="line-23">    <span class="s2">"start_supervisor"</span><span class="p">,</span>
-</span><span id="line-24">    <span class="s2">"stop_programs"</span><span class="p">,</span>
-</span><span id="line-25">    <span class="s2">"stop_supervisor"</span><span class="p">,</span>
-</span><span id="line-26">    <span class="s2">"write_supervisor_config"</span><span class="p">,</span>
-</span><span id="line-27"><span class="p">)</span>
-</span><span id="line-28">
+</span><span id="line-2"><span class="kn">from</span><span class="w"> </span><span class="nn">configparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigParser</span><span class="p">,</span> <span class="n">MissingSectionHeaderError</span>
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
+</span><span id="line-4"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="line-5"><span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
+</span><span id="line-6"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+</span><span id="line-7"><span class="kn">from</span><span class="w"> </span><span class="nn">xmlrpc.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fault</span>
+</span><span id="line-8">
+</span><span id="line-9"><span class="kn">from</span><span class="w"> </span><span class="nn">typer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Exit</span><span class="p">,</span> <span class="n">Option</span><span class="p">,</span> <span class="n">Typer</span>
+</span><span id="line-10">
+</span><span id="line-11"><span class="kn">from</span><span class="w"> </span><span class="nn">..client</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorMethodResult</span><span class="p">,</span> <span class="n">SupervisorRemoteXMLRPCClient</span>
+</span><span id="line-12"><span class="kn">from</span><span class="w"> </span><span class="nn">..config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorConvenienceConfiguration</span>
+</span><span id="line-13"><span class="kn">from</span><span class="w"> </span><span class="nn">.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorTaskStep</span>
+</span><span id="line-14">
+</span><span id="line-15"><span class="n">log</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span id="line-16">
+</span><span id="line-17"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="line-18">    <span class="s2">"check_programs"</span><span class="p">,</span>
+</span><span id="line-19">    <span class="s2">"kill_supervisor"</span><span class="p">,</span>
+</span><span id="line-20">    <span class="s2">"main"</span><span class="p">,</span>
+</span><span id="line-21">    <span class="s2">"remove_supervisor_config"</span><span class="p">,</span>
+</span><span id="line-22">    <span class="s2">"restart_programs"</span><span class="p">,</span>
+</span><span id="line-23">    <span class="s2">"start_programs"</span><span class="p">,</span>
+</span><span id="line-24">    <span class="s2">"start_supervisor"</span><span class="p">,</span>
+</span><span id="line-25">    <span class="s2">"stop_programs"</span><span class="p">,</span>
+</span><span id="line-26">    <span class="s2">"stop_supervisor"</span><span class="p">,</span>
+</span><span id="line-27">    <span class="s2">"write_supervisor_config"</span><span class="p">,</span>
+</span><span id="line-28"><span class="p">)</span>
 </span><span id="line-29">
-</span><span id="line-30"><span class="k">def</span><span class="w"> </span><span class="nf">_check_exists</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="line-31">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Checking for working dir </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">working_dir</span><span class="si">}</span><span class="s2"> and config path </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="line-32">    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">working_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-</span><span id="line-33">        <span class="c1"># its probably already been written</span>
-</span><span id="line-34">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Working dir </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">working_dir</span><span class="si">}</span><span class="s2"> and config path </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> exist"</span><span class="p">)</span>
-</span><span id="line-35">        <span class="k">return</span> <span class="kc">True</span>
-</span><span id="line-36">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Working dir </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">working_dir</span><span class="si">}</span><span class="s2"> and/or config path </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> do not exist"</span><span class="p">)</span>
-</span><span id="line-37">    <span class="k">return</span> <span class="kc">False</span>
-</span><span id="line-38">
+</span><span id="line-30">
+</span><span id="line-31"><span class="k">def</span><span class="w"> </span><span class="nf">_check_exists</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="line-32">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Checking for working dir </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">working_dir</span><span class="si">}</span><span class="s2"> and config path </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="line-33">    <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">working_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span id="line-34">        <span class="c1"># its probably already been written</span>
+</span><span id="line-35">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Working dir </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">working_dir</span><span class="si">}</span><span class="s2"> and config path </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> exist"</span><span class="p">)</span>
+</span><span id="line-36">        <span class="k">return</span> <span class="kc">True</span>
+</span><span id="line-37">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Working dir </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">working_dir</span><span class="si">}</span><span class="s2"> and/or config path </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> do not exist"</span><span class="p">)</span>
+</span><span id="line-38">    <span class="k">return</span> <span class="kc">False</span>
 </span><span id="line-39">
-</span><span id="line-40"><span class="k">def</span><span class="w"> </span><span class="nf">_check_same</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="line-41">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Checking if config file matches"</span><span class="p">)</span>
-</span><span id="line-42">    <span class="k">if</span> <span class="n">_check_exists</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="n">cfg</span><span class="o">.</span><span class="n">to_cfg</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-</span><span id="line-43">        <span class="c1"># same file contents</span>
-</span><span id="line-44">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Config file </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> matches"</span><span class="p">)</span>
-</span><span id="line-45">        <span class="k">return</span> <span class="kc">True</span>
-</span><span id="line-46">    <span class="k">elif</span> <span class="ow">not</span> <span class="n">_check_exists</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
-</span><span id="line-47">        <span class="c1"># no file exists, so we can write it</span>
-</span><span id="line-48">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Config file </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> does not exist, so we can write it"</span><span class="p">)</span>
-</span><span id="line-49">        <span class="k">return</span> <span class="kc">True</span>
-</span><span id="line-50">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Config file </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> does not match"</span><span class="p">)</span>
-</span><span id="line-51">    <span class="k">return</span> <span class="kc">False</span>
-</span><span id="line-52">
+</span><span id="line-40">
+</span><span id="line-41"><span class="k">def</span><span class="w"> </span><span class="nf">_check_same</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="line-42">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Checking if config file matches"</span><span class="p">)</span>
+</span><span id="line-43">    <span class="k">if</span> <span class="n">_check_exists</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="n">cfg</span><span class="o">.</span><span class="n">to_cfg</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+</span><span id="line-44">        <span class="c1"># same file contents</span>
+</span><span id="line-45">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Config file </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> matches"</span><span class="p">)</span>
+</span><span id="line-46">        <span class="k">return</span> <span class="kc">True</span>
+</span><span id="line-47">    <span class="k">elif</span> <span class="ow">not</span> <span class="n">_check_exists</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+</span><span id="line-48">        <span class="c1"># no file exists, so we can write it</span>
+</span><span id="line-49">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Config file </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> does not exist, so we can write it"</span><span class="p">)</span>
+</span><span id="line-50">        <span class="k">return</span> <span class="kc">True</span>
+</span><span id="line-51">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Config file </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> does not match"</span><span class="p">)</span>
+</span><span id="line-52">    <span class="k">return</span> <span class="kc">False</span>
 </span><span id="line-53">
-</span><span id="line-54"><span class="k">def</span><span class="w"> </span><span class="nf">_check_running</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="line-55">    <span class="k">if</span> <span class="n">_check_same</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
-</span><span id="line-56">        <span class="c1"># check if running</span>
-</span><span id="line-57">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Checking if supervisor is running"</span><span class="p">)</span>
-</span><span id="line-58">        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">running</span><span class="p">():</span>
-</span><span id="line-59">            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Supervisor is running"</span><span class="p">)</span>
-</span><span id="line-60">            <span class="k">return</span> <span class="kc">True</span>
-</span><span id="line-61">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Supervisor is not running"</span><span class="p">)</span>
-</span><span id="line-62">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Supervisor config file does not match, so we can't check if it's running"</span><span class="p">)</span>
-</span><span id="line-63">    <span class="k">return</span> <span class="kc">False</span>
-</span><span id="line-64">
+</span><span id="line-54">
+</span><span id="line-55"><span class="k">def</span><span class="w"> </span><span class="nf">_check_running</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="line-56">    <span class="k">if</span> <span class="n">_check_same</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+</span><span id="line-57">        <span class="c1"># check if running</span>
+</span><span id="line-58">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Checking if supervisor is running"</span><span class="p">)</span>
+</span><span id="line-59">        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">running</span><span class="p">():</span>
+</span><span id="line-60">            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Supervisor is running"</span><span class="p">)</span>
+</span><span id="line-61">            <span class="k">return</span> <span class="kc">True</span>
+</span><span id="line-62">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Supervisor is not running"</span><span class="p">)</span>
+</span><span id="line-63">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Supervisor config file does not match, so we can't check if it's running"</span><span class="p">)</span>
+</span><span id="line-64">    <span class="k">return</span> <span class="kc">False</span>
 </span><span id="line-65">
-</span><span id="line-66"><span class="k">def</span><span class="w"> </span><span class="nf">_wait_or_while</span><span class="p">(</span><span class="n">until</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">unless</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="line-67">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Waiting for </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
-</span><span id="line-68">    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timeout</span><span class="p">):</span>
-</span><span id="line-69">        <span class="k">if</span> <span class="n">until</span><span class="p">():</span>
-</span><span id="line-70">            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"`until` condition met"</span><span class="p">)</span>
-</span><span id="line-71">            <span class="k">return</span> <span class="kc">True</span>
-</span><span id="line-72">        <span class="k">if</span> <span class="n">unless</span> <span class="ow">and</span> <span class="n">unless</span><span class="p">():</span>
-</span><span id="line-73">            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"`unless` condition met"</span><span class="p">)</span>
-</span><span id="line-74">            <span class="k">return</span> <span class="kc">False</span>
-</span><span id="line-75">        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span id="line-76">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Timed out after </span><span class="si">{timeout}</span><span class="s2"> seconds"</span><span class="p">)</span>
-</span><span id="line-77">    <span class="k">return</span> <span class="kc">False</span>
-</span><span id="line-78">
+</span><span id="line-66">
+</span><span id="line-67"><span class="k">def</span><span class="w"> </span><span class="nf">_wait_or_while</span><span class="p">(</span><span class="n">until</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">unless</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="line-68">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Waiting for </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
+</span><span id="line-69">    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timeout</span><span class="p">):</span>
+</span><span id="line-70">        <span class="k">if</span> <span class="n">until</span><span class="p">():</span>
+</span><span id="line-71">            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"`until` condition met"</span><span class="p">)</span>
+</span><span id="line-72">            <span class="k">return</span> <span class="kc">True</span>
+</span><span id="line-73">        <span class="k">if</span> <span class="n">unless</span> <span class="ow">and</span> <span class="n">unless</span><span class="p">():</span>
+</span><span id="line-74">            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"`unless` condition met"</span><span class="p">)</span>
+</span><span id="line-75">            <span class="k">return</span> <span class="kc">False</span>
+</span><span id="line-76">        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="line-77">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Timed out after </span><span class="si">{timeout}</span><span class="s2"> seconds"</span><span class="p">)</span>
+</span><span id="line-78">    <span class="k">return</span> <span class="kc">False</span>
 </span><span id="line-79">
-</span><span id="line-80"><span class="k">def</span><span class="w"> </span><span class="nf">_raise_or_exit</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">exit</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-</span><span id="line-81">    <span class="k">if</span> <span class="n">exit</span><span class="p">:</span>
-</span><span id="line-82">        <span class="k">raise</span> <span class="n">Exit</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="n">val</span><span class="p">))</span>
-</span><span id="line-83">    <span class="k">return</span> <span class="n">val</span>
-</span><span id="line-84">
+</span><span id="line-80">
+</span><span id="line-81"><span class="k">def</span><span class="w"> </span><span class="nf">_raise_or_exit</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">exit</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+</span><span id="line-82">    <span class="k">if</span> <span class="n">exit</span><span class="p">:</span>
+</span><span id="line-83">        <span class="k">raise</span> <span class="n">Exit</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="ow">not</span> <span class="n">val</span><span class="p">))</span>
+</span><span id="line-84">    <span class="k">return</span> <span class="n">val</span>
 </span><span id="line-85">
-</span><span id="line-86"><span class="k">def</span><span class="w"> </span><span class="nf">_load_or_pass</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">:</span>
-</span><span id="line-87">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
-</span><span id="line-88">        <span class="n">cfg</span> <span class="o">=</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
-</span><span id="line-89">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="line-90">        <span class="n">cfg</span> <span class="o">=</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-</span><span id="line-91">    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">):</span>
-</span><span id="line-92">        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</span><span id="line-93">    <span class="k">return</span> <span class="n">cfg</span>
-</span><span id="line-94">
+</span><span id="line-86">
+</span><span id="line-87"><span class="k">def</span><span class="w"> </span><span class="nf">_load_or_pass</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">:</span>
+</span><span id="line-88">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+</span><span id="line-89">        <span class="n">cfg</span> <span class="o">=</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+</span><span id="line-90">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span id="line-91">        <span class="n">cfg</span> <span class="o">=</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+</span><span id="line-92">    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">):</span>
+</span><span id="line-93">        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</span><span id="line-94">    <span class="k">return</span> <span class="n">cfg</span>
 </span><span id="line-95">
+</span><span id="line-96">
+</span><span id="line-97"><span class="k">def</span><span class="w"> </span><span class="nf">_write_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">SupervisorConvenienceConfiguration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="line-98">    <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_same</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+</span><span id="line-99">        <span class="n">previous</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="line-100">        <span class="n">parser</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">(</span><span class="n">interpolation</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span id="line-101">        <span class="k">try</span><span class="p">:</span>
+</span><span id="line-102">            <span class="n">parser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="p">)</span>
+</span><span id="line-103">        <span class="k">except</span> <span class="n">MissingSectionHeaderError</span><span class="p">:</span>
+</span><span id="line-104">            <span class="k">pass</span>
+</span><span id="line-105">        <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">"supervisord"</span><span class="p">,</span> <span class="s2">"pidfile"</span><span class="p">):</span>
+</span><span id="line-106">            <span class="n">pidfile</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"supervisord"</span><span class="p">,</span> <span class="s2">"pidfile"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="si">%(here)s</span><span class="s2">"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
+</span><span id="line-107">            <span class="n">previous</span><span class="o">.</span><span class="n">supervisord</span><span class="o">.</span><span class="n">pidfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)</span>
+</span><span id="line-108">        <span class="k">if</span> <span class="n">previous</span><span class="o">.</span><span class="n">running</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">stop_supervisor</span><span class="p">(</span><span class="n">previous</span><span class="p">,</span> <span class="n">_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span><span id="line-109">            <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">"Supervisor did not stop; preserving existing configuration"</span><span class="p">)</span>
+</span><span id="line-110">            <span class="k">return</span> <span class="kc">False</span>
+</span><span id="line-111">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Writing supervisor config to </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="line-112">    <span class="n">cfg</span><span class="o">.</span><span class="n">_write_self</span><span class="p">()</span>
+</span><span id="line-113">    <span class="k">return</span> <span class="kc">True</span>
+</span><span id="line-114">
+</span><span id="line-115">
 <div class="viewcode-block" id="write_supervisor_config">
 <a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.write_supervisor_config.html#supervisor_pydantic.write_supervisor_config">[docs]</a>
-</span><span id="line-96"><span class="k">def</span><span class="w"> </span><span class="nf">write_supervisor_config</span><span class="p">(</span><span class="n">cfg_json</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_exit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Argument</span><span class="p">(</span><span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-</span><span id="line-97"><span class="w">    </span><span class="sd">"""Write a SupervisorConvenienceConfiguration JSON as a supervisor config file</span>
-</span><span id="line-98">
-</span><span id="line-99"><span class="sd">    Args:</span>
-</span><span id="line-100"><span class="sd">        cfg_json (str): JSON string of SupervisorConvenienceConfiguration</span>
-</span><span id="line-101"><span class="sd">    """</span>
-</span><span id="line-102">    <span class="c1"># NOTE: typer does not support union types</span>
-</span><span id="line-103">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Loading JSON config: </span><span class="si">{</span><span class="n">cfg_json</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="line-104">    <span class="n">cfg_obj</span> <span class="o">=</span> <span class="n">_load_or_pass</span><span class="p">(</span><span class="n">cfg_json</span><span class="p">)</span>
-</span><span id="line-105">
-</span><span id="line-106">    <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_same</span><span class="p">(</span><span class="n">cfg_obj</span><span class="p">):</span>
-</span><span id="line-107">        <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">"Configurations don't match while writing supervisor config. This may lead to zombie supervisors"</span><span class="p">)</span>
-</span><span id="line-108">
-</span><span id="line-109">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Writing supervisor config to </span><span class="si">{</span><span class="n">cfg_obj</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="line-110">    <span class="n">cfg_obj</span><span class="o">.</span><span class="n">_write_self</span><span class="p">()</span>
-</span><span id="line-111">
-</span><span id="line-112">    <span class="k">return</span> <span class="n">_raise_or_exit</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">_exit</span><span class="p">)</span></div>
+</span><span id="line-116"><span class="k">def</span><span class="w"> </span><span class="nf">write_supervisor_config</span><span class="p">(</span><span class="n">cfg_json</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_exit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Argument</span><span class="p">(</span><span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+</span><span id="line-117"><span class="w">    </span><span class="sd">"""Write a SupervisorConvenienceConfiguration JSON as a supervisor config file</span>
+</span><span id="line-118">
+</span><span id="line-119"><span class="sd">    Args:</span>
+</span><span id="line-120"><span class="sd">        cfg_json (str): JSON string of SupervisorConvenienceConfiguration</span>
+</span><span id="line-121"><span class="sd">    """</span>
+</span><span id="line-122">    <span class="c1"># NOTE: typer does not support union types</span>
+</span><span id="line-123">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Loading JSON config: </span><span class="si">{</span><span class="n">cfg_json</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="line-124">    <span class="n">cfg_obj</span> <span class="o">=</span> <span class="n">_load_or_pass</span><span class="p">(</span><span class="n">cfg_json</span><span class="p">)</span>
+</span><span id="line-125">
+</span><span id="line-126">    <span class="k">return</span> <span class="n">_raise_or_exit</span><span class="p">(</span><span class="n">_write_config</span><span class="p">(</span><span class="n">cfg_obj</span><span class="p">),</span> <span class="n">_exit</span><span class="p">)</span></div>
 
-</span><span id="line-113">
-</span><span id="line-114">
+</span><span id="line-127">
+</span><span id="line-128">
 <div class="viewcode-block" id="start_supervisor">
 <a class="viewcode-back" href="../../../docs/src/_build/supervisor_pydantic.start_supervisor.html#supervisor_pydantic.start_supervisor">[docs]</a>
-</span><span id="line-115"><span class="k">def</span><span class="w"> </span><span class="nf">start_supervisor</span><span class="p">(</span>
-</span><span id="line-116">    <span class="n">cfg</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Option</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_okay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">writable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">readable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolve_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
-</span><span id="line-117">        <span class="s2">"pydantic.json"</span>
-</span><span id="line-118">    <span class="p">),</span>
-</span><span id="line-119">    <span class="n">_exit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Argument</span><span class="p">(</span><span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="line-120"><span class="p">):</span>
-</span><span id="line-121"><span class="w">    </span><span class="sd">"""Start a supervisor instance using supervisord in background</span>
-</span><span id="line-122">
-</span><span id="line-123"><span class="sd">    Args:</span>
-</span><span id="line-124"><span class="sd">        cfg (Annotated[Path, Option, optional): Path to JSON file of SupervisorConvenienceConfiguration</span>
-</span><span id="line-125"><span class="sd">    """</span>
-</span><span id="line-126">    <span class="c1"># NOTE: typer does not support union types</span>
-</span><span id="line-127">    <span class="n">cfg_obj</span> <span class="o">=</span> <span class="n">_load_or_pass</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-</span><span id="line-128">    <span class="n">running</span> <span class="o">=</span> <span class="n">cfg_obj</span><span class="o">.</span><span class="n">running</span><span class="p">()</span>
-</span><span id="line-129">
-</span><span id="line-130">    <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_same</span><span class="p">(</span><span class="n">cfg_obj</span><span class="p">):</span>
-</span><span id="line-131">        <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">"Configurations don't match while writing supervisor config. This may lead to zombie supervisors"</span><span class="p">)</span>
-</span><span id="line-132">
-</span><span id="line-133">        <span class="c1"># TODO check if "critical" things are different and restart</span>
-</span><span id="line-134">        <span class="c1"># supervisor if necessary</span>
-</span><span id="line-135">
-</span><span id="line-136">        <span class="c1"># Otherwise just write and reload</span>
-</span><span id="line-137">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Writing supervisor config to </span><span class="si">{cfg_obj.config_path}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="line-138">        <span class="n">cfg_obj</span><span class="o">.</span><span class="n">_write_self</span><span class="p">()</span>
-</span><span id="line-139">
-</span><span id="line-140">        <span class="k">if</span> <span class="n">running</span><span class="p">:</span>
-</span><span id="line-141">            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Reloading supervisor config"</span><span class="p">)</span>
-</span><span id="line-142">            <span class="n">client</span> <span class="o">=</span> <span class="n">SupervisorRemoteXMLRPCClient</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">cfg_obj</span><span class="p">)</span>
-</span><span id="line-143">            <span class="n">client</span><span class="o">.</span><span class="n">reloadConfig</span><span class="p">()</span>
+</span><span id="line-129"><span class="k">def</span><span class="w"> </span><span class="nf">start_supervisor</span><span class="p">(</span>
+</span><span id="line-130">    <span class="n">cfg</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Option</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_okay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">writable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">readable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolve_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+</span><span id="line-131">        <span class="s2">"pydantic.json"</span>
+</span><span id="line-132">    <span class="p">),</span>
+</span><span id="line-133">    <span class="n">_exit</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Argument</span><span class="p">(</span><span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="line-134"><span class="p">):</span>
+</span><span id="line-135"><span class="w">    </span><span class="sd">"""Start a supervisor instance using supervisord in background</span>
+</span><span id="line-136">
+</span><span id="line-137"><span class="sd">    Args:</span>
+</span><span id="line-138"><span class="sd">        cfg (Annotated[Path, Option, optional): Path to JSON file of SupervisorConvenienceConfiguration</span>
+</span><span id="line-139"><span class="sd">    """</span>
+</span><span id="line-140">    <span class="c1"># NOTE: typer does not support union types</span>
+</span><span id="line-141">    <span class="n">cfg_obj</span> <span class="o">=</span> <span class="n">_load_or_pass</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+</span><span id="line-142">    <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_same</span><span class="p">(</span><span class="n">cfg_obj</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_write_config</span><span class="p">(</span><span class="n">cfg_obj</span><span class="p">):</span>
+</span><span id="line-143">        <span class="k">return</span> <span class="n">_raise_or_exit</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">_exit</span><span class="p">)</span>
 </span><span id="line-144">
-</span><span id="line-145">    <span class="k">if</span> <span class="n">running</span><span class="p">:</span>
+</span><span id="line-145">    <span class="k">if</span> <span class="n">cfg_obj</span><span class="o">.</span><span class="n">running</span><span class="p">():</span>
 </span><span id="line-146">        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Supervisor is already running"</span><span class="p">)</span>
 </span><span id="line-147">        <span class="k">return</span> <span class="n">_raise_or_exit</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">_exit</span><span class="p">)</span>
 </span><span id="line-148">
