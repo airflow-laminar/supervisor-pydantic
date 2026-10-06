@@ -1,14 +1,18 @@
 import shutil
+import socket
 import subprocess
+from pathlib import Path
 from subprocess import check_call
 from tempfile import TemporaryDirectory
+from time import monotonic, sleep
+from typing import Any
 from unittest.mock import Mock, patch
 from xmlrpc.client import Fault
 
 import pytest
 from typer import Exit
 
-from supervisor_pydantic import ProgramConfiguration, SupervisorConvenienceConfiguration
+from supervisor_pydantic import ProgramConfiguration, SupervisorConvenienceConfiguration, SupervisorRemoteXMLRPCClient
 from supervisor_pydantic.convenience.commands import (
     _check_exists,
     _check_running,
@@ -69,7 +73,7 @@ def test_start_supervisor_with_changed_config_and_stopped_daemon(supervisor_conv
     with (
         patch("supervisor_pydantic.convenience.commands.SupervisorRemoteXMLRPCClient") as client,
         patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.start") as start,
-        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", side_effect=[False, True]),
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", side_effect=[False, False, True]),
     ):
         assert start_supervisor(supervisor_convenience_configuration, _exit=False)
 
@@ -79,20 +83,160 @@ def test_start_supervisor_with_changed_config_and_stopped_daemon(supervisor_conv
 
 
 def test_start_supervisor_with_changed_config_and_running_daemon(supervisor_convenience_configuration: SupervisorConvenienceConfiguration):
-    supervisor_convenience_configuration._write_self()
-    supervisor_convenience_configuration.config_path.write_text("different content")
+    cfg = supervisor_convenience_configuration.model_copy(deep=True)
+    cfg._write_self()
+    previous_config = cfg.config_path.read_text()
+    cfg.program["test"].command = "echo replacement"
 
     with (
         patch("supervisor_pydantic.convenience.commands.SupervisorRemoteXMLRPCClient") as client,
         patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.start") as start,
-        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", return_value=True),
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", side_effect=[True, False, True]),
+        patch("supervisor_pydantic.convenience.commands.stop_supervisor", return_value=True) as stop,
     ):
-        assert start_supervisor(supervisor_convenience_configuration, _exit=False)
+        stop.side_effect = lambda *args, **kwargs: cfg.config_path.read_text() == previous_config
+        assert start_supervisor(cfg, _exit=False)
 
-    client.assert_called_once_with(cfg=supervisor_convenience_configuration)
-    client.return_value.reloadConfig.assert_called_once_with()
+    stop.assert_called_once()
+    client.assert_not_called()
+    start.assert_called_once_with(daemon=True)
+    assert _check_same(cfg)
+
+
+@pytest.mark.parametrize("command", [write_supervisor_config, start_supervisor])
+@pytest.mark.parametrize("exit_mode", [False, True])
+def test_changed_config_is_not_written_if_shutdown_fails(supervisor_convenience_configuration, command, exit_mode):
+    cfg = supervisor_convenience_configuration.model_copy(deep=True)
+    cfg._write_self()
+    old_config = cfg.config_path.read_text()
+    old_json = cfg._pydantic_path.read_text()
+    cfg.port = "127.0.0.1:9002"
+    cfg.inet_http_server.port = cfg.port
+    with (
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", return_value=True),
+        patch("supervisor_pydantic.convenience.commands.stop_supervisor", return_value=False) as stop,
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.start") as start,
+    ):
+        if exit_mode:
+            with pytest.raises(Exit) as failure:
+                command(cfg, _exit=True)
+            assert failure.value.exit_code == 1
+        else:
+            assert command(cfg, _exit=False) is False
+    stop.assert_called_once()
     start.assert_not_called()
-    assert _check_same(supervisor_convenience_configuration)
+    assert cfg.config_path.read_text() == old_config
+    assert cfg._pydantic_path.read_text() == old_json
+
+
+@pytest.mark.parametrize("use_here", [False, True])
+def test_configure_stops_old_daemon_before_replacing_config(supervisor_convenience_configuration, use_here):
+    cfg = supervisor_convenience_configuration.model_copy(deep=True)
+    if use_here:
+        cfg.supervisord.pidfile = Path("%(here)s/supervisord.pid")
+    cfg._write_self()
+    old_config = cfg.config_path.read_text()
+    old_pidfile = cfg.config_path.parent / "supervisord.pid" if use_here else cfg.supervisord.pidfile
+    cfg.supervisord.pidfile = cfg.working_dir / "replacement.pid"
+
+    def stop(previous, _exit):
+        assert not _exit
+        assert previous.supervisord.pidfile == old_pidfile
+        assert cfg.config_path.read_text() == old_config
+        return True
+
+    with (
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", return_value=True),
+        patch("supervisor_pydantic.convenience.commands.stop_supervisor", side_effect=stop) as stopped,
+    ):
+        assert write_supervisor_config(cfg.model_dump_json(), _exit=False)
+    stopped.assert_called_once()
+    assert _check_same(cfg)
+
+
+@pytest.mark.parametrize("command", [write_supervisor_config, start_supervisor])
+def test_unchanged_running_config_does_not_stop_daemon(supervisor_convenience_configuration, command):
+    cfg = supervisor_convenience_configuration.model_copy(deep=True)
+    cfg._write_self()
+    with (
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", return_value=True),
+        patch("supervisor_pydantic.convenience.commands.stop_supervisor") as stop,
+        patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.start") as start,
+    ):
+        assert command(cfg, _exit=False)
+    stop.assert_not_called()
+    start.assert_not_called()
+
+
+@pytest.mark.skipif(not _supervisord_available(), reason="supervisord is not installed or not functional")
+@pytest.mark.parametrize("configure_first", [False, True])
+@pytest.mark.parametrize("change", ["port", "credentials", "program", "pidfile"])
+def test_live_reconfiguration_applies_changed_settings(tmp_path, open_port, change, configure_first):
+    values: dict[str, Any] = {
+        "working_dir": tmp_path,
+        "port": f"127.0.0.1:{open_port}",
+        "username": "test",
+        "password": "before",
+        "program": {"test": {"command": "sleep 60"}},
+        "command_timeout": 5,
+        "startsecs": 0,
+        "stopwaitsecs": 1,
+    }
+    old = SupervisorConvenienceConfiguration(**values)
+    old._write_self()
+    client = SupervisorRemoteXMLRPCClient(old)
+    process = subprocess.Popen(
+        [shutil.which("supervisord"), "-n", "-c", str(old.config_path)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    new = old
+    try:
+        deadline = monotonic() + 5
+        while True:
+            try:
+                client.getState()
+                break
+            except ConnectionRefusedError:
+                assert monotonic() < deadline, "Supervisor did not open its XML-RPC endpoint"
+                sleep(0.05)
+        old_pid = process.pid
+        client.startAllProcesses()
+        assert write_supervisor_config(old.model_dump_json(), _exit=False)
+        assert start_supervisor(old, _exit=False)
+        assert process.poll() is None
+        if change == "port":
+            with socket.socket() as sock:
+                sock.bind(("127.0.0.1", 0))
+                values["port"] = f"127.0.0.1:{sock.getsockname()[1]}"
+        elif change == "credentials":
+            values["username"] = "updated"
+            values["password"] = "after"
+        elif change == "program":
+            values["program"] = {"replacement": {"command": "sleep 60"}}
+        else:
+            values["supervisord"] = {"pidfile": tmp_path / "replacement.pid"}
+        new = SupervisorConvenienceConfiguration(**values)
+        if configure_first:
+            assert write_supervisor_config(new.model_dump_json(), _exit=False)
+            assert not old.running()
+            assert start_supervisor(new._pydantic_path, _exit=False)
+        else:
+            assert start_supervisor(new, _exit=False)
+        process.wait(timeout=5)
+        assert new.running()
+        assert int(new.supervisord.pidfile.read_text()) != old_pid
+        client = SupervisorRemoteXMLRPCClient(new)
+        assert {info.name for info in client.getProgramProcessInfo()} == set(new.program)
+        assert _check_same(new)
+    finally:
+        if new.running():
+            stop_supervisor(new, _exit=False)
+        if old.running():
+            stop_supervisor(old, _exit=False)
+        if process.poll() is None:
+            process.terminate()
+        process.wait(timeout=5)
 
 
 # Unit tests for helper functions

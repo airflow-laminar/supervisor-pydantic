@@ -47,6 +47,28 @@ if config.running():
 Call `kill()` only when graceful shutdown does not complete. Call `rmdir()` only
 after the instance has stopped.
 
+## How to replace a running instance's configuration
+
+Create a convenience configuration with the same working directory and config
+path as the existing instance. Apply it through the convenience commands:
+
+```python
+from supervisor_pydantic.convenience import start_programs, start_supervisor, write_supervisor_config
+
+if not write_supervisor_config(config.model_dump_json(), _exit=False):
+    raise RuntimeError("Supervisor did not stop; existing configuration was preserved")
+if not start_supervisor(config, _exit=False):
+    raise RuntimeError("Supervisor did not start")
+if not start_programs(config, _exit=False):
+    raise RuntimeError("Programs did not start")
+```
+
+Plan for an interruption: a changed configuration stops supervisord and its
+managed processes before replacing the files. Keep the existing
+`supervisord.conf` until the convenience command applies the new settings.
+Unchanged configurations leave the running daemon in place. If graceful shutdown
+times out, resolve the shutdown failure before retrying; the files remain intact.
+
 ## How to control programs over XML-RPC
 
 Create a client from the same convenience configuration:
