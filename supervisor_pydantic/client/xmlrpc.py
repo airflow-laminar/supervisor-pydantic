@@ -1,12 +1,14 @@
+from collections import Counter
 from datetime import datetime
 from enum import Enum
-from xmlrpc.client import Fault, ServerProxy
+from typing import Literal
+from xmlrpc.client import Fault, ProtocolError, ServerProxy
 
 from pydantic import BaseModel
 
 from ..config import SupervisorConvenienceConfiguration
 
-__all__ = ("ProcessInfo", "ProcessState", "SupervisorMethodResult", "SupervisorRemoteXMLRPCClient", "SupervisorState")
+__all__ = ("ProcessInfo", "ProcessLogChunk", "ProcessState", "SupervisorMethodResult", "SupervisorRemoteXMLRPCClient", "SupervisorState")
 
 
 class ProcessState(Enum):
@@ -110,6 +112,12 @@ class ProcessInfo(BaseModel):
         )
 
 
+class ProcessLogChunk(BaseModel):
+    text: str
+    offset: int
+    truncated: bool = False
+
+
 class SupervisorRemoteXMLRPCClient:
     """A light wrapper over the supervisor xmlrpc api: http://supervisord.org/api.html"""
 
@@ -135,6 +143,29 @@ class SupervisorRemoteXMLRPCClient:
     def getAllProcessInfo(self) -> list[ProcessInfo]:
         return [ProcessInfo(**_) for _ in self._client.supervisor.getAllProcessInfo()]
 
+    def _program_groups(self) -> dict[str, tuple[int, int]]:
+        groups = {
+            name: (program.numprocs or 1, program.priority if program.priority is not None else 999)
+            for name, program in {**self._cfg.program, **(self._cfg.fcgiprogram or {})}.items()
+        }
+        for name, group in (self._cfg.group or {}).items():
+            groups[name] = (sum(groups.pop(program)[0] for program in group.programs), group.priority if group.priority is not None else 999)
+        return groups
+
+    def getProgramProcessInfo(self) -> list[ProcessInfo]:
+        """Return configured workloads, excluding event listeners."""
+        groups = self._program_groups()
+        processes = [info for info in self.getAllProcessInfo() if info.group in groups]
+        counts = Counter(info.group for info in processes)
+        missing = {name for name, (expected, _) in groups.items() if counts[name] < expected}
+        if missing:
+            raise RuntimeError(f"Supervisor is missing configured processes in program groups: {', '.join(sorted(missing))}")
+        return processes
+
+    def _validate_program(self, name: str):
+        if name not in self._cfg.program and name.split(":", 1)[0] not in self._program_groups():
+            raise RuntimeError(f"Unknown process: {name}")
+
     def getState(self) -> SupervisorState:
         return SupervisorState(self._client.supervisor.getState()["statecode"])
 
@@ -153,56 +184,87 @@ class SupervisorRemoteXMLRPCClient:
     # process methods #
     ###################
     def getProcessInfo(self, name: str) -> ProcessInfo:
-        if name not in self._cfg.program:
-            raise RuntimeError(f"Unknown process: {name}")
+        self._validate_program(name)
         return self._getProcessInfoInternal(name)
 
     def _getProcessInfoInternal(self, name: str) -> ProcessInfo:
         return ProcessInfo(**self._client.supervisor.getProcessInfo(name))
 
     def readProcessLog(self, name: str):
-        if name not in self._cfg.program:
-            raise RuntimeError(f"Unknown process: {name}")
+        self._validate_program(name)
         return self._client.supervisor.readProcessLog(name, 0, 0)
 
     def readProcessStderrLog(self, name: str, offset: int = 0, length: int = 0):
-        if name not in self._cfg.program:
-            raise RuntimeError(f"Unknown process: {name}")
+        self._validate_program(name)
 
         return self._client.supervisor.readProcessStderrLog(name, offset, length)
 
     def readProcessStdoutLog(self, name: str, offset: int = 0, length: int = 0):
-        if name not in self._cfg.program:
-            raise RuntimeError(f"Unknown process: {name}")
+        self._validate_program(name)
         return self._client.supervisor.readProcessStdoutLog(name, offset, length)
 
+    def readProcessLogChunk(self, name: str, channel: Literal["stdout", "stderr"], offset: int = 0, length: int = 65536) -> ProcessLogChunk:
+        """Read new UTF-8 text, advancing a byte cursor without replaying a tail window."""
+        self._validate_program(name)
+        if channel not in ("stdout", "stderr") or offset < 0 or length <= 0:
+            raise ValueError("channel must be stdout/stderr, offset nonnegative, and length positive")
+        size = self.getProcessLogSize(name, channel)
+        truncated = size < offset
+        offset = 0 if truncated else offset
+        available = min(length, size - offset)
+        if available <= 0:
+            return ProcessLogChunk(text="", offset=offset, truncated=truncated)
+        read = getattr(self._client.supervisor, f"readProcess{channel.title()}Log")
+        for extra in range(4):
+            read_length = min(available + extra, size - offset)
+            try:
+                text = read(name, offset, read_length)
+                break
+            except Fault as error:
+                if "UnicodeDecodeError" not in error.faultString or extra == 3:
+                    raise
+            except ProtocolError as error:
+                # Supervisor can report split UTF-8 as HTTP 500 instead of an XML-RPC fault.
+                if error.errcode != 500 or extra == 3:
+                    raise
+        return ProcessLogChunk(text=text, offset=offset + read_length, truncated=truncated)
+
+    def getProcessLogSize(self, name: str, channel: Literal["stdout", "stderr"]) -> int:
+        self._validate_program(name)
+        if channel not in ("stdout", "stderr"):
+            raise ValueError("channel must be stdout or stderr")
+        _, size, _ = getattr(self._client.supervisor, f"tailProcess{channel.title()}Log")(name, 0, 0)
+        return size
+
     def startAllProcesses(self) -> dict[str, ProcessInfo]:
-        # start all
-        self._client.supervisor.startAllProcesses()
-        return {name: self.getProcessInfo(name) for name in self._cfg.program}
+        self.getProgramProcessInfo()
+        groups = self._program_groups()
+        for name in sorted(groups, key=lambda name: groups[name][1]):
+            self._client.supervisor.startProcessGroup(name)
+        return {info.name if info.group == info.name else f"{info.group}:{info.name}": info for info in self.getProgramProcessInfo()}
 
     def startProcess(self, name: str) -> ProcessInfo:
-        if name not in self._cfg.program:
-            raise RuntimeError(f"Unknown process: {name}")
+        self._validate_program(name)
         try:
             if self._client.supervisor.startProcess(name):
                 return self.getProcessInfo(name)
         except Fault as f:
             if f.faultCode == SupervisorMethodResult.ALREADY_STARTED.value:
                 return self.getProcessInfo(name)
-            if f.faultCode == SupervisorMethodResult.SPAWN_ERROR.value:
+            if f.faultCode in (SupervisorMethodResult.SPAWN_ERROR.value, SupervisorMethodResult.ABNORMAL_TERMINATION.value):
                 return self.getProcessInfo(name)
             raise
         return self.getProcessInfo(name)
 
     def stopAllProcesses(self) -> dict[str, ProcessInfo]:
-        # start all
-        self._client.supervisor.stopAllProcesses()
-        return {name: self.getProcessInfo(name) for name in self._cfg.program}
+        self.getProgramProcessInfo()
+        groups = self._program_groups()
+        for name in sorted(groups, key=lambda name: groups[name][1], reverse=True):
+            self._client.supervisor.stopProcessGroup(name)
+        return {info.name if info.group == info.name else f"{info.group}:{info.name}": info for info in self.getProgramProcessInfo()}
 
     def stopProcess(self, name: str) -> ProcessInfo:
-        if name not in self._cfg.program:
-            raise RuntimeError(f"Unknown process: {name}")
+        self._validate_program(name)
         return self._stopProcessInternal(name)
 
     def _stopProcessInternal(self, name: str) -> ProcessInfo:

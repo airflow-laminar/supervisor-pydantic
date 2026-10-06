@@ -3,10 +3,11 @@ from logging import getLogger
 from pathlib import Path
 from time import sleep
 from typing import Annotated
+from xmlrpc.client import Fault
 
 from typer import Argument, Exit, Option, Typer
 
-from ..client import SupervisorRemoteXMLRPCClient
+from ..client import SupervisorMethodResult, SupervisorRemoteXMLRPCClient
 from ..config import SupervisorConvenienceConfiguration
 from .common import SupervisorTaskStep
 
@@ -184,18 +185,18 @@ def start_programs(
     log.info(ret)
 
     _wait_or_while(
-        until=lambda: all(_.running() for _ in client.getAllProcessInfo()),
-        unless=lambda: any(_.stopped() for _ in client.getAllProcessInfo()),
+        until=lambda: all(_.running() for _ in client.getProgramProcessInfo()),
+        unless=lambda: any(_.stopped() for _ in client.getProgramProcessInfo()),
         timeout=cfg_obj.command_timeout,
     )
     all_ok = _wait_or_while(
-        until=lambda: all(_.ok(ok_exitstatuses=cfg_obj.exitcodes) for _ in client.getAllProcessInfo()),
-        unless=lambda: any(_.bad(ok_exitstatuses=cfg_obj.exitcodes) for _ in client.getAllProcessInfo()),
+        until=lambda: all(_.ok(ok_exitstatuses=cfg_obj.exitcodes) for _ in client.getProgramProcessInfo()),
+        unless=lambda: any(_.bad(ok_exitstatuses=cfg_obj.exitcodes) for _ in client.getProgramProcessInfo()),
         timeout=cfg_obj.command_timeout,
     )
     if not all_ok:
         log.critical("Not all processes started successfully")
-        for r in client.getAllProcessInfo():
+        for r in client.getProgramProcessInfo():
             log.info(r.model_dump_json(exclude_unset=True))
         return _raise_or_exit(False, _exit)
     log.info("All processes started")
@@ -224,25 +225,25 @@ def check_programs(
     client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
 
     log.info("Checking all processes")
-    ret = client.getAllProcessInfo()
+    ret = client.getProgramProcessInfo()
     for r in ret:
         log.info(r.model_dump_json(exclude_unset=True))
 
     ok = False
     if check_running:
-        if all(p.running() for p in ret):
+        if ret and all(p.running() for p in ret):
             log.info("All processes running")
             ok = True
         else:
             log.warning("Not all processes running")
     elif check_done:
-        if all(p.done(ok_exitstatuses=cfg_obj.exitcodes) for p in ret):
+        if ret and all(p.done(ok_exitstatuses=cfg_obj.exitcodes) for p in ret):
             log.info("All processes done")
             ok = True
         else:
             log.info("Not all processes done")
     else:
-        if all(p.ok(ok_exitstatuses=cfg_obj.exitcodes) for p in ret):
+        if ret and all(p.ok(ok_exitstatuses=cfg_obj.exitcodes) for p in ret):
             log.info("All processes ok")
             ok = True
         else:
@@ -271,10 +272,10 @@ def stop_programs(
     ret = client.stopAllProcesses()
     log.info(ret)
 
-    all_stopped = _wait_or_while(until=lambda: all(_.stopped() for _ in client.getAllProcessInfo()), timeout=cfg_obj.command_timeout)
+    all_stopped = _wait_or_while(until=lambda: all(_.stopped() for _ in client.getProgramProcessInfo()), timeout=cfg_obj.command_timeout)
     if not all_stopped:
         log.critical("Not all processes stopped successfully")
-        for r in client.getAllProcessInfo():
+        for r in client.getProgramProcessInfo():
             log.info(r.model_dump_json(exclude_unset=True))
         return _raise_or_exit(False, _exit)
     log.info("All processes stopped")
@@ -296,10 +297,10 @@ def restart_programs(
     """
     if force:
         log.info("Force restarting all processes")
-        if not stop_programs(cfg, False):
+        if not stop_programs(cfg, _exit=False):
             log.warning("Could not stop programs")
             return _raise_or_exit(False, _exit)
-    if not start_programs(cfg, False):
+    if not start_programs(cfg, _exit=False):
         log.warning("Could not start programs")
         return _raise_or_exit(False, _exit)
     return _raise_or_exit(True, _exit)
@@ -341,19 +342,22 @@ def kill_supervisor(
         cfg (Annotated[Path, Option, optional): Path to JSON file of SupervisorConvenienceConfiguration
     """
     try:
-        if not stop_programs(cfg, False):
+        if not stop_programs(cfg, _exit=False):
             log.warning("could not stop programs")
     except ConnectionRefusedError:
         # supervisor already down, continue
         ...
+    except Fault as error:
+        if error.faultCode != SupervisorMethodResult.SHUTDOWN_STATE.value:
+            raise
 
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
     log.info("Killing supervisor")
     cfg_obj.kill()
 
-    still_running = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.command_timeout)
-    if still_running:
+    stopped = _wait_or_while(until=lambda: not cfg_obj.running(), timeout=cfg_obj.command_timeout)
+    if not stopped:
         log.critical(f"Still running {cfg_obj.command_timeout}s after kill command!")
         return _raise_or_exit(False, _exit)
     return _raise_or_exit(True, _exit)
@@ -374,12 +378,12 @@ def remove_supervisor_config(
     cfg_obj = _load_or_pass(cfg)
 
     log.info("Removing supervisor config")
-    still_running = stop_supervisor(cfg_obj, _exit=False)
-    if still_running:
+    stopped = stop_supervisor(cfg_obj, _exit=False)
+    if not stopped:
         log.critical("Supervisor still running after stop command!")
-        still_running = kill_supervisor(cfg_obj, _exit=False)
+        stopped = kill_supervisor(cfg_obj, _exit=False)
 
-    if still_running:
+    if not stopped:
         log.critical("Supervisor still running after kill command!")
         return _raise_or_exit(False, _exit)
 
