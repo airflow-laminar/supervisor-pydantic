@@ -21,9 +21,9 @@
 <meta content="#ffffff" media="(prefers-color-scheme: light)" name="theme-color"/>
 <meta content="#030711" media="(prefers-color-scheme: dark)" name="theme-color"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>supervisor_pydantic.ProcessState | supervisor-pydantic v1.4.3</title>
-<meta content="supervisor_pydantic.ProcessState | supervisor-pydantic v1.4.3" property="og:title"/>
-<meta content="supervisor_pydantic.ProcessState | supervisor-pydantic v1.4.3" name="twitter:title"/>
+<title>supervisor_pydantic.ProcessLogChunk | supervisor-pydantic v1.4.3</title>
+<meta content="supervisor_pydantic.ProcessLogChunk | supervisor-pydantic v1.4.3" property="og:title"/>
+<meta content="supervisor_pydantic.ProcessLogChunk | supervisor-pydantic v1.4.3" name="twitter:title"/>
 <link href="../../../_static/pygments.css?v=03e43079" rel="stylesheet" type="text/css"/>
 <link href="../../../_static/theme.css?v=d6d7c91b" rel="stylesheet" type="text/css"/>
 <link href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" rel="stylesheet" type="text/css"/>
@@ -37,8 +37,8 @@
 <link href="../../../_static/awesome-myst-nb.css?v=7c7ea10c" rel="stylesheet" type="text/css"/>
 <link href="../../../search.html" rel="search" title="Search"/>
 <link href="../../../genindex.html" rel="index" title="Index"/>
-<link href="supervisor_pydantic.SupervisorState.html" rel="next" title="supervisor_pydantic.SupervisorState"/>
-<link href="supervisor_pydantic.ProcessLogChunk.html" rel="prev" title="supervisor_pydantic.ProcessLogChunk"/>
+<link href="supervisor_pydantic.ProcessState.html" rel="next" title="supervisor_pydantic.ProcessState"/>
+<link href="supervisor_pydantic.ProcessInfo.html" rel="prev" title="supervisor_pydantic.ProcessInfo"/>
 </head>
 <body :class="{ 'overflow-hidden': showSidebar }" class="min-h-screen font-sans antialiased bg-background text-foreground" x-data="{ showSidebar: false, showScrollTop: false }">
 <div @click.self="showSidebar = false" class="fixed inset-0 z-50 overflow-hidden bg-background/80 backdrop-blur-sm md:hidden" x-cloak="" x-show="showSidebar"></div><div class="relative flex flex-col min-h-screen" id="page"><a class="absolute top-0 left-0 z-[100] block bg-background p-4 text-xl transition -translate-x-full opacity-0 focus:translate-x-0 focus:opacity-100" href="#content">
@@ -100,8 +100,8 @@
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.load_convenience_config.html">supervisor_pydantic.load_convenience_config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.SupervisorRemoteXMLRPCClient.html">supervisor_pydantic.SupervisorRemoteXMLRPCClient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.ProcessInfo.html">supervisor_pydantic.ProcessInfo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.ProcessLogChunk.html">supervisor_pydantic.ProcessLogChunk</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">supervisor_pydantic.ProcessState</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">supervisor_pydantic.ProcessLogChunk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.ProcessState.html">supervisor_pydantic.ProcessState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.SupervisorState.html">supervisor_pydantic.SupervisorState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.SupervisorMethodResult.html">supervisor_pydantic.SupervisorMethodResult</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.write_supervisor_config.html">supervisor_pydantic.write_supervisor_config</a></li>
@@ -135,55 +135,36 @@
 </svg>
 </a>
 <div class="mr-1">/</div><a class="hover:text-foreground overflow-hidden text-ellipsis whitespace-nowrap" href="../api.html">API reference</a>
-<div class="mr-1">/</div><span aria-current="page" class="font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">supervisor_pydantic.ProcessState</span>
+<div class="mr-1">/</div><span aria-current="page" class="font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">supervisor_pydantic.ProcessLogChunk</span>
 </nav>
 <div id="content" role="main">
-<section id="supervisor-pydantic-processstate">
-<h1>supervisor_pydantic.ProcessState<a class="headerlink" href="#supervisor-pydantic-processstate" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="supervisor_pydantic.ProcessState">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">supervisor_pydantic.</span></span><span class="sig-name descname"><span class="pre">ProcessState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/supervisor_pydantic/client/xmlrpc.html#ProcessState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#supervisor_pydantic.ProcessState" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#supervisor_pydantic.ProcessState'">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="supervisor_pydantic.ProcessState.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#supervisor_pydantic.ProcessState.__init__" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#supervisor_pydantic.ProcessState.__init__'">¶</a></dt>
+<section id="supervisor-pydantic-processlogchunk">
+<h1>supervisor_pydantic.ProcessLogChunk<a class="headerlink" href="#supervisor-pydantic-processlogchunk" title="Link to this heading">¶</a></h1>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="supervisor_pydantic.ProcessLogChunk">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">supervisor_pydantic.</span></span><span class="sig-name descname"><span class="pre">ProcessLogChunk</span></span><a class="reference internal" href="../../../_modules/supervisor_pydantic/client/xmlrpc.html#ProcessLogChunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#supervisor_pydantic.ProcessLogChunk" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#supervisor_pydantic.ProcessLogChunk'">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.ProcessLogChunk.text">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#supervisor_pydantic.ProcessLogChunk.text" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#supervisor_pydantic.ProcessLogChunk.text'">¶</a></dt>
 <dd></dd></dl>
-<p class="rubric">Attributes</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">STOPPED</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">STARTING</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RUNNING</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BACKOFF</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">STOPPING</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">EXITED</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FATAL</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">UNKNOWN</span></code></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.ProcessLogChunk.offset">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#supervisor_pydantic.ProcessLogChunk.offset" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#supervisor_pydantic.ProcessLogChunk.offset'">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="supervisor_pydantic.ProcessLogChunk.truncated">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncated</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#supervisor_pydantic.ProcessLogChunk.truncated" title="Link to this definition" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#supervisor_pydantic.ProcessLogChunk.truncated'">¶</a></dt>
+<dd></dd></dl>
 </dd></dl>
 </section>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
 <ul>
-<li><a :data-current="activeSection === '#supervisor_pydantic.ProcessState'" class="reference internal" href="#supervisor_pydantic.ProcessState"><code class="docutils literal notranslate"><span class="pre">ProcessState</span></code></a><ul>
-<li><a :data-current="activeSection === '#supervisor_pydantic.ProcessState.__init__'" class="reference internal" href="#supervisor_pydantic.ProcessState.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessState.__init__()</span></code></a></li>
+<li><a :data-current="activeSection === '#supervisor_pydantic.ProcessLogChunk'" class="reference internal" href="#supervisor_pydantic.ProcessLogChunk"><code class="docutils literal notranslate"><span class="pre">ProcessLogChunk</span></code></a><ul>
+<li><a :data-current="activeSection === '#supervisor_pydantic.ProcessLogChunk.text'" class="reference internal" href="#supervisor_pydantic.ProcessLogChunk.text"><code class="docutils literal notranslate"><span class="pre">ProcessLogChunk.text</span></code></a></li>
+<li><a :data-current="activeSection === '#supervisor_pydantic.ProcessLogChunk.offset'" class="reference internal" href="#supervisor_pydantic.ProcessLogChunk.offset"><code class="docutils literal notranslate"><span class="pre">ProcessLogChunk.offset</span></code></a></li>
+<li><a :data-current="activeSection === '#supervisor_pydantic.ProcessLogChunk.truncated'" class="reference internal" href="#supervisor_pydantic.ProcessLogChunk.truncated"><code class="docutils literal notranslate"><span class="pre">ProcessLogChunk.truncated</span></code></a></li>
 </ul>
 </li>
 </ul>

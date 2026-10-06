@@ -100,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.load_convenience_config.html">supervisor_pydantic.load_convenience_config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.SupervisorRemoteXMLRPCClient.html">supervisor_pydantic.SupervisorRemoteXMLRPCClient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.ProcessInfo.html">supervisor_pydantic.ProcessInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.ProcessLogChunk.html">supervisor_pydantic.ProcessLogChunk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.ProcessState.html">supervisor_pydantic.ProcessState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.SupervisorState.html">supervisor_pydantic.SupervisorState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.SupervisorMethodResult.html">supervisor_pydantic.SupervisorMethodResult</a></li>
@@ -193,6 +194,57 @@ after the instance has stopped.</p>
 <p>Set <code class="docutils literal notranslate"><span class="pre">host</span></code>, <code class="docutils literal notranslate"><span class="pre">protocol</span></code>, <code class="docutils literal notranslate"><span class="pre">port</span></code>, <code class="docutils literal notranslate"><span class="pre">username</span></code>, and <code class="docutils literal notranslate"><span class="pre">password</span></code> for remote access.
 Restrict the HTTP server at the network layer because it controls processes.</p>
 </section>
+<section id="how-to-forward-program-output-incrementally">
+<h2>How to forward program output incrementally<a class="headerlink" href="#how-to-forward-program-output-incrementally" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-forward-program-output-incrementally'">¶</a></h2>
+<p>Create an XML-RPC client from your local or remote configuration. Keep a byte
+cursor for each process and output channel, and reuse the returned offset on
+the next poll:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="kn">from</span><span class="w"> </span><span class="nn">supervisor_pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupervisorRemoteXMLRPCClient</span>
+</span><span id="line-4">
+</span><span id="line-5"><span class="n">client</span> <span class="o">=</span> <span class="n">SupervisorRemoteXMLRPCClient</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span><span id="line-6"><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span id="line-7"><span class="n">cursors</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="line-8">
+</span><span id="line-9">
+</span><span id="line-10"><span class="k">def</span><span class="w"> </span><span class="nf">forward_logs</span><span class="p">():</span>
+</span><span id="line-11">    <span class="n">received</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="line-12">    <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">getProgramProcessInfo</span><span class="p">():</span>
+</span><span id="line-13">        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">process</span><span class="o">.</span><span class="n">group</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">process</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
+</span><span id="line-14">        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"stdout"</span><span class="p">,</span> <span class="s2">"stderr"</span><span class="p">):</span>
+</span><span id="line-15">            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+</span><span id="line-16">            <span class="n">chunk</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">readProcessLogChunk</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">cursors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span><span id="line-17">            <span class="n">cursors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">offset</span>
+</span><span id="line-18">            <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">truncated</span><span class="p">:</span>
+</span><span id="line-19">                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> log shrank; reading from start"</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+</span><span id="line-20">            <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+</span><span id="line-21">                <span class="n">received</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="line-22">                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">chunk</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">))</span>
+</span><span id="line-23">    <span class="k">return</span> <span class="n">received</span>
+</span></code></pre></div>
+</div>
+<p>Call <code class="docutils literal notranslate"><span class="pre">forward_logs()</span></code> during monitoring. After stopping workloads, keep calling
+it until it returns <code class="docutils literal notranslate"><span class="pre">False</span></code> before restarting or removing their files.
+To forward only future output, initialize each cursor with
+<code class="docutils literal notranslate"><span class="pre">client.getProcessLogSize(name,</span> <span class="pre">channel)</span></code> before starting the workload.
+Refer to the <a class="reference internal" href="api.html"><span class="std std-doc">log cursor reference</span></a> for rotation limits.</p>
+</section>
+<section id="how-to-check-workloads-while-an-event-listener-runs">
+<h2>How to check workloads while an event listener runs<a class="headerlink" href="#how-to-check-workloads-while-an-event-listener-runs" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-check-workloads-while-an-event-listener-runs'">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">getProgramProcessInfo()</span></code> when checking modeled programs. Use
+<code class="docutils literal notranslate"><span class="pre">getAllProcessInfo()</span></code> when inspecting the daemon, including event listeners:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="kn">from</span><span class="w"> </span><span class="nn">supervisor_pydantic.convenience</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_programs</span><span class="p">,</span> <span class="n">start_programs</span><span class="p">,</span> <span class="n">stop_programs</span>
+</span><span id="line-2">
+</span><span id="line-3"><span class="n">start_programs</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="line-4"><span class="n">finished</span> <span class="o">=</span> <span class="n">check_programs</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">check_done</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="line-5"><span class="n">stop_programs</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">_exit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+<p>The convenience commands start, check, and stop configured workloads while
+leaving event listeners running. Stop the supervisord instance after stopping
+programs when you also want to shut down listeners.</p>
+</section>
 <section id="how-to-use-the-model-with-airflow-config">
 <h2>How to use the model with airflow-config<a class="headerlink" href="#how-to-use-the-model-with-airflow-config" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#how-to-use-the-model-with-airflow-config'">¶</a></h2>
 <p>Use the Airflow task model supplied by <code class="docutils literal notranslate"><span class="pre">airflow-supervisor</span></code>:</p>
@@ -231,6 +283,8 @@ corresponding Python callables.</p>
 <li><a :data-current="activeSection === '#how-to-load-yaml-with-hydra'" class="reference internal" href="#how-to-load-yaml-with-hydra">How to load YAML with Hydra</a></li>
 <li><a :data-current="activeSection === '#how-to-manage-a-supervisord-instance'" class="reference internal" href="#how-to-manage-a-supervisord-instance">How to manage a supervisord instance</a></li>
 <li><a :data-current="activeSection === '#how-to-control-programs-over-xml-rpc'" class="reference internal" href="#how-to-control-programs-over-xml-rpc">How to control programs over XML-RPC</a></li>
+<li><a :data-current="activeSection === '#how-to-forward-program-output-incrementally'" class="reference internal" href="#how-to-forward-program-output-incrementally">How to forward program output incrementally</a></li>
+<li><a :data-current="activeSection === '#how-to-check-workloads-while-an-event-listener-runs'" class="reference internal" href="#how-to-check-workloads-while-an-event-listener-runs">How to check workloads while an event listener runs</a></li>
 <li><a :data-current="activeSection === '#how-to-use-the-model-with-airflow-config'" class="reference internal" href="#how-to-use-the-model-with-airflow-config">How to use the model with airflow-config</a></li>
 <li><a :data-current="activeSection === '#how-to-use-the-convenience-cli'" class="reference internal" href="#how-to-use-the-convenience-cli">How to use the convenience CLI</a></li>
 </ul>

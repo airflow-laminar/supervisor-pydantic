@@ -1,0 +1,6 @@
+﻿supervisor\_pydantic.ProcessLogChunk
+====================================
+
+.. currentmodule:: supervisor_pydantic
+
+.. autopydantic_model:: ProcessLogChunk

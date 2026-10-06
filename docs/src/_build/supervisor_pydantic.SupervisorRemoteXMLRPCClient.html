@@ -100,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.load_convenience_config.html">supervisor_pydantic.load_convenience_config</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">supervisor_pydantic.SupervisorRemoteXMLRPCClient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.ProcessInfo.html">supervisor_pydantic.ProcessInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.ProcessLogChunk.html">supervisor_pydantic.ProcessLogChunk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.ProcessState.html">supervisor_pydantic.ProcessState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.SupervisorState.html">supervisor_pydantic.SupervisorState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supervisor_pydantic.SupervisorMethodResult.html">supervisor_pydantic.SupervisorMethodResult</a></li>
@@ -160,40 +161,49 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">getProcessInfo</span></code>(name)</p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">getProcessLogSize</span></code>(name, channel)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">getProgramProcessInfo</span></code>()</p></td>
+<td><p>Return configured workloads, excluding event listeners.</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">getState</span></code>()</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">readProcessLog</span></code>(name)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">readProcessStderrLog</span></code>(name[, offset, length])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">readProcessLogChunk</span></code>(name, channel[, offset, ...])</p></td>
+<td><p>Read new UTF-8 text, advancing a byte cursor without replaying a tail window.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">readProcessStderrLog</span></code>(name[, offset, length])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">readProcessStdoutLog</span></code>(name[, offset, length])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">readProcessStdoutLog</span></code>(name[, offset, length])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reloadConfig</span></code>([start_new])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reloadConfig</span></code>([start_new])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">signalProcess</span></code>(name, signal)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">signalProcess</span></code>(name, signal)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">startAllProcesses</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">startAllProcesses</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">startProcess</span></code>(name)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">startProcess</span></code>(name)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopAllProcesses</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopAllProcesses</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopProcess</span></code>(name)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stopProcess</span></code>(name)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>

@@ -179,6 +179,61 @@ client.startProcess("worker")
 Set `host`, `protocol`, `port`, `username`, and `password` for remote access.
 Restrict the HTTP server at the network layer because it controls processes.
 
+## How to forward program output incrementally
+
+Create an XML-RPC client from your local or remote configuration. Keep a byte
+cursor for each process and output channel, and reuse the returned offset on
+the next poll:
+
+```python
+import logging
+
+from supervisor_pydantic import SupervisorRemoteXMLRPCClient
+
+client = SupervisorRemoteXMLRPCClient(config)
+log = logging.getLogger(__name__)
+cursors = {}
+
+
+def forward_logs():
+    received = False
+    for process in client.getProgramProcessInfo():
+        name = f"{process.group}:{process.name}"
+        for channel in ("stdout", "stderr"):
+            key = (name, channel)
+            chunk = client.readProcessLogChunk(name, channel, offset=cursors.get(key, 0))
+            cursors[key] = chunk.offset
+            if chunk.truncated:
+                log.warning("%s %s log shrank; reading from start", name, channel)
+            if chunk.text:
+                received = True
+                log.info("%s %s: %s", name, channel, chunk.text.rstrip("\n"))
+    return received
+```
+
+Call `forward_logs()` during monitoring. After stopping workloads, keep calling
+it until it returns `False` before restarting or removing their files.
+To forward only future output, initialize each cursor with
+`client.getProcessLogSize(name, channel)` before starting the workload.
+Refer to the [log cursor reference](api.html.md) for rotation limits.
+
+## How to check workloads while an event listener runs
+
+Use `getProgramProcessInfo()` when checking modeled programs. Use
+`getAllProcessInfo()` when inspecting the daemon, including event listeners:
+
+```python
+from supervisor_pydantic.convenience import check_programs, start_programs, stop_programs
+
+start_programs(config, _exit=False)
+finished = check_programs(config, check_done=True, _exit=False)
+stop_programs(config, _exit=False)
+```
+
+The convenience commands start, check, and stop configured workloads while
+leaving event listeners running. Stop the supervisord instance after stopping
+programs when you also want to shut down listeners.
+
 ## How to use the model with airflow-config
 
 Use the Airflow task model supplied by `airflow-supervisor`:
@@ -282,11 +337,62 @@ familiar without hiding their different ownership models.
 | [`SupervisorRemoteXMLRPCClient`](_build/supervisor_pydantic.SupervisorRemoteXMLRPCClient.html.md#supervisor_pydantic.SupervisorRemoteXMLRPCClient)(cfg)   | A light wrapper over the supervisor xmlrpc api: [http://supervisord.org/api.html](http://supervisord.org/api.html)   |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
 | [`ProcessInfo`](_build/supervisor_pydantic.ProcessInfo.html.md#supervisor_pydantic.ProcessInfo)                                                           |                                                                                                                      |
+| [`ProcessLogChunk`](_build/supervisor_pydantic.ProcessLogChunk.html.md#supervisor_pydantic.ProcessLogChunk)                                               |                                                                                                                      |
 | [`ProcessState`](_build/supervisor_pydantic.ProcessState.html.md#supervisor_pydantic.ProcessState)(value)                                                 |                                                                                                                      |
 | [`SupervisorState`](_build/supervisor_pydantic.SupervisorState.html.md#supervisor_pydantic.SupervisorState)(value)                                        |                                                                                                                      |
 | [`SupervisorMethodResult`](_build/supervisor_pydantic.SupervisorMethodResult.html.md#supervisor_pydantic.SupervisorMethodResult)(value)                   |                                                                                                                      |
 
+### Workload processes
+
+`SupervisorRemoteXMLRPCClient.getAllProcessInfo()` returns every Supervisor
+process, including event listeners. `getProgramProcessInfo()` returns processes
+in the configured `program` and `fcgiprogram` groups, including heterogeneous
+`group` sections and `numprocs` instances. It raises `RuntimeError` when a
+configured group has fewer processes than its modeled workloads require.
+
+`startAllProcesses()` and `stopAllProcesses()` act on those workload processes.
+Workload groups start in ascending configured priority and stop in descending
+priority; an unspecified priority is `999`. Supervisor’s group RPC methods
+control process ordering within each group.
+They leave listeners running and return a dictionary of `ProcessInfo` values.
+For ordinary single-process programs, keys remain the program name. For grouped
+or differently named processes, keys are `group:process` names. Individual
+process methods also accept these qualified names.
+
+### Log cursors
+
+| Method                                                       | Result                                                              |
+|--------------------------------------------------------------|---------------------------------------------------------------------|
+| `getProcessLogSize(name, channel)`                           | Current output file size in bytes.                                  |
+| `readProcessLogChunk(name, channel, offset=0, length=65536)` | A `ProcessLogChunk` containing new UTF-8 output from a byte offset. |
+
+`channel` is `"stdout"` or `"stderr"`. `offset` is nonnegative; `length` is
+positive and measured in bytes. A chunk can include up to three additional
+bytes to complete a UTF-8 character. Logs must contain UTF-8 text, and offsets
+must start at character boundaries. Invalid arguments raise `ValueError`;
+names outside configured workload groups raise `RuntimeError`. XML-RPC and HTTP errors propagate
+when the read cannot complete.
+
+`ProcessLogChunk.text` contains decoded output. `offset` is the byte position
+after that output, suitable for the next read. `truncated` is true when the
+current file is shorter than the supplied cursor; that read starts at byte
+zero. An unchanged cursor at the current file size returns empty text.
+XML parsing normalizes carriage returns in `text`; offsets still count bytes
+in the source file.
+
+Supervisor XML-RPC exposes file size, but no file identity or rotation
+generation. Replacement or rotation to a file at least as large as the cursor
+cannot be detected. These methods read the current file; they do not recover
+rotated backups. Reusing returned cursors prevents replay during ordinary
+append-only logging, but does not guarantee complete delivery across rotation.
+
 ## Convenience operations
+
+With `_exit=False`, lifecycle operations return `True` on success and `False`
+when their checks fail. Configuration, transport, and filesystem exceptions
+propagate. The default `_exit=True` exits with a CLI status code instead.
+`kill_supervisor()` succeeds when the daemon stops; `remove_supervisor_config()`
+requires successful shutdown before removing its working directory.
 
 | [`write_supervisor_config`](_build/supervisor_pydantic.write_supervisor_config.html.md#supervisor_pydantic.write_supervisor_config)(cfg_json[, \_exit])   | Write a SupervisorConvenienceConfiguration JSON as a supervisor config file   |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
@@ -861,22 +967,25 @@ A light wrapper over the supervisor xmlrpc api: [http://supervisord.org/api.html
 
 ### Methods
 
-| [`__init__`](#supervisor_pydantic.SupervisorRemoteXMLRPCClient.__init__)(cfg)   |    |
-|---------------------------------------------------------------------------------|----|
-| `getAllProcessInfo`()                                                           |    |
-| `getProcessInfo`(name)                                                          |    |
-| `getState`()                                                                    |    |
-| `readProcessLog`(name)                                                          |    |
-| `readProcessStderrLog`(name[, offset, length])                                  |    |
-| `readProcessStdoutLog`(name[, offset, length])                                  |    |
-| `reloadConfig`([start_new])                                                     |    |
-| `restart`()                                                                     |    |
-| `shutdown`()                                                                    |    |
-| `signalProcess`(name, signal)                                                   |    |
-| `startAllProcesses`()                                                           |    |
-| `startProcess`(name)                                                            |    |
-| `stopAllProcesses`()                                                            |    |
-| `stopProcess`(name)                                                             |    |
+| [`__init__`](#supervisor_pydantic.SupervisorRemoteXMLRPCClient.__init__)(cfg)   |                                                                               |
+|---------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| `getAllProcessInfo`()                                                           |                                                                               |
+| `getProcessInfo`(name)                                                          |                                                                               |
+| `getProcessLogSize`(name, channel)                                              |                                                                               |
+| `getProgramProcessInfo`()                                                       | Return configured workloads, excluding event listeners.                       |
+| `getState`()                                                                    |                                                                               |
+| `readProcessLog`(name)                                                          |                                                                               |
+| `readProcessLogChunk`(name, channel[, offset, ...])                             | Read new UTF-8 text, advancing a byte cursor without replaying a tail window. |
+| `readProcessStderrLog`(name[, offset, length])                                  |                                                                               |
+| `readProcessStdoutLog`(name[, offset, length])                                  |                                                                               |
+| `reloadConfig`([start_new])                                                     |                                                                               |
+| `restart`()                                                                     |                                                                               |
+| `shutdown`()                                                                    |                                                                               |
+| `signalProcess`(name, signal)                                                   |                                                                               |
+| `startAllProcesses`()                                                           |                                                                               |
+| `startProcess`(name)                                                            |                                                                               |
+| `stopAllProcesses`()                                                            |                                                                               |
+| `stopProcess`(name)                                                             |                                                                               |
 
 <!-- docs/src/_build/supervisor_pydantic.ProcessInfo.html.md -->
 
@@ -921,6 +1030,20 @@ Bases: `BaseModel`
 #### ok(ok_exitstatuses=None)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.ok)
 
 #### bad(ok_exitstatuses=None)[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessInfo.bad)
+
+<!-- docs/src/_build/supervisor_pydantic.ProcessLogChunk.html.md -->
+
+# supervisor_pydantic.ProcessLogChunk
+
+### *pydantic model* supervisor_pydantic.ProcessLogChunk[[source]](../../../_modules/supervisor_pydantic/client/xmlrpc.html.md#ProcessLogChunk)
+
+Bases: `BaseModel`
+
+#### *field* text *: str* *[Required]*
+
+#### *field* offset *: int* *[Required]*
+
+#### *field* truncated *: bool* *= False*
 
 <!-- docs/src/_build/supervisor_pydantic.ProcessState.html.md -->
 
@@ -998,7 +1121,7 @@ Bases: `Enum`
 
 # supervisor_pydantic.write_supervisor_config
 
-### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c5713950>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#write_supervisor_config)
+### supervisor_pydantic.write_supervisor_config(cfg_json: str, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd78089d0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#write_supervisor_config)
 
 Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
 
@@ -1009,7 +1132,7 @@ Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
 
 # supervisor_pydantic.start_supervisor
 
-### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c5927250>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c5713910>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#start_supervisor)
+### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd7a29b90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd78088d0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#start_supervisor)
 
 Start a supervisor instance using supervisord in background
 
@@ -1020,7 +1143,7 @@ Start a supervisor instance using supervisord in background
 
 # supervisor_pydantic.start_programs
 
-### supervisor_pydantic.start_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c5718450>] = PosixPath('pydantic.json'), restart: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c576f2d0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#start_programs)
+### supervisor_pydantic.start_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd7868650>] = PosixPath('pydantic.json'), restart: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd76c6690>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#start_programs)
 
 Start all programs in the supervisor instance
 
@@ -1032,7 +1155,7 @@ Start all programs in the supervisor instance
 
 # supervisor_pydantic.check_programs
 
-### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c55d9250>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c55d93d0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#check_programs)
+### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd76c6990>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd76c6a10>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#check_programs)
 
 Check if programs are in a good state.
 
@@ -1045,7 +1168,7 @@ Check if programs are in a good state.
 
 # supervisor_pydantic.restart_programs
 
-### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c55d9590>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c55d9650>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#restart_programs)
+### supervisor_pydantic.restart_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd76c6bd0>] = PosixPath('pydantic.json'), force: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd76c6c90>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#restart_programs)
 
 Restart all programs in the supervisor instance
 
@@ -1057,7 +1180,7 @@ Restart all programs in the supervisor instance
 
 # supervisor_pydantic.stop_programs
 
-### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c55d9450>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c55d94d0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#stop_programs)
+### supervisor_pydantic.stop_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd76c6a90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd76c6b10>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#stop_programs)
 
 Stop all programs in the supervisor instance
 
@@ -1068,7 +1191,7 @@ Stop all programs in the supervisor instance
 
 # supervisor_pydantic.stop_supervisor
 
-### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c55d9750>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c55d9810>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#stop_supervisor)
+### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd76c6d90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd76c6e50>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#stop_supervisor)
 
 Stop the supervisor instance
 
@@ -1079,7 +1202,7 @@ Stop the supervisor instance
 
 # supervisor_pydantic.kill_supervisor
 
-### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c55d98d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c55d9990>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#kill_supervisor)
+### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd76c6f10>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd76c6fd0>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#kill_supervisor)
 
 Kill the supervisor instance with os.kill
 
@@ -1090,7 +1213,7 @@ Kill the supervisor instance with os.kill
 
 # supervisor_pydantic.remove_supervisor_config
 
-### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c55d9a50>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c55d9b10>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#remove_supervisor_config)
+### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd76c7090>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd76c7150>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#remove_supervisor_config)
 
 Remove the supervisor config file and working directory
 

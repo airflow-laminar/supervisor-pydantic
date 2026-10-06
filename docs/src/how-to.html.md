@@ -65,6 +65,61 @@ client.startProcess("worker")
 Set `host`, `protocol`, `port`, `username`, and `password` for remote access.
 Restrict the HTTP server at the network layer because it controls processes.
 
+## How to forward program output incrementally
+
+Create an XML-RPC client from your local or remote configuration. Keep a byte
+cursor for each process and output channel, and reuse the returned offset on
+the next poll:
+
+```python
+import logging
+
+from supervisor_pydantic import SupervisorRemoteXMLRPCClient
+
+client = SupervisorRemoteXMLRPCClient(config)
+log = logging.getLogger(__name__)
+cursors = {}
+
+
+def forward_logs():
+    received = False
+    for process in client.getProgramProcessInfo():
+        name = f"{process.group}:{process.name}"
+        for channel in ("stdout", "stderr"):
+            key = (name, channel)
+            chunk = client.readProcessLogChunk(name, channel, offset=cursors.get(key, 0))
+            cursors[key] = chunk.offset
+            if chunk.truncated:
+                log.warning("%s %s log shrank; reading from start", name, channel)
+            if chunk.text:
+                received = True
+                log.info("%s %s: %s", name, channel, chunk.text.rstrip("\n"))
+    return received
+```
+
+Call `forward_logs()` during monitoring. After stopping workloads, keep calling
+it until it returns `False` before restarting or removing their files.
+To forward only future output, initialize each cursor with
+`client.getProcessLogSize(name, channel)` before starting the workload.
+Refer to the [log cursor reference](api.html.md) for rotation limits.
+
+## How to check workloads while an event listener runs
+
+Use `getProgramProcessInfo()` when checking modeled programs. Use
+`getAllProcessInfo()` when inspecting the daemon, including event listeners:
+
+```python
+from supervisor_pydantic.convenience import check_programs, start_programs, stop_programs
+
+start_programs(config, _exit=False)
+finished = check_programs(config, check_done=True, _exit=False)
+stop_programs(config, _exit=False)
+```
+
+The convenience commands start, check, and stop configured workloads while
+leaving event listeners running. Stop the supervisord instance after stopping
+programs when you also want to shut down listeners.
+
 ## How to use the model with airflow-config
 
 Use the Airflow task model supplied by `airflow-supervisor`:

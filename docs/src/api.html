@@ -100,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.load_convenience_config.html">supervisor_pydantic.load_convenience_config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.SupervisorRemoteXMLRPCClient.html">supervisor_pydantic.SupervisorRemoteXMLRPCClient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.ProcessInfo.html">supervisor_pydantic.ProcessInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.ProcessLogChunk.html">supervisor_pydantic.ProcessLogChunk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.ProcessState.html">supervisor_pydantic.ProcessState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.SupervisorState.html">supervisor_pydantic.SupervisorState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_build/supervisor_pydantic.SupervisorMethodResult.html">supervisor_pydantic.SupervisorMethodResult</a></li>
@@ -197,20 +198,79 @@
 <tr class="row-even"><td><p><a class="reference internal" href="_build/supervisor_pydantic.ProcessInfo.html#supervisor_pydantic.ProcessInfo" title="supervisor_pydantic.ProcessInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessInfo</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_build/supervisor_pydantic.ProcessState.html#supervisor_pydantic.ProcessState" title="supervisor_pydantic.ProcessState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessState</span></code></a>(value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_build/supervisor_pydantic.ProcessLogChunk.html#supervisor_pydantic.ProcessLogChunk" title="supervisor_pydantic.ProcessLogChunk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessLogChunk</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_build/supervisor_pydantic.SupervisorState.html#supervisor_pydantic.SupervisorState" title="supervisor_pydantic.SupervisorState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SupervisorState</span></code></a>(value)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_build/supervisor_pydantic.ProcessState.html#supervisor_pydantic.ProcessState" title="supervisor_pydantic.ProcessState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessState</span></code></a>(value)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_build/supervisor_pydantic.SupervisorMethodResult.html#supervisor_pydantic.SupervisorMethodResult" title="supervisor_pydantic.SupervisorMethodResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SupervisorMethodResult</span></code></a>(value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_build/supervisor_pydantic.SupervisorState.html#supervisor_pydantic.SupervisorState" title="supervisor_pydantic.SupervisorState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SupervisorState</span></code></a>(value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_build/supervisor_pydantic.SupervisorMethodResult.html#supervisor_pydantic.SupervisorMethodResult" title="supervisor_pydantic.SupervisorMethodResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SupervisorMethodResult</span></code></a>(value)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
+<section id="workload-processes">
+<h3>Workload processes<a class="headerlink" href="#workload-processes" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#workload-processes'">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">SupervisorRemoteXMLRPCClient.getAllProcessInfo()</span></code> returns every Supervisor
+process, including event listeners. <code class="docutils literal notranslate"><span class="pre">getProgramProcessInfo()</span></code> returns processes
+in the configured <code class="docutils literal notranslate"><span class="pre">program</span></code> and <code class="docutils literal notranslate"><span class="pre">fcgiprogram</span></code> groups, including heterogeneous
+<code class="docutils literal notranslate"><span class="pre">group</span></code> sections and <code class="docutils literal notranslate"><span class="pre">numprocs</span></code> instances. It raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> when a
+configured group has fewer processes than its modeled workloads require.</p>
+<p><code class="docutils literal notranslate"><span class="pre">startAllProcesses()</span></code> and <code class="docutils literal notranslate"><span class="pre">stopAllProcesses()</span></code> act on those workload processes.
+Workload groups start in ascending configured priority and stop in descending
+priority; an unspecified priority is <code class="docutils literal notranslate"><span class="pre">999</span></code>. Supervisor’s group RPC methods
+control process ordering within each group.
+They leave listeners running and return a dictionary of <code class="docutils literal notranslate"><span class="pre">ProcessInfo</span></code> values.
+For ordinary single-process programs, keys remain the program name. For grouped
+or differently named processes, keys are <code class="docutils literal notranslate"><span class="pre">group:process</span></code> names. Individual
+process methods also accept these qualified names.</p>
+</section>
+<section id="log-cursors">
+<h3>Log cursors<a class="headerlink" href="#log-cursors" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#log-cursors'">¶</a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">getProcessLogSize(name,</span> <span class="pre">channel)</span></code></p></td>
+<td><p>Current output file size in bytes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">readProcessLogChunk(name,</span> <span class="pre">channel,</span> <span class="pre">offset=0,</span> <span class="pre">length=65536)</span></code></p></td>
+<td><p>A <code class="docutils literal notranslate"><span class="pre">ProcessLogChunk</span></code> containing new UTF-8 output from a byte offset.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">channel</span></code> is <code class="docutils literal notranslate"><span class="pre">"stdout"</span></code> or <code class="docutils literal notranslate"><span class="pre">"stderr"</span></code>. <code class="docutils literal notranslate"><span class="pre">offset</span></code> is nonnegative; <code class="docutils literal notranslate"><span class="pre">length</span></code> is
+positive and measured in bytes. A chunk can include up to three additional
+bytes to complete a UTF-8 character. Logs must contain UTF-8 text, and offsets
+must start at character boundaries. Invalid arguments raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>;
+names outside configured workload groups raise <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. XML-RPC and HTTP errors propagate
+when the read cannot complete.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ProcessLogChunk.text</span></code> contains decoded output. <code class="docutils literal notranslate"><span class="pre">offset</span></code> is the byte position
+after that output, suitable for the next read. <code class="docutils literal notranslate"><span class="pre">truncated</span></code> is true when the
+current file is shorter than the supplied cursor; that read starts at byte
+zero. An unchanged cursor at the current file size returns empty text.
+XML parsing normalizes carriage returns in <code class="docutils literal notranslate"><span class="pre">text</span></code>; offsets still count bytes
+in the source file.</p>
+<p>Supervisor XML-RPC exposes file size, but no file identity or rotation
+generation. Replacement or rotation to a file at least as large as the cursor
+cannot be detected. These methods read the current file; they do not recover
+rotated backups. Reusing returned cursors prevents replay during ordinary
+append-only logging, but does not guarantee complete delivery across rotation.</p>
+</section>
 </section>
 <section id="convenience-operations">
 <h2>Convenience operations<a class="headerlink" href="#convenience-operations" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#convenience-operations'">¶</a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">_exit=False</span></code>, lifecycle operations return <code class="docutils literal notranslate"><span class="pre">True</span></code> on success and <code class="docutils literal notranslate"><span class="pre">False</span></code>
+when their checks fail. Configuration, transport, and filesystem exceptions
+propagate. The default <code class="docutils literal notranslate"><span class="pre">_exit=True</span></code> exits with a CLI status code instead.
+<code class="docutils literal notranslate"><span class="pre">kill_supervisor()</span></code> succeeds when the daemon stops; <code class="docutils literal notranslate"><span class="pre">remove_supervisor_config()</span></code>
+requires successful shutdown before removing its working directory.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_build/supervisor_pydantic.write_supervisor_config.html#supervisor_pydantic.write_supervisor_config" title="supervisor_pydantic.write_supervisor_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_supervisor_config</span></code></a>(cfg_json[, _exit])</p></td>
@@ -248,7 +308,11 @@
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
 <ul>
 <li><a :data-current="activeSection === '#configuration-models'" class="reference internal" href="#configuration-models">Configuration models</a></li>
-<li><a :data-current="activeSection === '#runtime-client'" class="reference internal" href="#runtime-client">Runtime client</a></li>
+<li><a :data-current="activeSection === '#runtime-client'" class="reference internal" href="#runtime-client">Runtime client</a><ul>
+<li><a :data-current="activeSection === '#workload-processes'" class="reference internal" href="#workload-processes">Workload processes</a></li>
+<li><a :data-current="activeSection === '#log-cursors'" class="reference internal" href="#log-cursors">Log cursors</a></li>
+</ul>
+</li>
 <li><a :data-current="activeSection === '#convenience-operations'" class="reference internal" href="#convenience-operations">Convenience operations</a></li>
 </ul>
 </div>

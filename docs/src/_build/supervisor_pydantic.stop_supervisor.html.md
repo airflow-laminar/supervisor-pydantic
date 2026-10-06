@@ -1,6 +1,6 @@
 # supervisor_pydantic.stop_supervisor
 
-### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7f86c55d9750>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7f86c55d9810>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#stop_supervisor)
+### supervisor_pydantic.stop_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ffbd76c6d90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ffbd76c6e50>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#stop_supervisor)
 
 Stop the supervisor instance
 
