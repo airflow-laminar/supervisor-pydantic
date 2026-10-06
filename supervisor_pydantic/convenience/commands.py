@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from configparser import ConfigParser, MissingSectionHeaderError
 from logging import getLogger
 from pathlib import Path
 from time import sleep
@@ -93,6 +94,25 @@ def _load_or_pass(cfg: str | SupervisorConvenienceConfiguration) -> SupervisorCo
     return cfg
 
 
+def _write_config(cfg: SupervisorConvenienceConfiguration) -> bool:
+    if not _check_same(cfg):
+        previous = cfg.model_copy(deep=True)
+        parser = ConfigParser(interpolation=None)
+        try:
+            parser.read(cfg.config_path)
+        except MissingSectionHeaderError:
+            pass
+        if parser.has_option("supervisord", "pidfile"):
+            pidfile = parser.get("supervisord", "pidfile").replace("%(here)s", str(cfg.config_path.parent))
+            previous.supervisord.pidfile = Path(pidfile)
+        if previous.running() and not stop_supervisor(previous, _exit=False):
+            log.critical("Supervisor did not stop; preserving existing configuration")
+            return False
+    log.info(f"Writing supervisor config to {cfg.config_path}")
+    cfg._write_self()
+    return True
+
+
 def write_supervisor_config(cfg_json: str, _exit: Annotated[bool, Argument(hidden=True)] = True):
     """Write a SupervisorConvenienceConfiguration JSON as a supervisor config file
 
@@ -103,13 +123,7 @@ def write_supervisor_config(cfg_json: str, _exit: Annotated[bool, Argument(hidde
     log.info(f"Loading JSON config: {cfg_json}")
     cfg_obj = _load_or_pass(cfg_json)
 
-    if not _check_same(cfg_obj):
-        log.critical("Configurations don't match while writing supervisor config. This may lead to zombie supervisors")
-
-    log.info(f"Writing supervisor config to {cfg_obj.config_path}")
-    cfg_obj._write_self()
-
-    return _raise_or_exit(True, _exit)
+    return _raise_or_exit(_write_config(cfg_obj), _exit)
 
 
 def start_supervisor(
@@ -125,24 +139,10 @@ def start_supervisor(
     """
     # NOTE: typer does not support union types
     cfg_obj = _load_or_pass(cfg)
-    running = cfg_obj.running()
+    if not _check_same(cfg_obj) and not _write_config(cfg_obj):
+        return _raise_or_exit(False, _exit)
 
-    if not _check_same(cfg_obj):
-        log.critical("Configurations don't match while writing supervisor config. This may lead to zombie supervisors")
-
-        # TODO check if "critical" things are different and restart
-        # supervisor if necessary
-
-        # Otherwise just write and reload
-        log.info("Writing supervisor config to {cfg_obj.config_path}")
-        cfg_obj._write_self()
-
-        if running:
-            log.info("Reloading supervisor config")
-            client = SupervisorRemoteXMLRPCClient(cfg=cfg_obj)
-            client.reloadConfig()
-
-    if running:
+    if cfg_obj.running():
         log.info("Supervisor is already running")
         return _raise_or_exit(True, _exit)
 
