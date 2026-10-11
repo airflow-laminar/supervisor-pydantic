@@ -7,7 +7,7 @@ __all__ = ("EventListenerConfiguration",)
 
 
 class EventListenerConfiguration(ProgramConfiguration):
-    def to_cfg(self, key: str) -> str:
+    def to_cfg(self, key: str = "") -> str:
         # Overload to require key
         return super().to_cfg(key=key).replace("[event_listener", "[eventlistener")
 
@@ -27,10 +27,9 @@ class EventListenerConfiguration(ProgramConfiguration):
     # TODO can't inherit stdout_capture_maxbytes
     @field_validator("stdout_capture_maxbytes")
     @classmethod
-    def _event_listener_cant_use_stdout_capture_maxbytes(cls, v: str) -> str:
+    def _event_listener_cant_use_stdout_capture_maxbytes(cls, v: int | None) -> None:
         if v:
             raise ValueError("eventlistener cannot use stdout_capture_maxbytes")
-        return None
 
     @field_serializer("events", when_used="json")
     def _dump_events(self, v):

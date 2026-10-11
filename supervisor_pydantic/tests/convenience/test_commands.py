@@ -68,6 +68,7 @@ def test_start_stop(supervisor_convenience_configuration: SupervisorConvenienceC
 
 def test_start_supervisor_with_changed_config_and_stopped_daemon(supervisor_convenience_configuration: SupervisorConvenienceConfiguration):
     supervisor_convenience_configuration._write_self()
+    assert supervisor_convenience_configuration.config_path is not None
     supervisor_convenience_configuration.config_path.write_text("different content")
 
     with (
@@ -85,6 +86,7 @@ def test_start_supervisor_with_changed_config_and_stopped_daemon(supervisor_conv
 def test_start_supervisor_with_changed_config_and_running_daemon(supervisor_convenience_configuration: SupervisorConvenienceConfiguration):
     cfg = supervisor_convenience_configuration.model_copy(deep=True)
     cfg._write_self()
+    assert cfg.config_path is not None
     previous_config = cfg.config_path.read_text()
     cfg.program["test"].command = "echo replacement"
 
@@ -94,7 +96,8 @@ def test_start_supervisor_with_changed_config_and_running_daemon(supervisor_conv
         patch("supervisor_pydantic.convenience.commands.SupervisorConvenienceConfiguration.running", side_effect=[True, False, True]),
         patch("supervisor_pydantic.convenience.commands.stop_supervisor", return_value=True) as stop,
     ):
-        stop.side_effect = lambda *args, **kwargs: cfg.config_path.read_text() == previous_config
+        config_path = cfg.config_path
+        stop.side_effect = lambda *args, **kwargs: config_path.read_text() == previous_config
         assert start_supervisor(cfg, _exit=False)
 
     stop.assert_called_once()
@@ -185,8 +188,10 @@ def test_live_reconfiguration_applies_changed_settings(tmp_path, open_port, chan
     old = SupervisorConvenienceConfiguration(**values)
     old._write_self()
     client = SupervisorRemoteXMLRPCClient(old)
+    executable = shutil.which("supervisord")
+    assert executable is not None
     process = subprocess.Popen(
-        [shutil.which("supervisord"), "-n", "-c", str(old.config_path)],
+        [executable, "-n", "-c", str(old.config_path)],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
@@ -225,6 +230,7 @@ def test_live_reconfiguration_applies_changed_settings(tmp_path, open_port, chan
             assert start_supervisor(new, _exit=False)
         process.wait(timeout=5)
         assert new.running()
+        assert new.supervisord.pidfile is not None
         assert int(new.supervisord.pidfile.read_text()) != old_pid
         client = SupervisorRemoteXMLRPCClient(new)
         assert {info.name for info in client.getProgramProcessInfo()} == set(new.program)
@@ -372,6 +378,7 @@ def test_check_same_different_file():
         )
         cfg._write_self()
         # Modify the config file directly to simulate a different config
+        assert cfg.config_path is not None
         cfg.config_path.write_text("different content")
         assert _check_same(cfg) is False
 
@@ -433,6 +440,7 @@ def test_write_supervisor_config_different_file():
         )
         # Write a different config first
         cfg._write_self()
+        assert cfg.config_path is not None
         cfg.config_path.write_text("different content")
 
         # Now write the correct config

@@ -1,4 +1,4 @@
-import xmlrpc
+import xmlrpc.client
 from time import monotonic, sleep
 
 import pytest

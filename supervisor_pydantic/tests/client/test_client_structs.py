@@ -89,3 +89,7 @@ def test_changed_process_group_is_replaced_before_restart():
     assert client._client.supervisor.method_calls.index(call.removeProcessGroup("test")) < client._client.supervisor.method_calls.index(
         call.addProcessGroup("test")
     )
+
+
+def test_unknown_process_state():
+    assert ProcessState(999) is ProcessState.UNKNOWN

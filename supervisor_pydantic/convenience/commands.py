@@ -3,7 +3,7 @@ from configparser import ConfigParser, MissingSectionHeaderError
 from logging import getLogger
 from pathlib import Path
 from time import sleep
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 from xmlrpc.client import Fault
 
 from typer import Argument, Exit, Option, Typer
@@ -11,6 +11,11 @@ from typer import Argument, Exit, Option, Typer
 from ..client import SupervisorMethodResult, SupervisorRemoteXMLRPCClient
 from ..config import SupervisorConvenienceConfiguration
 from .common import SupervisorTaskStep
+
+if TYPE_CHECKING:
+    CommandConfig = Path | SupervisorConvenienceConfiguration
+else:
+    CommandConfig = Path
 
 log = getLogger(__name__)
 
@@ -30,6 +35,8 @@ __all__ = (
 
 def _check_exists(cfg: SupervisorConvenienceConfiguration) -> bool:
     log.info(f"Checking for working dir {cfg.working_dir} and config path {cfg.config_path}")
+    assert cfg.config_path is not None
+    assert cfg.working_dir is not None
     if cfg.working_dir.exists() and cfg.config_path.exists():
         # its probably already been written
         log.info(f"Working dir {cfg.working_dir} and config path {cfg.config_path} exist")
@@ -40,6 +47,7 @@ def _check_exists(cfg: SupervisorConvenienceConfiguration) -> bool:
 
 def _check_same(cfg: SupervisorConvenienceConfiguration) -> bool:
     log.info("Checking if config file matches")
+    assert cfg.config_path is not None
     if _check_exists(cfg) and cfg.config_path.read_text().strip() == cfg.to_cfg().strip():
         # same file contents
         log.info(f"Config file {cfg.config_path} matches")
@@ -84,7 +92,7 @@ def _raise_or_exit(val: bool, exit: bool):
     return val
 
 
-def _load_or_pass(cfg: str | SupervisorConvenienceConfiguration) -> SupervisorConvenienceConfiguration:
+def _load_or_pass(cfg: str | Path | SupervisorConvenienceConfiguration) -> SupervisorConvenienceConfiguration:
     if isinstance(cfg, Path):
         cfg = SupervisorConvenienceConfiguration.model_validate_json(cfg.read_text())
     if isinstance(cfg, str):
@@ -95,6 +103,7 @@ def _load_or_pass(cfg: str | SupervisorConvenienceConfiguration) -> SupervisorCo
 
 
 def _write_config(cfg: SupervisorConvenienceConfiguration) -> bool:
+    assert cfg.config_path is not None
     if not _check_same(cfg):
         previous = cfg.model_copy(deep=True)
         parser = ConfigParser(interpolation=None)
@@ -127,7 +136,7 @@ def write_supervisor_config(cfg_json: str, _exit: Annotated[bool, Argument(hidde
 
 
 def start_supervisor(
-    cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
+    cfg: Annotated[CommandConfig, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
     _exit: Annotated[bool, Argument(hidden=True)] = True,
@@ -157,7 +166,7 @@ def start_supervisor(
 
 
 def start_programs(
-    cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
+    cfg: Annotated[CommandConfig, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
     restart: bool = False,
@@ -204,7 +213,7 @@ def start_programs(
 
 
 def check_programs(
-    cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
+    cfg: Annotated[CommandConfig, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
     check_running: bool = False,
@@ -252,7 +261,7 @@ def check_programs(
 
 
 def stop_programs(
-    cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
+    cfg: Annotated[CommandConfig, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
     _exit: Annotated[bool, Argument(hidden=True)] = True,
@@ -283,7 +292,7 @@ def stop_programs(
 
 
 def restart_programs(
-    cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
+    cfg: Annotated[CommandConfig, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
     force: bool = False,
@@ -307,7 +316,7 @@ def restart_programs(
 
 
 def stop_supervisor(
-    cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
+    cfg: Annotated[CommandConfig, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
     _exit: Annotated[bool, Argument(hidden=True)] = True,
@@ -331,7 +340,7 @@ def stop_supervisor(
 
 
 def kill_supervisor(
-    cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
+    cfg: Annotated[CommandConfig, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
     _exit: Annotated[bool, Argument(hidden=True)] = True,
@@ -364,7 +373,7 @@ def kill_supervisor(
 
 
 def remove_supervisor_config(
-    cfg: Annotated[Path, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
+    cfg: Annotated[CommandConfig, Option(exists=True, file_okay=True, dir_okay=False, writable=False, readable=True, resolve_path=True)] = Path(
         "pydantic.json"
     ),
     _exit: Annotated[bool, Argument(hidden=True)] = True,

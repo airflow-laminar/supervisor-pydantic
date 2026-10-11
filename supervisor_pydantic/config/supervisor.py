@@ -72,12 +72,12 @@ class SupervisorConfiguration(BaseModel):
     rpcinterface: dict[str, RpcInterfaceConfiguration] | None = Field(default=None)
 
     # other configuration
-    config_path: Path | None = Field(default="supervisord.conf", description="Path to supervisor configuration file, relative to `working_dir`")
-    working_dir: Path | None = Field(default="", description="Path to supervisor working directory")
+    config_path: Path | None = Field(default=Path("supervisord.conf"), description="Path to supervisor configuration file, relative to `working_dir`")
+    working_dir: Path | None = Field(default=None, description="Path to supervisor working directory")
 
     @model_validator(mode="after")
     def _setup_config_and_working_dir(self):
-        if self.working_dir is None or self.working_dir == "" and self.supervisord.directory:
+        if (self.working_dir is None or self.working_dir == "") and self.supervisord.directory:
             # use this as the dir
             self.working_dir = self.supervisord.directory
         elif self.working_dir is None or self.working_dir == "":
@@ -88,6 +88,8 @@ class SupervisorConfiguration(BaseModel):
             # align supervisord to working dir
             self.supervisord.directory = self.working_dir
 
+        assert self.working_dir is not None
+        assert self.config_path is not None
         if not Path(self.config_path).exists() or str(self.working_dir) not in str(self.config_path):
             self.config_path = (self.working_dir / self.config_path).resolve()
 
@@ -129,16 +131,16 @@ class SupervisorConfiguration(BaseModel):
                 else ((folder / config_dir / f"{config_name}.yml").exists() or (folder / config_dir / f"{config_name}.yaml").exists())
             )
 
-        config_dir = (folder / config_dir).resolve()
+        resolved_config_dir = (folder / config_dir).resolve()
         if not config_name:
-            return folder.resolve(), config_dir, ""
+            return folder.resolve(), resolved_config_dir, ""
         elif (folder / config_dir / f"{config_name}.yml").exists():
-            return folder.resolve(), config_dir, (folder / config_dir / f"{config_name}.yml").resolve()
-        return folder.resolve(), config_dir, (folder / config_dir / f"{config_name}.yaml").resolve()
+            return folder.resolve(), resolved_config_dir, (folder / config_dir / f"{config_name}.yml").resolve()
+        return folder.resolve(), resolved_config_dir, (folder / config_dir / f"{config_name}.yaml").resolve()
 
     @classmethod
     def load(
-        cls: "SupervisorConfiguration",
+        cls: type["SupervisorConfiguration"],
         config_dir: str = "config",
         config_name: str = "",
         overrides: list[str] | None = None,
@@ -150,13 +152,13 @@ class SupervisorConfiguration(BaseModel):
 
         with initialize_config_dir(config_dir=str(Path(__file__).resolve().parent / "hydra"), version_base=None):
             if config_dir:
-                hydra_folder, config_dir, _ = cls._find_parent_config_folder(
+                hydra_folder, resolved_config_dir, _ = cls._find_parent_config_folder(
                     config_dir=config_dir, config_name=config_name, basepath=basepath, _offset=_offset
                 )
 
                 cfg = compose(config_name="base", overrides=[], return_hydra_config=True)
                 searchpaths = cfg["hydra"]["searchpath"]
-                searchpaths.extend([hydra_folder, config_dir])
+                searchpaths.extend([hydra_folder, resolved_config_dir])
                 if config_name:
                     overrides = [
                         f"+config={config_name}",
@@ -176,6 +178,8 @@ class SupervisorConfiguration(BaseModel):
             return config
 
     def write(self):
+        assert self.working_dir is not None
+        assert self.config_path is not None
         _log.info(f"Making working dir: {self.working_dir}")
         self.working_dir.mkdir(parents=True, exist_ok=True)
         for program_name, program_config in self.program.items():
@@ -186,6 +190,7 @@ class SupervisorConfiguration(BaseModel):
         self.config_path.write_text(self.to_cfg())
 
     def rmdir(self):
+        assert self.working_dir is not None
         if not self.running():
             _log.info(f"Removing working dir: {self.working_dir}")
             rmtree(self.working_dir)
@@ -201,6 +206,7 @@ class SupervisorConfiguration(BaseModel):
     def running(self):
         # grab the pidfile, find the process with the pid, and kill
         _log.info(f"Checking supervisord: {self.supervisord.pidfile}")
+        assert self.supervisord.pidfile is not None
         if not self.supervisord.pidfile.exists():
             return False
         try:
@@ -213,12 +219,14 @@ class SupervisorConfiguration(BaseModel):
         if self.running():
             # grab the pidfile, find the process with the pid, and kill with SIGTERM
             _log.info(f"Stopping supervisord: {self.supervisord.pidfile}")
+            assert self.supervisord.pidfile is not None
             os.kill(int(self.supervisord.pidfile.read_text()), SIGTERM)
 
     def kill(self):
         if self.running():
             # grab the pidfile, find the process with the pid, and kill with SIGKILL
             _log.info(f"Killing supervisord: {self.supervisord.pidfile}")
+            assert self.supervisord.pidfile is not None
             os.kill(int(self.supervisord.pidfile.read_text()), SIGKILL)
 
 
