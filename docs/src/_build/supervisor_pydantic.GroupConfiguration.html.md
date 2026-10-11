@@ -4,7 +4,7 @@
 
 Bases: `_BaseCfgModel`
 
-#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/group.html.md#GroupConfiguration.to_cfg)
+#### to_cfg(key: str = '') → str[[source]](../../../_modules/supervisor_pydantic/config/group.html.md#GroupConfiguration.to_cfg)
 
 #### *field* programs *: list[str]* *[Required]*
 

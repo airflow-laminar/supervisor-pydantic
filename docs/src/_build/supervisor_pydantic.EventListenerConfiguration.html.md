@@ -4,7 +4,7 @@
 
 Bases: [`ProgramConfiguration`](supervisor_pydantic.ProgramConfiguration.html.md#supervisor_pydantic.ProgramConfiguration)
 
-#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/eventlistener.html.md#EventListenerConfiguration.to_cfg)
+#### to_cfg(key: str = '') → str[[source]](../../../_modules/supervisor_pydantic/config/eventlistener.html.md#EventListenerConfiguration.to_cfg)
 
 #### *field* buffer_size *: int | None* *= None*
 

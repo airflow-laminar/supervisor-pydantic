@@ -4,7 +4,7 @@
 
 Bases: `_BaseCfgModel`
 
-#### to_cfg(key: str) → str[[source]](../../../_modules/supervisor_pydantic/config/rpcinterface.html.md#RpcInterfaceConfiguration.to_cfg)
+#### to_cfg(key: str = '') → str[[source]](../../../_modules/supervisor_pydantic/config/rpcinterface.html.md#RpcInterfaceConfiguration.to_cfg)
 
 #### *field* rpcinterface_factory *: str* *= 'supervisor.rpcinterface:make_main_rpcinterface'*
 

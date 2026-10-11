@@ -4,7 +4,7 @@
 
 Bases: `_BaseCfgModel`
 
-#### to_cfg() → str[[source]](../../../_modules/supervisor_pydantic/config/inet_http_server.html.md#InetHttpServerConfiguration.to_cfg)
+#### to_cfg(key: str = '') → str[[source]](../../../_modules/supervisor_pydantic/config/inet_http_server.html.md#InetHttpServerConfiguration.to_cfg)
 
 #### *field* port *: Annotated[str, BeforeValidator(func=\_convert_to_host_port, json_schema_input_type=PydanticUndefined), AfterValidator(func=\_is_host_port)] | None* *= None*
 
