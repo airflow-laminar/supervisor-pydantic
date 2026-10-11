@@ -6,7 +6,7 @@ from supervisor_pydantic import IncludeConfiguration
 
 def test_inst():
     with raises(ValidationError):
-        IncludeConfiguration()
+        IncludeConfiguration.model_validate({})
     IncludeConfiguration(files=[""])
 
 

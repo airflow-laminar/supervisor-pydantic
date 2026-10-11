@@ -11,7 +11,7 @@ __all__ = ("ProgramConfiguration",)
 
 
 class ProgramConfiguration(_BaseCfgModel):
-    def to_cfg(self, key: str) -> str:
+    def to_cfg(self, key: str = "") -> str:
         # Overload to require key
         return super().to_cfg(key=key)
 

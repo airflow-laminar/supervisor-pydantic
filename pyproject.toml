@@ -34,6 +34,7 @@ dependencies = [
     "jinja2",
     "omegaconf",
     "pydantic>=2",
+    "python-dateutil",
     "rich",
     "typer",
 ]
@@ -57,6 +58,7 @@ develop = [
     "wheel",
     # Test dependencies
     "supervisor",
+    "types-python-dateutil",
 ]
 
 [project.scripts]

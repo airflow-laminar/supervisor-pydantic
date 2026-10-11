@@ -1,16 +1,21 @@
 from datetime import UTC, datetime
-from types import SimpleNamespace
 from unittest.mock import Mock, call
 from xmlrpc.client import Fault, ProtocolError
 
 import pytest
 
-from supervisor_pydantic import GroupConfiguration, ProcessInfo, ProgramConfiguration, SupervisorRemoteXMLRPCClient
+from supervisor_pydantic import (
+    GroupConfiguration,
+    ProcessInfo,
+    ProgramConfiguration,
+    SupervisorConvenienceConfiguration,
+    SupervisorRemoteXMLRPCClient,
+)
 
 
 def client():
     value = SupervisorRemoteXMLRPCClient.__new__(SupervisorRemoteXMLRPCClient)
-    value._cfg = SimpleNamespace(program={"batch": ProgramConfiguration(command="true")}, group=None, fcgiprogram=None)
+    value._cfg = SupervisorConvenienceConfiguration(program={"batch": ProgramConfiguration(command="true")})
     value._client = Mock()
     return value
 

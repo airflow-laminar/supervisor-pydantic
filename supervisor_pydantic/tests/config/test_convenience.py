@@ -6,10 +6,8 @@ def test_inst():
 
 
 def test_cfg_extra():
-    c = SupervisorConvenienceConfiguration(
-        port=7000,
-        program={"test": ProgramConfiguration(command="echo test")},
-        working_dir="/tmp/supervisor-runner-test",
+    c = SupervisorConvenienceConfiguration.model_validate(
+        {"port": 7000, "program": {"test": {"command": "echo test"}}, "working_dir": "/tmp/supervisor-runner-test"}
     )
     assert (
         c.to_cfg().strip()

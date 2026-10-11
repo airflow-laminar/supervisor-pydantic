@@ -7,7 +7,7 @@ if __name__ == "__main__":
     cfg = SupervisorConvenienceConfiguration(
         port="*:9090",
         working_dir=path,
-        path=path,
+        config_path=path,
         program={
             "test": ProgramConfiguration(
                 command="bash -c 'sleep 60; exit 1'",

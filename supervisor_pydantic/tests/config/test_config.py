@@ -22,7 +22,7 @@ from supervisor_pydantic import (
 
 def test_inst():
     with raises(ValidationError):
-        SupervisorConfiguration()
+        SupervisorConfiguration.model_validate({})
     with (
         patch("supervisor_pydantic.config.supervisor.gettempdir") as p1,
     ):

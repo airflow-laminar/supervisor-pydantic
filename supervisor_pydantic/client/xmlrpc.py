@@ -1,10 +1,10 @@
 from collections import Counter
 from datetime import datetime
 from enum import Enum
-from typing import Literal
+from typing import Any, Literal
 from xmlrpc.client import Fault, ProtocolError, ServerProxy
 
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 
 from ..config import SupervisorConvenienceConfiguration
 
@@ -22,12 +22,12 @@ class ProcessState(Enum):
     UNKNOWN = 1000
 
     @classmethod
-    def _missing_(cls, code):
-        if isinstance(code, str):
-            return getattr(cls, code)
-        if code not in (0, 10, 20, 30, 40, 100, 200):
-            return super().__init__(1000)
-        raise ValueError(code)
+    def _missing_(cls, value):
+        if isinstance(value, str):
+            return getattr(cls, value)
+        if value not in (0, 10, 20, 30, 40, 100, 200):
+            return cls.UNKNOWN
+        raise ValueError(value)
 
 
 class SupervisorState(Enum):
@@ -37,10 +37,10 @@ class SupervisorState(Enum):
     SHUTDOWN = -1
 
     @classmethod
-    def _missing_(cls, code):
-        if isinstance(code, str):
-            return getattr(cls, code)
-        raise ValueError(code)
+    def _missing_(cls, value):
+        if isinstance(value, str):
+            return getattr(cls, value)
+        raise ValueError(value)
 
 
 class SupervisorMethodResult(Enum):
@@ -128,9 +128,9 @@ class SupervisorRemoteXMLRPCClient:
         self._protocol = cfg.protocol
         self._rpcpath = "/" + cfg.rpcpath if not cfg.rpcpath.startswith("/") else cfg.rpcpath
         self._rpcurl = self._build_rpcurl(username=cfg.username, password=cfg.password)
-        self._client = ServerProxy(self._rpcurl)
+        self._client: Any = ServerProxy(self._rpcurl)
 
-    def _build_rpcurl(self, username: str | None, password: str | None) -> str:
+    def _build_rpcurl(self, username: str | None, password: SecretStr | None) -> str:
         # Forces http or https based on port, otherwise resolves to given protocol
         protocol = {80: "http", 443: "https"}.get(self._port, self._protocol)
         port = "" if self._port in {80, 443} else f":{self._port}"
@@ -277,7 +277,7 @@ class SupervisorRemoteXMLRPCClient:
             raise
         return self._getProcessInfoInternal(name)
 
-    def reloadConfig(self, start_new: bool = False) -> SupervisorState:
+    def reloadConfig(self, start_new: bool = False) -> list[ProcessInfo]:
         added, changed, removed = self._client.supervisor.reloadConfig()[0]
         proc_infos = []
         for name in removed:

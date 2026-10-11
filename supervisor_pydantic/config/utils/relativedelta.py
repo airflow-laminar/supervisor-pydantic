@@ -2,9 +2,8 @@
 # Pydantic-compatible wrapper for dateutil.relativedelta.relativedelta
 from typing import Annotated, Any
 
-from dateutil.relativedelta import relativedelta, weekday
-from pydantic import BaseModel, Field, model_serializer, model_validator
-from pydantic_core import core_schema
+from dateutil.relativedelta import relativedelta, weekday as DateutilWeekday
+from pydantic import BaseModel, Field, ModelWrapValidatorHandler, model_serializer, model_validator
 
 
 class WeekdayAnnotations(BaseModel):
@@ -12,26 +11,27 @@ class WeekdayAnnotations(BaseModel):
     n: int | None = None
 
     @model_validator(mode="wrap")
-    def _validate(value, handler: core_schema.ValidatorFunctionWrapHandler) -> relativedelta:
+    @classmethod
+    def _validate(cls, value, handler: ModelWrapValidatorHandler[Any]) -> DateutilWeekday:
         # if already dateutil._common.weekday instance, return it
-        if isinstance(value, weekday):
+        if isinstance(value, DateutilWeekday):
             return value
 
         # otherwise run model validation, which returns either a
         # a dateutil._common.weekday or a WeekdayAnnotations
         validated = handler(value)
-        if isinstance(validated, weekday):
+        if isinstance(validated, DateutilWeekday):
             return validated
 
         kwargs = {k: v for k, v in dict(validated).items() if v is not None}
-        return weekday(**kwargs)
+        return DateutilWeekday(**kwargs)
 
     @model_serializer(mode="plain")
-    def _serialize(self: weekday) -> dict[str, Any]:
+    def _serialize(self: DateutilWeekday) -> dict[str, Any]:
         return {"weekday": self.weekday, "n": self.n}
 
 
-Weekday = Annotated[weekday, WeekdayAnnotations]
+Weekday = Annotated[DateutilWeekday, WeekdayAnnotations]
 
 
 class RelativeDeltaAnnotation(BaseModel):
@@ -61,7 +61,8 @@ class RelativeDeltaAnnotation(BaseModel):
     dt2: int | None = Field(None, exclude=True)
 
     @model_validator(mode="wrap")
-    def _validate(value, handler: core_schema.ValidatorFunctionWrapHandler) -> relativedelta:
+    @classmethod
+    def _validate(cls, value, handler: ModelWrapValidatorHandler[Any]) -> relativedelta:
         if isinstance(value, relativedelta):
             return value
 
