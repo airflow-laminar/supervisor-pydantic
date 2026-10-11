@@ -46,6 +46,7 @@ develop = [
     "codespell",
     "hatchling",
     "mdformat",
+    "mdformat-frontmatter",
     "mdformat-tables>=1",
     "pytest",
     "pytest-cov",
@@ -84,7 +85,7 @@ replace = 'version = "{new_version}"'
 [tool.coverage.run]
 branch = true
 omit = [
-    "supervisor_pydantic/tests/integration/",
+    "supervisor_pydantic/tests/integration/*",
 ]
 
 [tool.coverage.report]
