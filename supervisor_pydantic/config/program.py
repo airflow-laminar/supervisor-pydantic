@@ -1,5 +1,5 @@
 from pathlib import Path
-from shlex import quote
+from shlex import quote, shlex
 from typing import Literal
 
 from omegaconf import DictConfig
@@ -166,11 +166,18 @@ class ProgramConfiguration(_BaseCfgModel):
     @classmethod
     def _load_environment(cls, v):
         if isinstance(v, str):
+            lexer = shlex(v, posix=True)
+            lexer.whitespace = ","
+            lexer.whitespace_split = True
+            lexer.commenters = ""
             d = {}
-            for item in v.split(","):
-                if "=" in item:
-                    k, val = item.split("=", 1)
-                    d[k] = val
+            for item in lexer:
+                if "=" not in item:
+                    raise ValueError("environment entries must have KEY=value form")
+                key, value = item.split("=", 1)
+                if not key:
+                    raise ValueError("environment entries must have a nonempty key")
+                d[key] = value
             return d
         if isinstance(v, DictConfig):
             return dict(v)
