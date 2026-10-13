@@ -1,7 +1,7 @@
 from logging import getLogger
 from pathlib import Path
 
-from pydantic import Field, PrivateAttr, SecretStr, field_serializer, field_validator, model_validator
+from pydantic import AnyUrl, Field, PrivateAttr, SecretStr, field_serializer, field_validator, model_validator
 
 from .base import HostPort, Signal, SupervisorLocation, UnixUserName
 from .inet_http_server import InetHttpServerConfiguration
@@ -16,7 +16,7 @@ _log = getLogger(__name__)
 class SupervisorConvenienceConfiguration(SupervisorConfiguration):
     """Convenience layer, settings that MUST be set when running via convenience API"""
 
-    _pydantic_path: Path = PrivateAttr(default="pydantic.json")
+    _pydantic_path: Path = PrivateAttr(default=Path("pydantic.json"))
 
     ############
     # programs #
@@ -140,7 +140,9 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
         if not self.inet_http_server:
             self.inet_http_server = InetHttpServerConfiguration()
 
-        self.port, self.inet_http_server.port = self.port or self.inet_http_server.port, self.port or self.inet_http_server.port
+        port = self.port or self.inet_http_server.port
+        assert port is not None
+        self.port, self.inet_http_server.port = port, port
         self.username, self.inet_http_server.username = (
             self.username or self.inet_http_server.username,
             self.username or self.inet_http_server.username,
@@ -150,7 +152,7 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
             self.password or self.inet_http_server.password,
         )
 
-        self.supervisorctl.serverurl = f"{self.protocol}://{self.host}:{self.port.split(':')[-1]}/"
+        self.supervisorctl.serverurl = AnyUrl(f"{self.protocol}://{self.host}:{self.port.split(':')[-1]}/")
 
         # rpcinterface
         if not self.rpcinterface:
@@ -160,6 +162,8 @@ class SupervisorConvenienceConfiguration(SupervisorConfiguration):
         # supervisord
         self.supervisord.nodaemon = False
         self.supervisord.identifier = "supervisor"
+
+        assert self.working_dir is not None
 
         # programs
         for name, config in self.program.items():

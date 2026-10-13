@@ -6,11 +6,11 @@ from supervisor_pydantic import FcgiProgramConfiguration
 
 def test_inst():
     with raises(ValidationError):
-        FcgiProgramConfiguration()
+        FcgiProgramConfiguration.model_validate({})
     with raises(ValidationError):
-        FcgiProgramConfiguration(socket="test")
+        FcgiProgramConfiguration.model_validate({"socket": "test"})
     with raises(ValidationError):
-        FcgiProgramConfiguration(command="test")
+        FcgiProgramConfiguration.model_validate({"command": "test"})
     FcgiProgramConfiguration(command="echo 'test'", socket="test")
 
 

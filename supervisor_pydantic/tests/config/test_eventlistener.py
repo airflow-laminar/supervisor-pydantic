@@ -6,9 +6,9 @@ from supervisor_pydantic import EventListenerConfiguration
 
 def test_inst():
     with raises(ValidationError):
-        EventListenerConfiguration()
+        EventListenerConfiguration.model_validate({})
     with raises(ValidationError):
-        EventListenerConfiguration(stdout_capture_maxbytes=10)
+        EventListenerConfiguration.model_validate({"stdout_capture_maxbytes": 10})
     EventListenerConfiguration(command="echo 'test'")
 
 

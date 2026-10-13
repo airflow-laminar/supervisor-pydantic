@@ -6,7 +6,7 @@ from supervisor_pydantic import GroupConfiguration
 
 def test_inst():
     with raises(ValidationError):
-        GroupConfiguration()
+        GroupConfiguration.model_validate({})
     GroupConfiguration(programs=["test"])
 
 

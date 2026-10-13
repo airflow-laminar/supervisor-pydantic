@@ -2,6 +2,7 @@ import shutil
 import socket
 import subprocess
 from collections.abc import Iterator
+from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from time import sleep
 
@@ -77,7 +78,7 @@ def supervisor_convenience_configuration(open_port: int) -> Iterator[SupervisorC
             working_dir=td,
             program={
                 "test": ProgramConfiguration(
-                    command="bash -c 'sleep 1; exit 1'",
+                    command="bash -c 'sleep 3; exit 1'",
                 )
             },
         )
@@ -93,10 +94,10 @@ def permissioned_supervisor_convenience_configuration(
             port=f"*:{permissioned_open_port}",
             username="user1",
             password="testpassword1",
-            path=tf.name,
+            config_path=Path(tf.name),
             program={
                 "test": ProgramConfiguration(
-                    command="bash -c 'sleep 1; exit 1'",
+                    command="bash -c 'sleep 3; exit 1'",
                 )
             },
         )

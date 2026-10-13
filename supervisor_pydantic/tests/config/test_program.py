@@ -10,7 +10,7 @@ from supervisor_pydantic import ProgramConfiguration
 
 def test_inst():
     with raises(ValidationError):
-        ProgramConfiguration()
+        ProgramConfiguration.model_validate({})
     ProgramConfiguration(command="echo 'test'")
 
 
@@ -27,7 +27,7 @@ def test_autorestart_options():
     ProgramConfiguration(command="echo 'test'", autorestart=False).model_dump_json(exclude_unset=True)
     ProgramConfiguration(command="echo 'test'", autorestart="unexpected").model_dump_json(exclude_unset=True)
     with raises(ValidationError):
-        ProgramConfiguration(command="echo 'test'", autorestart="other").model_dump_json(exclude_unset=True)
+        ProgramConfiguration.model_validate({"command": "echo 'test'", "autorestart": "other"}).model_dump_json(exclude_unset=True)
 
 
 def test_cfg():

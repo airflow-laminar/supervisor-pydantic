@@ -6,7 +6,7 @@ __all__ = ("InetHttpServerConfiguration",)
 
 
 class InetHttpServerConfiguration(_BaseCfgModel):
-    def to_cfg(self) -> str:
+    def to_cfg(self, key: str = "") -> str:
         ret = "[inet_http_server]"
         if self.port:
             ret += f"\nport={self.port}"
