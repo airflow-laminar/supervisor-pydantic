@@ -1,6 +1,6 @@
 # supervisor_pydantic.kill_supervisor
 
-### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fd5bacf9f10>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fd5bacf9f90>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#kill_supervisor)
+### supervisor_pydantic.kill_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fcaf39f4b90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fcaf39f4c10>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#kill_supervisor)
 
 Kill the supervisor instance with os.kill
 
