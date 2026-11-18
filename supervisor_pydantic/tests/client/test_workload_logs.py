@@ -146,6 +146,22 @@ def test_live_newline_normalization_keeps_byte_cursor(workload_instance):
     assert client.readProcessLogChunk("jobs:batch_00", "stdout", offset=chunk.offset).text == ""
 
 
+def test_live_control_characters_do_not_break_log_reads(workload_instance):
+    client = SupervisorRemoteXMLRPCClient(workload_instance)
+    client.startAllProcesses()
+    deadline = monotonic() + 5
+    while monotonic() < deadline and not all(process.done() for process in client.getProgramProcessInfo()):
+        sleep(0.1)
+    assert all(process.done() for process in client.getProgramProcessInfo())
+    content = b"[\x1b[36m2026-11-18\x1b[0m] bell\x07 tab\tend\n"
+    Path(client.getProcessInfo("jobs:batch_00").stdout_logfile).write_bytes(content)
+
+    chunk = client.readProcessLogChunk("jobs:batch_00", "stdout")
+
+    assert chunk.text == "[2026-11-18] bell tab\tend\n"
+    assert chunk.offset == len(content)
+
+
 @pytest.mark.parametrize("force_kill", [False, True])
 def test_live_cleanup_returns_success(workload_instance, force_kill):
     cfg = workload_instance
