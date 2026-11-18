@@ -2,7 +2,6 @@ import re
 from collections import Counter
 from datetime import datetime
 from enum import Enum
-from io import BytesIO
 from typing import Any, Literal
 from xmlrpc.client import Fault, ProtocolError, SafeTransport, ServerProxy, Transport, gzip_decode
 
@@ -18,21 +17,20 @@ __all__ = ("ProcessInfo", "ProcessLogChunk", "ProcessState", "SupervisorMethodRe
 _XML_INVALID = re.compile(rb"\x1b\[[0-;=-?]*[ -%'-/]*[@-~]|[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
-class _ControlCharacterMixin:
+class _ControlCharacterTransport(Transport):
     """Drop control characters that supervisor copies unescaped from process logs into XML-RPC responses."""
 
     def parse_response(self, response):
         body = response.read()
         if response.getheader("Content-Encoding", "") == "gzip":
             body = gzip_decode(body)
-        return super().parse_response(BytesIO(_XML_INVALID.sub(b"", body)))
+        parser, unmarshaller = self.getparser()
+        parser.feed(_XML_INVALID.sub(b"", body))
+        parser.close()
+        return unmarshaller.close()
 
 
-class _ControlCharacterTransport(_ControlCharacterMixin, Transport):
-    pass
-
-
-class _ControlCharacterSafeTransport(_ControlCharacterMixin, SafeTransport):
+class _ControlCharacterSafeTransport(_ControlCharacterTransport, SafeTransport):
     pass
 
 

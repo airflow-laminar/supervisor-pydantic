@@ -112,6 +112,4 @@ def test_unknown_process_state():
 def test_transport_drops_control_characters_without_touching_markup(text, expected):
     body = dumps((text,), methodresponse=True).encode()
     response = MagicMock(read=MagicMock(return_value=body), getheader=MagicMock(return_value=""))
-    transport = _ControlCharacterTransport()
-    transport.verbose = False
-    assert transport.parse_response(response) == (expected,)
+    assert _ControlCharacterTransport().parse_response(response) == (expected,)
