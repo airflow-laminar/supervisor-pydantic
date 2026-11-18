@@ -1,14 +1,37 @@
+import re
 from collections import Counter
 from datetime import datetime
 from enum import Enum
 from typing import Any, Literal
-from xmlrpc.client import Fault, ProtocolError, ServerProxy
+from xmlrpc.client import Fault, ProtocolError, SafeTransport, ServerProxy, Transport, gzip_decode
 
 from pydantic import BaseModel, SecretStr
 
 from ..config import SupervisorConvenienceConfiguration
 
 __all__ = ("ProcessInfo", "ProcessLogChunk", "ProcessState", "SupervisorMethodResult", "SupervisorRemoteXMLRPCClient", "SupervisorState")
+
+
+# ANSI CSI sequences first, so colour codes do not leave their parameters behind. '<' and '&' are
+# excluded so a sequence cut off at a chunk boundary cannot consume XML markup or entities.
+_XML_INVALID = re.compile(rb"\x1b\[[0-;=-?]*[ -%'-/]*[@-~]|[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+class _ControlCharacterTransport(Transport):
+    """Drop control characters that supervisor copies unescaped from process logs into XML-RPC responses."""
+
+    def parse_response(self, response):
+        body = response.read()
+        if response.getheader("Content-Encoding", "") == "gzip":
+            body = gzip_decode(body)
+        parser, unmarshaller = self.getparser()
+        parser.feed(_XML_INVALID.sub(b"", body))
+        parser.close()
+        return unmarshaller.close()
+
+
+class _ControlCharacterSafeTransport(_ControlCharacterTransport, SafeTransport):
+    pass
 
 
 class ProcessState(Enum):
@@ -128,7 +151,8 @@ class SupervisorRemoteXMLRPCClient:
         self._protocol = cfg.protocol
         self._rpcpath = "/" + cfg.rpcpath if not cfg.rpcpath.startswith("/") else cfg.rpcpath
         self._rpcurl = self._build_rpcurl(username=cfg.username, password=cfg.password)
-        self._client: Any = ServerProxy(self._rpcurl)
+        transport = _ControlCharacterSafeTransport() if self._rpcurl.startswith("https:") else _ControlCharacterTransport()
+        self._client: Any = ServerProxy(self._rpcurl, transport=transport)
 
     def _build_rpcurl(self, username: str | None, password: SecretStr | None) -> str:
         # Forces http or https based on port, otherwise resolves to given protocol

@@ -1,7 +1,11 @@
 from datetime import UTC, datetime
 from unittest.mock import MagicMock, call
+from xmlrpc.client import dumps
+
+import pytest
 
 from supervisor_pydantic.client import ProcessInfo, ProcessState, SupervisorRemoteXMLRPCClient
+from supervisor_pydantic.client.xmlrpc import _ControlCharacterTransport
 
 
 def _gen() -> ProcessInfo:
@@ -93,3 +97,19 @@ def test_changed_process_group_is_replaced_before_restart():
 
 def test_unknown_process_state():
     assert ProcessState(999) is ProcessState.UNKNOWN
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("[\x1b[36mtime\x1b[0m] ok\x07\n", "[time] ok\n"),
+        # A chunk can end inside an escape sequence, right before supervisor's closing tag.
+        ("cut \x1b[", "cut ["),
+        ("cut \x1b[3", "cut [3"),
+        ("\x1b[ <a & b>", "[ <a & b>"),
+    ],
+)
+def test_transport_drops_control_characters_without_touching_markup(text, expected):
+    body = dumps((text,), methodresponse=True).encode()
+    response = MagicMock(read=MagicMock(return_value=body), getheader=MagicMock(return_value=""))
+    assert _ControlCharacterTransport().parse_response(response) == (expected,)
