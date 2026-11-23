@@ -1,6 +1,6 @@
 # supervisor_pydantic.remove_supervisor_config
 
-### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ff2e551ac10>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ff2e551ac90>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#remove_supervisor_config)
+### supervisor_pydantic.remove_supervisor_config(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fcc0ad1ec90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fcc0ad1ed50>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#remove_supervisor_config)
 
 Remove the supervisor config file and working directory
 

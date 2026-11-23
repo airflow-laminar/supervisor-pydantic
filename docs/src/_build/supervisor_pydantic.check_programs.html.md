@@ -1,6 +1,6 @@
 # supervisor_pydantic.check_programs
 
-### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ff2e551a390>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ff2e551a490>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#check_programs)
+### supervisor_pydantic.check_programs(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fcc0ad1e550>] = PosixPath('pydantic.json'), check_running: bool = False, check_done: bool = False, \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fcc0ad1e650>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#check_programs)
 
 Check if programs are in a good state.
 

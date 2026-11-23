@@ -1,6 +1,6 @@
 # supervisor_pydantic.start_supervisor
 
-### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7ff2e58a17d0>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7ff2e565c090>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#start_supervisor)
+### supervisor_pydantic.start_supervisor(cfg: ~pathlib.Annotated[~pathlib.Path, <typer.models.OptionInfo object at 0x7fcc0ae48d90>] = PosixPath('pydantic.json'), \_exit: ~typing.Annotated[bool, <typer.models.ArgumentInfo object at 0x7fcc0ae48110>] = True)[[source]](../../../_modules/supervisor_pydantic/convenience/commands.html.md#start_supervisor)
 
 Start a supervisor instance using supervisord in background
 
