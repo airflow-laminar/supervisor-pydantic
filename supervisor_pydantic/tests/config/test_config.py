@@ -135,3 +135,32 @@ command=echo 'test'
 [rpcinterface:testrpcinterface]
 supervisor.rpcinterface_factory=a.test.module""".format(dir=str(pth / f"supervisor-{getuser()}-test"))
         )
+
+
+def test_start_uses_the_supervisord_next_to_python(tmp_path):
+    (tmp_path / "python").touch()
+    (tmp_path / "supervisord").touch()
+    with (
+        patch("supervisor_pydantic.config.supervisor.gettempdir", return_value=str(tmp_path)),
+        patch("supervisor_pydantic.config.supervisor.sys.executable", str(tmp_path / "python")),
+        patch("supervisor_pydantic.config.supervisor.Popen") as popen,
+    ):
+        c = SupervisorConfiguration(program={"test": ProgramConfiguration(command="test")})
+        c.start(daemon=True)
+    assert popen.call_args.args[0] == f"{tmp_path / 'supervisord'} -c {c.config_path}"
+
+
+def test_write_makes_log_dirs_outside_the_program_directory(tmp_path):
+    with patch("supervisor_pydantic.config.supervisor.gettempdir", return_value=str(tmp_path)):
+        c = SupervisorConfiguration(
+            program={
+                "test": ProgramConfiguration(
+                    command="test",
+                    directory=tmp_path,
+                    stdout_logfile=tmp_path / "logs" / "test" / "output.log",
+                    stderr_logfile=tmp_path / "logs" / "test" / "error.log",
+                )
+            }
+        )
+        c.write()
+    assert (tmp_path / "logs" / "test").is_dir()

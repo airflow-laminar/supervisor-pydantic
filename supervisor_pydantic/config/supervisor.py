@@ -1,4 +1,5 @@
 import os
+import sys
 from getpass import getuser
 from logging import getLogger
 from pathlib import Path
@@ -30,6 +31,17 @@ __all__ = (
 )
 
 _log = getLogger(__name__)
+
+
+def _supervisord() -> str:
+    """Return the supervisord installed with this interpreter, if any.
+
+    A service such as an Airflow worker may run with a PATH that does not
+    include its virtualenv's bin directory, so a bare ``supervisord`` would not
+    be found there.
+    """
+    local = Path(sys.executable).with_name("supervisord")
+    return str(local) if local.exists() else "supervisord"
 
 
 class SupervisorConfiguration(BaseModel):
@@ -186,6 +198,10 @@ class SupervisorConfiguration(BaseModel):
             if program_config.directory:
                 _log.info(f"Making program dir ({program_name}): {program_config.directory}")
                 program_config.directory.mkdir(exist_ok=True)
+            # supervisord refuses to start if a log file's directory is missing.
+            for log_file in (program_config.stdout_logfile, program_config.stderr_logfile):
+                if log_file is not None and log_file.is_absolute():
+                    log_file.parent.mkdir(parents=True, exist_ok=True)
         _log.info(f"Writing config file: {self.config_path}")
         self.config_path.write_text(self.to_cfg())
 
@@ -198,10 +214,11 @@ class SupervisorConfiguration(BaseModel):
     def start(self, daemon: bool = False):
         _log.info(f"Starting supervisord: {self.config_path}")
         if not self.running():
+            supervisord = _supervisord()
             if daemon is False:
-                Popen(f"supervisord -n -c {self.config_path!s}", shell=True)
+                Popen(f"{supervisord} -n -c {self.config_path!s}", shell=True)
                 return
-            Popen(f"supervisord -c {self.config_path!s}", close_fds=True, shell=True)
+            Popen(f"{supervisord} -c {self.config_path!s}", close_fds=True, shell=True)
 
     def running(self):
         # grab the pidfile, find the process with the pid, and kill
